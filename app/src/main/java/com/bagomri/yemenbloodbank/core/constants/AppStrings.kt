@@ -219,6 +219,8 @@ object AppStrings {
     const val submit = "إرسال البلاغ"
     const val email = "البريد الإلكتروني"
     const val password = "كلمة المرور"
+    const val logout = "تسجيل الخروج"
+    const val confirmLogout = "تأكيد تسجيل الخروج"
     const val hospitalDashboard = "لوحة تحكم المستشفى"
     const val manageDonors = "إدارة المتبرعين"
     const val suspendedDonors = "المتبرعون الموقوفون"

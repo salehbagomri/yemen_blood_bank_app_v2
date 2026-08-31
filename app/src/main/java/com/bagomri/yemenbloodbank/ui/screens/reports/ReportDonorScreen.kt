@@ -1,5 +1,6 @@
 package com.bagomri.yemenbloodbank.ui.screens.reports
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,15 +15,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Note
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
@@ -37,7 +38,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -51,23 +54,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
 import com.bagomri.yemenbloodbank.ui.components.CustomTextField
 import com.bagomri.yemenbloodbank.ui.components.LoadingIndicator
 
-private val reportReasons = listOf(
-    "number_not_working" to "الرقم لا يعمل أو مفصول",
-    "wrong_number" to "الرقم خاطئ (ليس للمتبرع)",
-    "refuses_to_donate" to "الشخص يرفض التبرع بالدم",
-    "number_busy" to "الرقم مشغول دائماً",
-    "no_answer" to "لا يرد على الاتصال المتكرر",
-    "deceased" to "المتبرع متوفى رحمه الله",
-    "moved_away" to "انتقل من المنطقة / المحافظة",
-    "health_issues" to "لديه موانع أو مشاكل صحية",
+private val REPORT_REASONS = listOf(
+    "number_not_working" to "الرقم مفصول أو مغلق",
+    "no_response" to "لا يتم الرد على الاتصال",
+    "wrong_number" to "الرقم غير صحيح أو لشخص آخر",
+    "not_donor" to "الشخص يرفض التبرع أو لم يعد متبرعاً",
     "other" to "سبب آخر"
 )
 
@@ -94,10 +93,7 @@ fun ReportDonorScreen(
 
     if (showSuccessDialog) {
         AlertDialog(
-            onDismissRequest = {
-                showSuccessDialog = false
-                onNavigateBack()
-            },
+            onDismissRequest = {},
             icon = {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
@@ -107,12 +103,17 @@ fun ReportDonorScreen(
                 )
             },
             title = {
-                Text("تم إرسال البلاغ بنجاح", fontWeight = FontWeight.Bold)
+                Text(
+                    text = "تم استلام بلاغك بنجاح",
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.TextPrimary
+                )
             },
             text = {
                 Text(
-                    "شكراً لمساعدتك في تحسين جودة بيانات المتبرعين. ستتم مراجعة البلاغ من قِبل إدارة النظام.",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = "شكراً لمساهمتك في الحفاظ على صحة ودقة بيانات المتبرعين لخدمة المحتاجين والمرضى.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = AppColors.TextSecondary
                 )
             },
             confirmButton = {
@@ -123,13 +124,14 @@ fun ReportDonorScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
                 ) {
-                    Text("حسناً")
+                    Text("حسناً", color = Color.White)
                 }
             }
         )
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -142,7 +144,7 @@ fun ReportDonorScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = AppStrings.back,
                             tint = Color.White
                         )
@@ -170,14 +172,15 @@ fun ReportDonorScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // بطاقة تنبيه
+                    // بطاقة تنبيه وتوضيح
                     Card(
                         colors = CardDefaults.cardColors(containerColor = AppColors.WarningContainer),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        border = BorderStroke(1.dp, AppColors.Warning.copy(alpha = 0.3f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(14.dp),
+                            modifier = Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
@@ -188,9 +191,9 @@ fun ReportDonorScreen(
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
-                                text = "إذا وجدت رقماً غير صحيح أو واجهت مشكلة مع متبرع، يُرجى الإبلاغ لتحديث أو إزالة البيانات.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface
+                                text = "يساعدنا إبلاغك عن الأرقام غير الصحيحة أو التي لا ترد في الحفاظ على تحديث البيانات ومساعدة المرضى في الطوارئ.",
+                                style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
+                                color = AppColors.Warning
                             )
                         }
                     }
@@ -198,38 +201,41 @@ fun ReportDonorScreen(
                     // رقم الهاتف المبلغ عنه
                     CustomTextField(
                         value = uiState.phoneNumber,
-                        onValueChange = {
-                            viewModel.onPhoneNumberChange(it)
-                            viewModel.clearError()
-                        },
+                        onValueChange = { viewModel.onPhoneNumberChange(it) },
                         label = AppStrings.phoneNumber,
                         placeholder = "777123456",
+                        enabled = donorId == null,
                         leadingIcon = {
                             Icon(Icons.Default.Phone, contentDescription = null, tint = AppColors.Primary)
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                        }
                     )
 
                     // اختيار سبب البلاغ
                     Text(
-                        text = AppStrings.reportReason,
+                        text = "اختر سبب البلاغ:",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = AppColors.TextPrimary
                     )
 
-                    Card(
-                        shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            reportReasons.forEach { (reasonCode, reasonTitle) ->
-                                val isSelected = uiState.selectedReason == reasonCode
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        REPORT_REASONS.forEach { (key, reasonTitle) ->
+                            val isSelected = uiState.selectedReason == key
+
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { viewModel.onReasonChange(key) },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (isSelected) AppColors.PrimaryContainer else MaterialTheme.colorScheme.surface
+                                ),
+                                border = BorderStroke(
+                                    1.dp,
+                                    if (isSelected) AppColors.Primary else AppColors.Border
+                                )
+                            ) {
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { viewModel.onReasonChange(reasonCode) }
-                                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                                    modifier = Modifier.padding(14.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
@@ -244,7 +250,7 @@ fun ReportDonorScreen(
                                         style = MaterialTheme.typography.bodyMedium.copy(
                                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                                         ),
-                                        color = if (isSelected) AppColors.Primary else MaterialTheme.colorScheme.onSurface
+                                        color = if (isSelected) AppColors.Primary else AppColors.TextPrimary
                                     )
                                 }
                             }
@@ -260,7 +266,7 @@ fun ReportDonorScreen(
                         singleLine = false,
                         maxLines = 3,
                         leadingIcon = {
-                            Icon(Icons.Default.Note, contentDescription = null, tint = AppColors.TextSecondary)
+                            Icon(Icons.AutoMirrored.Filled.Note, contentDescription = null, tint = AppColors.Primary)
                         }
                     )
 
@@ -269,13 +275,18 @@ fun ReportDonorScreen(
                         Card(
                             colors = CardDefaults.cardColors(containerColor = AppColors.ErrorContainer),
                             shape = RoundedCornerShape(10.dp),
+                            border = BorderStroke(1.dp, AppColors.Error.copy(alpha = 0.3f)),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
                                 modifier = Modifier.padding(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.ErrorOutline, contentDescription = null, tint = AppColors.Error)
+                                Icon(
+                                    imageVector = Icons.Default.ErrorOutline,
+                                    contentDescription = null,
+                                    tint = AppColors.Error
+                                )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = uiState.errorMessage!!,
@@ -294,10 +305,15 @@ fun ReportDonorScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Warning)
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary),
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
                     ) {
-                        Icon(Icons.Default.Report, contentDescription = null, tint = Color.White)
+                        Icon(
+                            imageVector = Icons.Default.Report,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = AppStrings.submit,
@@ -308,7 +324,7 @@ fun ReportDonorScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }

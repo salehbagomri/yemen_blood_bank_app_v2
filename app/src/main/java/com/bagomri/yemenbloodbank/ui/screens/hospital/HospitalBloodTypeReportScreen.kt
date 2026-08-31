@@ -1,5 +1,6 @@
 package com.bagomri.yemenbloodbank.ui.screens.hospital
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,16 +14,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bloodtype
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
-import com.bagomri.yemenbloodbank.ui.components.EmptyState
+import com.bagomri.yemenbloodbank.ui.components.BloodTypeBadge
 import com.bagomri.yemenbloodbank.ui.components.ErrorDisplay
 import com.bagomri.yemenbloodbank.ui.components.LoadingIndicator
 
@@ -61,11 +61,12 @@ fun HospitalBloodTypeReportScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = AppStrings.bloodTypeReport,
+                        text = "تقرير فصائل الدم",
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
@@ -73,7 +74,7 @@ fun HospitalBloodTypeReportScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = AppStrings.back,
                             tint = Color.White
                         )
@@ -110,7 +111,6 @@ fun HospitalBloodTypeReportScreen(
                     onRetry = { viewModel.loadData() }
                 )
             } else {
-                // حساب توزيع الفصائل من قائمة المتبرعين
                 val totalDonors = uiState.donors.size
                 val distribution = AppStrings.bloodTypes.associateWith { type ->
                     uiState.donors.count { it.bloodType == type }
@@ -131,7 +131,8 @@ fun HospitalBloodTypeReportScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+                        border = BorderStroke(1.dp, AppColors.Border)
                     ) {
                         Column(
                             modifier = Modifier
@@ -139,103 +140,72 @@ fun HospitalBloodTypeReportScreen(
                                 .padding(20.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Surface(
-                                modifier = Modifier.size(56.dp),
-                                shape = CircleShape,
-                                color = AppColors.PrimaryContainer
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(
-                                        imageVector = Icons.Default.People,
-                                        contentDescription = null,
-                                        tint = AppColors.Primary,
-                                        modifier = Modifier.size(30.dp)
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Text(
-                                text = "$totalDonors",
-                                style = MaterialTheme.typography.displaySmall.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = AppColors.Primary
-                                )
-                            )
-
-                            Spacer(modifier = Modifier.height(2.dp))
-
                             Text(
                                 text = "إجمالي المتبرعين المسجلين بالمحافظة",
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = AppColors.TextSecondary
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "$totalDonors",
+                                style = MaterialTheme.typography.displayMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 36.sp
+                                ),
+                                color = AppColors.Primary
+                            )
+                            Text(
+                                text = "متبرع نشط ومسجل",
+                                style = MaterialTheme.typography.bodySmall,
                                 color = AppColors.TextSecondary
                             )
                         }
                     }
 
-                    // توزيع الفصائل
+                    // قائمة توزيع الفصائل مع أشرطة التقدم
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+                        border = BorderStroke(1.dp, AppColors.Border)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Default.Bloodtype,
-                                    contentDescription = null,
-                                    tint = AppColors.Primary,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "توزيع فصائل الدم والنسب المئوية",
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
+                            Text(
+                                text = "توزيع فصائل الدم ونسب التواجد",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = AppColors.TextPrimary
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                            Spacer(modifier = Modifier.height(18.dp))
+                            AppStrings.bloodTypes.forEach { type ->
+                                val count = distribution[type] ?: 0
+                                val percentage = if (totalDonors > 0) (count * 100f / totalDonors) else 0f
+                                val color = AppColors.getBloodTypeColor(type)
 
-                            sortedEntries.forEach { entry ->
-                                val percentage = if (totalDonors > 0) (entry.value.toFloat() / totalDonors) * 100f else 0f
-                                val color = AppColors.getBloodTypeColor(entry.key)
-
-                                Column(modifier = Modifier.padding(bottom = 14.dp)) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 6.dp)
+                                ) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Surface(
-                                                shape = RoundedCornerShape(8.dp),
-                                                color = color
-                                            ) {
-                                                Text(
-                                                    text = entry.key,
-                                                    style = MaterialTheme.typography.labelLarge.copy(
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = Color.White
-                                                    ),
-                                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
-                                                )
-                                            }
-
-                                            Spacer(modifier = Modifier.width(12.dp))
-
+                                            BloodTypeBadge(bloodType = type, size = 34)
+                                            Spacer(modifier = Modifier.width(10.dp))
                                             Text(
-                                                text = "${entry.value} متبرع",
+                                                text = "$count متبرع",
                                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                                                color = MaterialTheme.colorScheme.onSurface
+                                                color = AppColors.TextPrimary
                                             )
                                         }
 
                                         Text(
-                                            text = "${String.format("%.1f", percentage)}%",
-                                            style = MaterialTheme.typography.titleMedium.copy(
+                                            text = String.format("%.1f%%", percentage),
+                                            style = MaterialTheme.typography.labelMedium.copy(
                                                 fontWeight = FontWeight.Bold,
                                                 color = color
                                             )
@@ -245,7 +215,7 @@ fun HospitalBloodTypeReportScreen(
                                     Spacer(modifier = Modifier.height(6.dp))
 
                                     LinearProgressIndicator(
-                                        progress = { if (totalDonors > 0) entry.value.toFloat() / totalDonors else 0f },
+                                        progress = { if (totalDonors > 0) count.toFloat() / totalDonors else 0f },
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(8.dp),
@@ -263,13 +233,14 @@ fun HospitalBloodTypeReportScreen(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+                            border = BorderStroke(1.dp, AppColors.Border)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
                                     text = "مؤشرات وتفاصيل خاصة",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = AppColors.TextPrimary
                                 )
 
                                 Spacer(modifier = Modifier.height(12.dp))
@@ -278,7 +249,8 @@ fun HospitalBloodTypeReportScreen(
                                 Surface(
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(10.dp),
-                                    color = AppColors.SuccessContainer
+                                    color = AppColors.SuccessContainer,
+                                    border = BorderStroke(1.dp, AppColors.Success.copy(alpha = 0.25f))
                                 ) {
                                     Row(
                                         modifier = Modifier.padding(12.dp),

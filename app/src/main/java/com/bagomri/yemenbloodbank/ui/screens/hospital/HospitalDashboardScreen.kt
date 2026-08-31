@@ -1,5 +1,6 @@
 package com.bagomri.yemenbloodbank.ui.screens.hospital
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,10 +19,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.People
@@ -70,11 +71,12 @@ import com.bagomri.yemenbloodbank.ui.components.LoadingIndicator
 @Composable
 fun HospitalDashboardScreen(
     onNavigateToManageDonors: () -> Unit,
+    onNavigateToReportsHub: () -> Unit,
     onNavigateToSuspendedDonors: () -> Unit,
     onNavigateToAdvancedSearch: () -> Unit,
-    onNavigateToReportsHub: () -> Unit,
     onNavigateToAddDonor: () -> Unit,
     onLogout: () -> Unit,
+    onNavigateToBloodTypeReport: () -> Unit = onNavigateToReportsHub,
     viewModel: HospitalDashboardViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -83,17 +85,17 @@ fun HospitalDashboardScreen(
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("تأكيد تسجيل الخروج", fontWeight = FontWeight.Bold) },
-            text = { Text("هل أنت متأكد من رغبتك في تسجيل الخروج من حساب المستشفى؟") },
+            title = { Text(AppStrings.confirmLogout, fontWeight = FontWeight.Bold) },
+            text = { Text("هل أنت متأكد من رغبتك في تسجيل الخروج من لوحة المستشفى؟") },
             confirmButton = {
                 Button(
                     onClick = {
                         showLogoutDialog = false
-                        onLogout()
+                        viewModel.logout(onLogout)
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Error)
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
                 ) {
-                    Text("تسجيل الخروج")
+                    Text(AppStrings.logout, color = Color.White)
                 }
             },
             dismissButton = {
@@ -105,6 +107,7 @@ fun HospitalDashboardScreen(
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -121,7 +124,7 @@ fun HospitalDashboardScreen(
                 actions = {
                     IconButton(onClick = { showLogoutDialog = true }) {
                         Icon(
-                            imageVector = Icons.Default.ExitToApp,
+                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = "تسجيل الخروج",
                             tint = Color.White
                         )
@@ -343,7 +346,8 @@ private fun MiniStatCard(
         modifier = modifier,
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+        border = BorderStroke(1.dp, AppColors.Border)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Surface(
@@ -369,7 +373,7 @@ private fun MiniStatCard(
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp
                 ),
-                color = MaterialTheme.colorScheme.onSurface
+                color = AppColors.TextPrimary
             )
 
             Spacer(modifier = Modifier.height(2.dp))
@@ -396,7 +400,7 @@ private fun HospitalActionTile(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Box(
             modifier = Modifier
@@ -445,7 +449,7 @@ private fun HospitalActionTile(
                 }
 
                 Icon(
-                    imageVector = Icons.Default.ArrowForwardIos,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                     contentDescription = null,
                     tint = Color.White.copy(alpha = 0.8f),
                     modifier = Modifier.size(16.dp)

@@ -1,5 +1,6 @@
 package com.bagomri.yemenbloodbank.ui.screens.hospital
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,14 +18,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Bloodtype
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +56,7 @@ fun HospitalReportsHubScreen(
     onNavigateToSuspendedDonors: () -> Unit
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -68,7 +69,7 @@ fun HospitalReportsHubScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = AppStrings.back,
                             tint = Color.White
                         )
@@ -93,6 +94,7 @@ fun HospitalReportsHubScreen(
             Card(
                 colors = CardDefaults.cardColors(containerColor = AppColors.InfoContainer),
                 shape = RoundedCornerShape(14.dp),
+                border = BorderStroke(1.dp, AppColors.Info.copy(alpha = 0.25f)),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -124,7 +126,7 @@ fun HospitalReportsHubScreen(
                         Text(
                             text = "إحصائيات دقيقة لفصائل الدم وحالة التوفر بالمحافظة",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = AppColors.TextPrimary
                         )
                     }
                 }
@@ -158,8 +160,8 @@ fun HospitalReportsHubScreen(
             ReportHubCard(
                 title = "التقرير الشامل",
                 description = "ملخص تحليلي عام يجمع كافة أرقام وبيانات المحافظة",
-                icon = Icons.Default.Description,
-                gradient = listOf(Color(0xFFE65100), Color(0xFFF57C00)),
+                icon = Icons.Default.Analytics,
+                gradient = listOf(Color(0xFF0277BD), Color(0xFF0288D1)),
                 onClick = onNavigateToBloodTypeReport
             )
 
@@ -181,22 +183,22 @@ private fun ReportHubCard(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Brush.horizontalGradient(gradient))
-                .padding(18.dp)
+                .padding(20.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
-                    modifier = Modifier.size(50.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color.White.copy(alpha = 0.22f)
+                    modifier = Modifier.size(52.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    color = Color.White.copy(alpha = 0.2f)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
@@ -230,7 +232,7 @@ private fun ReportHubCard(
                 }
 
                 Icon(
-                    imageVector = Icons.Default.ArrowForwardIos,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                     contentDescription = null,
                     tint = Color.White.copy(alpha = 0.8f),
                     modifier = Modifier.size(18.dp)

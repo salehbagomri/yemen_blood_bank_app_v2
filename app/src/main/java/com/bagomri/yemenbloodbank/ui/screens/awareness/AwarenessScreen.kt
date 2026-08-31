@@ -1,5 +1,6 @@
 package com.bagomri.yemenbloodbank.ui.screens.awareness
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Bloodtype
 import androidx.compose.material.icons.filled.CheckCircle
@@ -58,6 +59,7 @@ fun AwarenessScreen(
     onNavigateBack: () -> Unit
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -70,7 +72,7 @@ fun AwarenessScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = AppStrings.back,
                             tint = Color.White
                         )
@@ -95,7 +97,7 @@ fun AwarenessScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -113,7 +115,7 @@ fun AwarenessScreen(
                             imageVector = Icons.Default.Bloodtype,
                             contentDescription = null,
                             tint = Color.White,
-                            modifier = Modifier.size(56.dp)
+                            modifier = Modifier.size(52.dp)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
@@ -158,34 +160,34 @@ fun AwarenessScreen(
                     "أن يكون العمر بين 17 و 70 سنة",
                     "أن يكون الوزن أكثر من 50 كيلوجرام",
                     "أن يكون بصحة جيدة وخالياً من الأمراض المعدية والمزمنة",
-                    "أن يكون ضغط الدم ومستوى الهيموجلوبين في الحدود الطبيعية",
-                    "أن لا يكون قد تبرع بالدم خلال الـ 6 أشهر الماضية"
+                    "أن تكون نسبة الهيموجلوبين في المعدل الطبيعي",
+                    "ألا يكون قد أجرى عملية جراحية كبرى مؤخراً"
                 )
             )
 
             AwarenessSectionCard(
                 title = AppStrings.beforeDonation,
-                icon = Icons.Default.Info,
+                icon = Icons.Default.Lightbulb,
                 iconColor = AppColors.Info,
                 items = listOf(
-                    "احصل على قسط كافٍ من النوم والراحة ليلة التبرع",
-                    "تناول وجبة صحية خفيفة قبل التبرع بساعتين",
-                    "اشرب كمية كافية من الماء والسوائل",
-                    "تجنب الأطعمة الدسمة والمشروبات المنبهة قبل التبرع",
-                    "أخبر الفريق الطبي عن أي أدوية تتناولها"
+                    "شرب كميات كافية من الماء والسوائل قبل التبرع",
+                    "تناول وجبة خفيفة وصحية قبل التبرع بساعتين",
+                    "الحصول على قسط كافٍ من النوم والراحة في الليلة السابقة",
+                    "تجنب الأطعمة الدهنية والسكريات الزائدة قبل التبرع",
+                    "إحضار الهوية الشخصية لإثبات البيانات"
                 )
             )
 
             AwarenessSectionCard(
                 title = AppStrings.afterDonation,
-                icon = Icons.Default.Lightbulb,
-                iconColor = AppColors.Warning,
+                icon = Icons.Default.Schedule,
+                iconColor = AppColors.Success,
                 items = listOf(
-                    "استرح لمدة 10-15 دقيقة بعد التبرع وتناول عصيراً أو وجبة خفيفة",
-                    "اشرب كمية وافرة من السوائل لتعويض حجم الدم",
-                    "تجنب المجهود البدني الشاق وحمل الأثقال لمدة 24 ساعة",
-                    "إذا شعرت بدوار، اجلس فوراً وارفع قدميك للأعلى",
-                    "حافظ على الضمادة على موضع الإبرة لعدة ساعات"
+                    "الاسترخاء والراحة لمدة 10-15 دقيقة بعد التبرع مباشرة",
+                    "شرب المزيد من السوائل لتعويض حجم الدم المتبرع به",
+                    "تجنب المجهود البدني الشاق وحمل الأوزان الثقيلة لبقية اليوم",
+                    "تناول وجبة خفيفة ومغذية غنية بالبروتينات والحديد",
+                    "عدم إزالة اللاصق الطبي من موضع الإبرة لمدة ساعتين على الأقل"
                 )
             )
 
@@ -194,36 +196,37 @@ fun AwarenessScreen(
                 icon = Icons.Default.Block,
                 iconColor = AppColors.Error,
                 items = listOf(
-                    "مرضى القلب والكبد والكلى والأورام",
-                    "مرضى السكري المعتمد على الأنسولين أو غير المنضبط",
-                    "الحوامل والمرضعات حتى سنة بعد الولادة",
-                    "من لديه حمى أو نزلة برد أو عدوى نشطة",
-                    "من تناول المضادات الحيوية مؤخراً أو أجرى عملية جراحية حديثة"
+                    "المصابون بالأمراض المعدية مثل فيروس الكبد الوبائي أو نقص المناعة (الإيدز)",
+                    "مرضى القلب والضغط المرتفع غير المنضبط",
+                    "مرضى السكري المعتمدين على حقن الأنسولين",
+                    "النساء الحوامل والمرضعات حتى انقضاء فترة الرضاعة",
+                    "من تناول مضادات حيوية أو أدوية معينة خلال الـ 48 ساعة الماضية"
                 )
             )
 
             AwarenessSectionCard(
                 title = AppStrings.donationInterval,
-                icon = Icons.Default.Schedule,
-                iconColor = AppColors.Primary,
+                icon = Icons.Default.Info,
+                iconColor = AppColors.Warning,
                 items = listOf(
-                    "يجب أن تمر 6 أشهر (180 يوماً) على الأقل بين كل تبرع وآخر",
-                    "هذه المدة تضمن تعويض مخزون الحديد وخلايا الدم بشكل كامل",
-                    "التطبيق يحسب هذه المدة تلقائياً ويحدد موعد إتاحة المتبرع"
+                    "الرجال: يمكنهم التبرع كل 3 أشهر (بحد أقصى 4 مرات سنوياً)",
+                    "النساء: يمكنهن التبرع كل 4 أشهر (بحد أقصى 3 مرات سنوياً)",
+                    "الفاصل الزمني المعتمد في التطبيق لحماية صحة المتبرع هو 6 أشهر"
                 )
             )
 
-            // جدول فصائل الدم
+            // بطاقة فصائل الدم
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+                border = BorderStroke(1.dp, AppColors.Border)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(18.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
-                            modifier = Modifier.size(36.dp),
+                            modifier = Modifier.size(38.dp),
                             shape = CircleShape,
                             color = AppColors.PrimaryContainer
                         ) {
@@ -232,15 +235,17 @@ fun AwarenessScreen(
                                     imageVector = Icons.Default.Bloodtype,
                                     contentDescription = null,
                                     tint = AppColors.Primary,
-                                    modifier = Modifier.size(20.dp)
+                                    modifier = Modifier.size(22.dp)
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "فصائل الدم وتوافقها",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = AppColors.TextPrimary
+                            )
                         )
                     }
 
@@ -258,13 +263,20 @@ fun AwarenessScreen(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    Text(
-                        text = "💡 فصيلة O- هي المعطي العام لجميع الفصائل في الطوارئ، بينما AB+ هي المستقبل العام.",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = AppColors.TextSecondary,
-                            lineHeight = 20.sp
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = AppColors.SurfaceVariant,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "💡 فصيلة O- هي المعطي العام لجميع الفصائل في الطوارئ، بينما AB+ هي المستقبل العام لجميع الفصائل.",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = AppColors.TextSecondary,
+                                lineHeight = 20.sp
+                            ),
+                            modifier = Modifier.padding(12.dp)
                         )
-                    )
+                    }
                 }
             }
 
@@ -284,12 +296,13 @@ private fun AwarenessSectionCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+        border = BorderStroke(1.dp, AppColors.Border)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(18.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Surface(
-                    modifier = Modifier.size(36.dp),
+                    modifier = Modifier.size(38.dp),
                     shape = CircleShape,
                     color = iconColor.copy(alpha = 0.12f)
                 ) {
@@ -298,15 +311,17 @@ private fun AwarenessSectionCard(
                             imageVector = icon,
                             contentDescription = null,
                             tint = iconColor,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 }
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = AppColors.TextPrimary
+                    )
                 )
             }
 
@@ -322,15 +337,17 @@ private fun AwarenessSectionCard(
                     Surface(
                         modifier = Modifier
                             .padding(top = 7.dp)
-                            .size(6.dp),
+                            .size(7.dp),
                         shape = CircleShape,
                         color = iconColor
                     ) {}
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = point,
-                        style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
-                        color = MaterialTheme.colorScheme.onSurface
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            lineHeight = 22.sp,
+                            color = AppColors.TextSecondary
+                        )
                     )
                 }
             }

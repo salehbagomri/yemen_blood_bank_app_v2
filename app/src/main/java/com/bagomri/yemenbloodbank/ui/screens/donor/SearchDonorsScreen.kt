@@ -1,6 +1,7 @@
 package com.bagomri.yemenbloodbank.ui.screens.donor
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,19 +20,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bloodtype
 import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,7 +51,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
@@ -74,6 +72,7 @@ fun SearchDonorsScreen(
     var showAdvancedFilters by remember { mutableStateOf(false) }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -86,7 +85,7 @@ fun SearchDonorsScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = AppStrings.back,
                             tint = Color.White
                         )
@@ -120,7 +119,8 @@ fun SearchDonorsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                border = BorderStroke(1.dp, AppColors.Border)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     // 1. القائمة المنسدلة للمحافظة
@@ -139,7 +139,7 @@ fun SearchDonorsScreen(
                         }
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     // 2. القائمة المنسدلة للمديرية (تظهر وتتحدث تلقائياً)
                     CustomDropdown(
@@ -158,7 +158,7 @@ fun SearchDonorsScreen(
                         }
                     )
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     // 3. فصيلة الدم (8 رقاقات ملوّنة)
                     Row(
@@ -177,7 +177,7 @@ fun SearchDonorsScreen(
                             Text(
                                 text = AppStrings.bloodType,
                                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = AppColors.TextPrimary
                             )
                         }
 
@@ -227,7 +227,7 @@ fun SearchDonorsScreen(
                                 Text(
                                     text = if (showAdvancedFilters) "إخفاء خيارات الترتيب" else "خيارات الفلترة والترتيب",
                                     color = AppColors.Primary,
-                                    style = MaterialTheme.typography.labelSmall
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
                                 )
                             }
                         }
@@ -329,15 +329,16 @@ fun SearchDonorsScreen(
                             item {
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Surface(
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = AppColors.PrimaryContainer,
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = AppColors.SuccessContainer,
+                                    border = BorderStroke(1.dp, AppColors.Success.copy(alpha = 0.2f)),
                                     modifier = Modifier.padding(bottom = 8.dp)
                                 ) {
                                     Text(
-                                        text = "تم العثور على ${uiState.filteredDonors.size} متبرع متاح",
-                                        color = AppColors.Primary,
+                                        text = "تم العثور على ${uiState.filteredDonors.size} متبرع متاح للتبرع",
+                                        color = AppColors.Success,
                                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
                                     )
                                 }
                             }

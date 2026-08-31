@@ -186,4 +186,19 @@ class AddDonorViewModel(
     fun clearError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
+
+    fun resetSuccess() {
+        _uiState.update {
+            it.copy(
+                isSuccess = false,
+                name = "",
+                phoneNumber = "",
+                phoneNumber2 = "",
+                phoneNumber3 = "",
+                bloodType = "",
+                age = "",
+                notes = ""
+            )
+        }
+    }
 }

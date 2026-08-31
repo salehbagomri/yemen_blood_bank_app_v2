@@ -8,6 +8,7 @@ import com.bagomri.yemenbloodbank.data.model.Donor
 import com.bagomri.yemenbloodbank.data.model.Hospital
 import com.bagomri.yemenbloodbank.data.model.LocationData
 import com.bagomri.yemenbloodbank.data.model.Report
+import com.bagomri.yemenbloodbank.data.repository.AuthRepository
 import com.bagomri.yemenbloodbank.data.repository.BannerRepository
 import com.bagomri.yemenbloodbank.data.repository.DonorRepository
 import com.bagomri.yemenbloodbank.data.repository.HospitalRepository
@@ -42,7 +43,8 @@ class AdminDashboardViewModel(
     private val hospitalRepository: HospitalRepository = HospitalRepository(),
     private val reportRepository: ReportRepository = ReportRepository(),
     private val bannerRepository: BannerRepository = BannerRepository(),
-    private val locationRepository: LocationRepository = LocationRepository()
+    private val locationRepository: LocationRepository = LocationRepository(),
+    private val authRepository: AuthRepository = AuthRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdminDashboardUiState())
@@ -203,6 +205,13 @@ class AdminDashboardViewModel(
         viewModelScope.launch {
             bannerRepository.toggleBannerStatus(banner.id, !banner.isActive)
             refresh()
+            onComplete()
+        }
+    }
+
+    fun logout(onComplete: () -> Unit) {
+        viewModelScope.launch {
+            authRepository.signOut()
             onComplete()
         }
     }

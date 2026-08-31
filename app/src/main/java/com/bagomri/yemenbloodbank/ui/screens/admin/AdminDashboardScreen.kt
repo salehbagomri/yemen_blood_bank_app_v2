@@ -1,5 +1,6 @@
 package com.bagomri.yemenbloodbank.ui.screens.admin
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,11 +19,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.People
@@ -118,7 +119,7 @@ fun AdminDashboardScreen(
                 actions = {
                     IconButton(onClick = { showLogoutDialog = true }) {
                         Icon(
-                            imageVector = Icons.Default.ExitToApp,
+                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                             contentDescription = "تسجيل الخروج",
                             tint = Color.White
                         )
@@ -337,7 +338,8 @@ private fun AdminMiniMetricCard(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+        border = BorderStroke(1.dp, AppColors.Border)
     ) {
         Column(
             modifier = Modifier.padding(10.dp),
@@ -375,9 +377,10 @@ private fun AdminSectionTile(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+        border = BorderStroke(1.dp, AppColors.Border)
     ) {
         Row(
             modifier = Modifier
@@ -410,7 +413,7 @@ private fun AdminSectionTile(
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp
                         ),
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = AppColors.TextPrimary
                     )
 
                     if (badgeCount != null && badgeCount > 0) {
@@ -439,10 +442,10 @@ private fun AdminSectionTile(
             }
 
             Icon(
-                imageVector = Icons.Default.ArrowForwardIos,
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = null,
-                tint = AppColors.TextSecondary,
-                modifier = Modifier.size(16.dp)
+                tint = AppColors.TextHint,
+                modifier = Modifier.size(15.dp)
             )
         }
     }

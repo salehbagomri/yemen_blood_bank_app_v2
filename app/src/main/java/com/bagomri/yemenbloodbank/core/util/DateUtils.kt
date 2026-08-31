@@ -14,8 +14,8 @@ object DateUtils {
         timeZone = TimeZone.getTimeZone("UTC")
     }
 
-    private val displayFormat = SimpleDateFormat("yyyy/MM/dd", Locale("ar"))
-    private val displayWithTimeFormat = SimpleDateFormat("yyyy/MM/dd hh:mm a", Locale("ar"))
+    private val displayFormat = SimpleDateFormat("yyyy/MM/dd", Locale.forLanguageTag("ar"))
+    private val displayWithTimeFormat = SimpleDateFormat("yyyy/MM/dd hh:mm a", Locale.forLanguageTag("ar"))
 
     fun parseIsoDate(isoString: String?): Date? {
         if (isoString.isNullOrEmpty()) return null

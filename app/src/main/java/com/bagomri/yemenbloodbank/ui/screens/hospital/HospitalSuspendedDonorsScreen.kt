@@ -1,5 +1,6 @@
 package com.bagomri.yemenbloodbank.ui.screens.hospital
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,14 +14,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Card
@@ -44,12 +44,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
 import com.bagomri.yemenbloodbank.core.util.DateUtils
 import com.bagomri.yemenbloodbank.core.util.IntentUtils
 import com.bagomri.yemenbloodbank.data.model.Donor
+import com.bagomri.yemenbloodbank.ui.components.BloodTypeBadge
 import com.bagomri.yemenbloodbank.ui.components.EmptyState
 import com.bagomri.yemenbloodbank.ui.components.ErrorDisplay
 import com.bagomri.yemenbloodbank.ui.components.LoadingIndicator
@@ -63,6 +65,7 @@ fun HospitalSuspendedDonorsScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -75,7 +78,7 @@ fun HospitalSuspendedDonorsScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = AppStrings.back,
                             tint = Color.White
                         )
@@ -124,17 +127,17 @@ fun HospitalSuspendedDonorsScreen(
                     uiState.suspendedDonors.isEmpty() -> {
                         EmptyState(
                             title = "لا يوجد متبرعون موقوفون",
-                            message = "جميع المتبرعين المسجلين في المحافظة متاحون للتبرع حالياً!",
-                            icon = Icons.Default.CheckCircle
+                            message = "جميع المتبرعين في محافظتك متاحون للتبرع حالياً",
+                            icon = Icons.Default.Schedule
                         )
                     }
 
                     else -> {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             item {
-                                Spacer(modifier = Modifier.height(14.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
                                 Text(
-                                    text = "العدد: ${uiState.suspendedDonors.size} متبرع في فترة التوقف",
+                                    text = "إجمالي المتبرعين في فترة الراحة (6 أشهر): ${uiState.suspendedDonors.size}",
                                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                     color = AppColors.TextSecondary,
                                     modifier = Modifier.padding(bottom = 8.dp)
@@ -164,46 +167,47 @@ private fun SuspendedDonorCard(donor: Donor) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp),
+            .padding(vertical = 5.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+        border = BorderStroke(1.dp, AppColors.Border)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    modifier = Modifier.size(46.dp),
-                    shape = CircleShape,
-                    color = AppColors.WarningContainer
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = donor.bloodType,
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = AppColors.Warning
-                            )
-                        )
-                    }
-                }
+                BloodTypeBadge(bloodType = donor.bloodType, size = 46)
 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(14.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = donor.name,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        ),
+                        color = AppColors.TextPrimary
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = donor.phoneNumber,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = AppColors.TextSecondary
-                    )
+
+                    Spacer(modifier = Modifier.height(3.dp))
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = null,
+                            tint = AppColors.Primary,
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = donor.district,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppColors.TextSecondary
+                        )
+                    }
                 }
 
                 IconButton(
@@ -223,7 +227,7 @@ private fun SuspendedDonorCard(donor: Donor) {
                     modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Chat,
+                        imageVector = Icons.AutoMirrored.Filled.Chat,
                         contentDescription = "واتساب",
                         tint = AppColors.Success,
                         modifier = Modifier.size(20.dp)
@@ -236,7 +240,8 @@ private fun SuspendedDonorCard(donor: Donor) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
-                color = AppColors.WarningContainer
+                color = AppColors.WarningContainer,
+                border = BorderStroke(1.dp, AppColors.Warning.copy(alpha = 0.25f))
             ) {
                 Row(
                     modifier = Modifier.padding(12.dp),
@@ -251,9 +256,9 @@ private fun SuspendedDonorCard(donor: Donor) {
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
                         Text(
-                            text = "موقوف حتى: ${DateUtils.formatDate(donor.suspendedUntil)}",
+                            text = "موقوف حتى: ${DateUtils.formatDate(donor.suspendedUntil ?: "")}",
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = AppColors.TextPrimary
                         )
                         Text(
                             text = "متبقي $daysLeft يوماً لإعادة التفعيل التلقائي",

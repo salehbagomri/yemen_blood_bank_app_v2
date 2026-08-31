@@ -93,4 +93,11 @@ class HospitalDashboardViewModel(
             onComplete()
         }
     }
+
+    fun logout(onComplete: () -> Unit) {
+        viewModelScope.launch {
+            authRepository.signOut()
+            onComplete()
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.bagomri.yemenbloodbank.ui.screens.info
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,27 +21,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.OpenInNew
-import androidx.compose.material.icons.filled.PersonAdd
-import androidx.compose.material.icons.filled.PhoneAndroid
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.WifiOff
+import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -79,6 +76,7 @@ fun AboutScreen(
     var devExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -91,7 +89,7 @@ fun AboutScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = AppStrings.back,
                             tint = Color.White
                         )
@@ -144,7 +142,7 @@ fun AboutScreen(
                     Text(
                         text = AppStrings.appNameEnglish,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.8f)
+                        color = Color.White.copy(alpha = 0.85f)
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -154,7 +152,7 @@ fun AboutScreen(
                         color = Color.White.copy(alpha = 0.2f)
                     ) {
                         Text(
-                            text = "الإصدار 1.0.0",
+                            text = "الإصدار 2.0.0 (Native Jetpack Compose)",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
                             color = Color.White,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
@@ -164,77 +162,73 @@ fun AboutScreen(
             }
 
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // عن التطبيق
                 AboutCard(
-                    title = "📱 عن التطبيق",
-                    content = "بنك دم اليمن هو تطبيق مجاني يهدف إلى ربط المتبرعين بالدم مع المحتاجين في جميع محافظات اليمن.\n\n" +
-                            "التطبيق يساعد على:\n" +
-                            "• البحث السريع عن متبرعين حسب فصيلة الدم والمحافظة والمديرية\n" +
-                            "• التسجيل السهل كمتبرع بدون الحاجة لإنشاء حساب\n" +
-                            "• نشر الوعي الصحي حول شروط وأهمية التبرع بالدم\n" +
-                            "• توفير الوقت والجهد في إنقاذ الأرواح في الحالات الطارئة\n" +
-                            "• ربط المجتمع في عمل إنساني نبيل"
+                    title = "عن التطبيق",
+                    content = "بنك دم اليمن هو تطبيق خيري تطوعي يهدف إلى تسهيل عملية البحث عن متبرعين بالدم وربط المحتاجين للدم بالمتبرعين في جميع محافظات ومديريات الجمهورية اليمنية الـ 22 بدون أي وسيط أو تكلفة."
                 )
 
-                // الميزات
+                AboutCard(
+                    title = "رؤيتنا ورسالتنا",
+                    content = "المساهمة في إنقاذ الأرواح وتوفير فصائل الدم المختلفة في أسرع وقت ممكن عبر منصة رقمية حديثة، موثوقة ومتاحة للجميع مجاناً على مدار الساعة."
+                )
+
+                AboutCard(
+                    title = "مميزات التطبيق",
+                    content = "• قاعدة بيانات واسعة ومحدثة للمتبرعين في كافة المحافظات\n• بحث سريع وفوري حسب فصيلة الدم والموقع الجغرافي\n• اتصال وتواصل مباشر عبر الهاتف وواتساب\n• خصوصية وأمان عالي للمتبرعين\n• لوحات إدارة مخصصة للمستشفيات والمراكز الطبية"
+                )
+
+                // بطاقة المطور القابلة للتوسيع
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+                    border = BorderStroke(1.dp, AppColors.Border)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "✨ الميزات",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        FeatureItem(Icons.Default.Search, "بحث متقدم وتلقائي عن المتبرعين")
-                        FeatureItem(Icons.Default.PersonAdd, "تسجيل سهل وفوري بدون حساب")
-                        FeatureItem(Icons.Default.Dashboard, "لوحات تحكم متكاملة للمستشفيات والإدارة")
-                        FeatureItem(Icons.Default.PhoneAndroid, "تصميم عصري متجاوب ويدعم اللغة العربية")
-                        FeatureItem(Icons.Default.Lock, "حماية وخصوصية عالية للبيانات")
-                        FeatureItem(Icons.Default.Favorite, "خدمة إنسانية مجانية 100%")
-                        FeatureItem(Icons.Default.WifiOff, "دعم العمل في وضع عدم الاتصال بالإنترنت")
-                    }
-                }
-
-                // إخلاء المسؤولية
-                AboutCard(
-                    title = "📋 إخلاء المسؤولية",
-                    content = "هذا التطبيق أداة مساعدة لتسهيل التواصل والربط الإنساني بين المتبرعين والمحتاجين، ولا يُغني عن الاستشارة الطبية المتخصصة. يجب التأكد من الأهلية الطبية للتبرع وإجراء الفحوصات اللازمة لدى بنوك الدم والمستشفيات المعتمدة."
-                )
-
-                // قسم التطوير والدعم الفني
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { devExpanded = !devExpanded },
-                            horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("⚙️", fontSize = 18.sp)
-                                Spacer(modifier = Modifier.width(8.dp))
+                            Surface(
+                                modifier = Modifier.size(42.dp),
+                                shape = CircleShape,
+                                color = AppColors.PrimaryContainer
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Default.Code,
+                                        contentDescription = null,
+                                        tint = AppColors.Primary,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "التطوير والدعم الفني",
+                                    text = "فريق التطوير والتقنية",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = AppColors.TextPrimary
+                                )
+                                Text(
+                                    text = "معلومات المطور والتواصل",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = AppColors.TextSecondary
                                 )
                             }
+
                             Icon(
                                 imageVector = if (devExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                                 contentDescription = null,
@@ -251,13 +245,13 @@ fun AboutScreen(
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "صالح باقمري",
+                                    text = "صالح باقمري (Saleh Bagomri)",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = AppColors.TextPrimary
                                 )
 
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Divider(color = AppColors.Divider)
+                                Spacer(modifier = Modifier.height(14.dp))
+                                HorizontalDivider(color = AppColors.Divider, thickness = 1.dp)
                                 Spacer(modifier = Modifier.height(12.dp))
 
                                 ContactRowItem(
@@ -266,7 +260,7 @@ fun AboutScreen(
                                     onClick = { IntentUtils.openUrl(context, "mailto:s.bagomri@gmail.com") }
                                 )
                                 ContactRowItem(
-                                    icon = Icons.Default.Chat,
+                                    icon = Icons.AutoMirrored.Filled.Chat,
                                     label = "+967 770 727 055",
                                     subtitle = "تواصل عبر واتساب",
                                     iconColor = AppColors.Success,
@@ -284,7 +278,7 @@ fun AboutScreen(
                                 )
 
                                 Spacer(modifier = Modifier.height(12.dp))
-                                Divider(color = AppColors.Divider)
+                                HorizontalDivider(color = AppColors.Divider, thickness = 1.dp)
                                 Spacer(modifier = Modifier.height(12.dp))
 
                                 Text(
@@ -299,6 +293,19 @@ fun AboutScreen(
                     }
                 }
 
+                // روابط قانونية
+                LegalLinkCard(
+                    title = "سياسة الخصوصية",
+                    icon = Icons.Default.PrivacyTip,
+                    onClick = { IntentUtils.openUrl(context, "https://salehbagomri.github.io/yemen-blood-bank-privacy/") }
+                )
+
+                LegalLinkCard(
+                    title = "شروط الاستخدام",
+                    icon = Icons.Default.Description,
+                    onClick = { IntentUtils.openUrl(context, "https://salehbagomri.github.io/yemen-blood-bank-privacy/terms.html") }
+                )
+
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -311,44 +318,24 @@ private fun AboutCard(title: String, content: String) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+        border = BorderStroke(1.dp, AppColors.Border)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(18.dp)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onSurface
+                color = AppColors.TextPrimary
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = content,
-                style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
-                color = AppColors.TextSecondary
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    lineHeight = 24.sp,
+                    color = AppColors.TextSecondary
+                )
             )
         }
-    }
-}
-
-@Composable
-private fun FeatureItem(icon: ImageVector, text: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = AppColors.Primary,
-            modifier = Modifier.size(18.dp)
-        )
-        Spacer(modifier = Modifier.width(10.dp))
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            color = AppColors.TextSecondary
-        )
     }
 }
 
@@ -360,47 +347,109 @@ private fun ContactRowItem(
     iconColor: Color = AppColors.Primary,
     onClick: (() -> Unit)? = null
 ) {
-    Surface(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable(enabled = onClick != null, onClick = { onClick?.invoke() }),
-        shape = RoundedCornerShape(10.dp),
-        color = AppColors.SurfaceVariant
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Surface(
+            modifier = Modifier.size(36.dp),
+            shape = CircleShape,
+            color = iconColor.copy(alpha = 0.12f)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconColor,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                color = AppColors.TextPrimary
+            )
+            if (subtitle != null) {
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppColors.TextSecondary
+                )
+            }
+        }
+
+        if (onClick != null) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                contentDescription = null,
+                tint = AppColors.TextHint,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun LegalLinkCard(
+    title: String,
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        border = BorderStroke(1.dp, AppColors.Border)
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconColor,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                if (subtitle != null) {
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = iconColor
-                    )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Surface(
+                    modifier = Modifier.size(36.dp),
+                    shape = CircleShape,
+                    color = AppColors.Info.copy(alpha = 0.12f)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = AppColors.Info,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
-            }
-            if (onClick != null) {
-                Icon(
-                    imageVector = Icons.Default.OpenInNew,
-                    contentDescription = null,
-                    tint = AppColors.TextSecondary,
-                    modifier = Modifier.size(14.dp)
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = AppColors.TextPrimary
                 )
             }
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = null,
+                tint = AppColors.TextHint,
+                modifier = Modifier.size(14.dp)
+            )
         }
     }
 }

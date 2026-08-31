@@ -1,5 +1,6 @@
 package com.bagomri.yemenbloodbank.ui.screens.info
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,18 +15,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.Chat
-import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -48,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
 import com.bagomri.yemenbloodbank.core.util.IntentUtils
@@ -60,6 +60,7 @@ fun ContactScreen(
     val context = LocalContext.current
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -72,7 +73,7 @@ fun ContactScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = AppStrings.back,
                             tint = Color.White
                         )
@@ -108,10 +109,10 @@ fun ContactScreen(
                         imageVector = Icons.Default.SupportAgent,
                         contentDescription = null,
                         tint = Color.White,
-                        modifier = Modifier.size(72.dp)
+                        modifier = Modifier.size(64.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
                         text = "نسعد بتواصلكم",
@@ -124,7 +125,7 @@ fun ContactScreen(
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = "لأي استفسار أو اقتراح لا تتردد في التواصل معنا",
+                        text = "لأي استفسار أو اقتراح أو دعم فني، لا تتردد في مراسلتنا",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.9f),
                         textAlign = TextAlign.Center
@@ -136,12 +137,12 @@ fun ContactScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 Text(
-                    text = "وسائل التواصل",
+                    text = "وسائل التواصل المباشر",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = AppColors.TextPrimary
                 )
 
                 ContactCard(
@@ -162,70 +163,39 @@ fun ContactScreen(
 
                 ContactCard(
                     title = "واتساب الدعم الفني",
-                    subtitle = "تواصل عبر واتساب (+967 735 325 614)",
-                    icon = Icons.Default.Chat,
+                    subtitle = "+967 770 727 055",
+                    icon = Icons.AutoMirrored.Filled.Chat,
                     iconColor = AppColors.Success,
-                    onClick = { IntentUtils.openWhatsApp(context, "967735325614") }
+                    onClick = { IntentUtils.openWhatsApp(context, "967770727055") }
+                )
+
+                ContactCard(
+                    title = "الاتصال الهاتفي",
+                    subtitle = "+967 770 727 055",
+                    icon = Icons.Default.Phone,
+                    iconColor = AppColors.Primary,
+                    onClick = { IntentUtils.dialPhoneNumber(context, "770727055") }
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "معلومات إضافية",
+                    text = "ساعات الاستجابة والموقع",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = AppColors.TextPrimary
                 )
 
                 InfoCard(
                     title = "الموقع الجغرافي",
-                    content = "حضرموت، الجمهورية اليمنية",
+                    content = "الجمهورية اليمنية — حضرموت",
                     icon = Icons.Default.LocationOn
                 )
 
                 InfoCard(
-                    title = "المطور",
-                    content = "صالح باقمري\nSaleh Bagomri",
-                    icon = Icons.Default.Code
+                    title = "أوقات الرد والاستجابة",
+                    content = "يتم الرد على جميع الاستفسارات والرسائل في أقرب وقت ممكن على مدار الأسبوع.",
+                    icon = Icons.Default.SupportAgent
                 )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // بطاقة الشكر
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = AppColors.PrimaryContainer)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Favorite,
-                            contentDescription = null,
-                            tint = AppColors.Primary,
-                            modifier = Modifier.size(32.dp)
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = "شكراً لاستخدامكم بنك دم اليمن",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = AppColors.Primary
-                            ),
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "نسعى دائماً لتقديم أفضل خدمة ومساعدة أهلنا في اليمن",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = AppColors.TextSecondary,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -247,7 +217,8 @@ private fun ContactCard(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+        border = BorderStroke(1.dp, AppColors.Border)
     ) {
         Row(
             modifier = Modifier
@@ -256,7 +227,7 @@ private fun ContactCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(46.dp),
                 shape = RoundedCornerShape(12.dp),
                 color = iconColor.copy(alpha = 0.12f)
             ) {
@@ -270,13 +241,13 @@ private fun ContactCard(
                 }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(14.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = AppColors.TextPrimary
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
@@ -287,10 +258,10 @@ private fun ContactCard(
             }
 
             Icon(
-                imageVector = Icons.Default.ArrowForwardIos,
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = null,
-                tint = AppColors.TextSecondary,
-                modifier = Modifier.size(16.dp)
+                tint = AppColors.TextHint,
+                modifier = Modifier.size(15.dp)
             )
         }
     }
@@ -306,7 +277,8 @@ private fun InfoCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+        border = BorderStroke(1.dp, AppColors.Border)
     ) {
         Row(
             modifier = Modifier
@@ -315,7 +287,7 @@ private fun InfoCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(46.dp),
                 shape = RoundedCornerShape(12.dp),
                 color = AppColors.PrimaryContainer
             ) {
@@ -329,18 +301,18 @@ private fun InfoCard(
                 }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(14.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = AppColors.TextPrimary
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = content,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall.copy(lineHeight = 20.sp),
                     color = AppColors.TextSecondary
                 )
             }

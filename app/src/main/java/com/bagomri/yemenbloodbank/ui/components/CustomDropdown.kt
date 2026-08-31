@@ -67,7 +67,7 @@ fun CustomDropdown(
                     disabledTextColor = AppColors.TextPrimary
                 ),
                 modifier = Modifier
-                    .menuAnchor()
+                    .menuAnchor(androidx.compose.material3.ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled)
                     .fillMaxWidth()
             )
 

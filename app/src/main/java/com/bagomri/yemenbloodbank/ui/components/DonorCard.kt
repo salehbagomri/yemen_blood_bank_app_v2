@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
@@ -27,12 +26,13 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Report
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -76,84 +76,87 @@ fun DonorCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp)
+            .padding(vertical = 5.dp)
             .clickable { expanded = !expanded },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = BorderStroke(1.dp, AppColors.Divider)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
+        border = BorderStroke(1.dp, AppColors.Border)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // الصف العلوي: شارة الفصيلة + الاسم + المحافظة + زر التوسيع
+            // الصف العلوي: شارة الفصيلة + الاسم + المحافظة والمديرية + حالة المتبرع
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BloodTypeBadge(bloodType = donor.bloodType, size = 48)
 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(14.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = donor.name,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        ),
+                        color = AppColors.TextPrimary
                     )
 
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(3.dp))
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = null,
                             tint = AppColors.Primary,
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(15.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = donor.district,
+                            text = if (donor.subDistrict.isNullOrEmpty()) donor.district else "${donor.district} • ${donor.subDistrict}",
                             style = MaterialTheme.typography.bodySmall,
                             color = AppColors.TextSecondary
                         )
                     }
                 }
 
-                // حالة الأهلية للتبرع
+                // شارة الحالة
                 if (donor.isSuspended) {
-                    StatusBadge(
+                    StatusPillBadge(
                         text = "موقوف",
-                        bgColor = AppColors.ErrorContainer,
-                        textColor = AppColors.Error
+                        bgColor = AppColors.WarningContainer,
+                        textColor = AppColors.Warning
                     )
                 } else if (donor.canDonateNow) {
-                    StatusBadge(
-                        text = "متاح",
+                    StatusPillBadge(
+                        text = "متاح للتبرع",
                         bgColor = AppColors.SuccessContainer,
                         textColor = AppColors.Success
                     )
                 } else {
-                    StatusBadge(
+                    StatusPillBadge(
                         text = "غير متاح",
-                        bgColor = AppColors.WarningContainer,
-                        textColor = AppColors.Warning
+                        bgColor = AppColors.ErrorContainer,
+                        textColor = AppColors.Error
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // معلومات إضافية سريعة: العمر، الجنس
+            // شريط المعلومات الخفيفة: العمر، الجنس، آخر تبرع
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                InfoTag(label = "العمر", value = "${donor.age} سنة")
-                InfoTag(
+                MetaInfoItem(label = "العمر", value = "${donor.age} سنة")
+                MetaInfoItem(
                     label = "الجنس",
                     value = if (donor.gender == "female") AppStrings.female else AppStrings.male
                 )
                 if (donor.lastDonationDate != null) {
-                    InfoTag(
+                    MetaInfoItem(
                         label = "آخر تبرع",
                         value = DateUtils.formatDate(donor.lastDonationDate)
                     )
@@ -162,54 +165,67 @@ fun DonorCard(
 
             // التفاصيل الموسعة
             AnimatedVisibility(visible = expanded) {
-                Column(modifier = Modifier.padding(top = 12.dp)) {
-                    Divider(color = AppColors.Divider, thickness = 1.dp)
+                Column(modifier = Modifier.padding(top = 14.dp)) {
+                    HorizontalDivider(color = AppColors.Divider, thickness = 1.dp)
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                    // عرض أرقام الهواتف المتعددة إن وجدت
+                    // أرقام الهواتف المتعددة
                     Text(
-                        text = "أرقام الهواتف:",
-                        style = MaterialTheme.typography.labelMedium,
+                        text = "أرقام التواصل المسجلة:",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
                         color = AppColors.TextSecondary
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     donor.allPhoneNumbers.forEach { phone ->
-                        Row(
+                        Surface(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                                .padding(vertical = 3.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            color = AppColors.SurfaceVariant
                         ) {
-                            Text(
-                                text = phone,
-                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                            )
-
-                            Row {
-                                IconButton(
-                                    onClick = { IntentUtils.dialPhoneNumber(context, phone) },
-                                    modifier = Modifier.size(36.dp)
-                                ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
-                                        imageVector = Icons.Default.Call,
-                                        contentDescription = AppStrings.call,
-                                        tint = AppColors.Primary,
-                                        modifier = Modifier.size(20.dp)
+                                        imageVector = Icons.Default.Phone,
+                                        contentDescription = null,
+                                        tint = AppColors.TextSecondary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = phone,
+                                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = AppColors.TextPrimary
                                     )
                                 }
 
-                                IconButton(
-                                    onClick = { IntentUtils.openWhatsApp(context, phone) },
-                                    modifier = Modifier.size(36.dp)
-                                ) {
-                                    Text(
-                                        text = "💬",
-                                        fontSize = 18.sp
-                                    )
+                                Row {
+                                    IconButton(
+                                        onClick = { IntentUtils.dialPhoneNumber(context, phone) },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Call,
+                                            contentDescription = AppStrings.call,
+                                            tint = AppColors.Primary,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
+
+                                    IconButton(
+                                        onClick = { IntentUtils.openWhatsApp(context, phone) },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Text(text = "💬", fontSize = 16.sp)
+                                    }
                                 }
                             }
                         }
@@ -227,17 +243,17 @@ fun DonorCard(
                     if (donor.isSuspended && donor.suspendedUntil != null) {
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "موقوف حتى: ${DateUtils.formatDate(donor.suspendedUntil)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = AppColors.Error
+                            text = "موقوف مؤقتاً حتى: ${DateUtils.formatDate(donor.suspendedUntil)}",
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                            color = AppColors.Warning
                         )
                     }
 
                     // أزرار الإجراءات الإدارية والمستشفيات
                     if (showAdminActions || showHospitalActions) {
                         Spacer(modifier = Modifier.height(12.dp))
-                        Divider(color = AppColors.Divider, thickness = 1.dp)
-                        Spacer(modifier = Modifier.height(8.dp))
+                        HorizontalDivider(color = AppColors.Divider, thickness = 1.dp)
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
@@ -246,7 +262,8 @@ fun DonorCard(
                             if (onEdit != null) {
                                 OutlinedButton(
                                     onClick = onEdit,
-                                    shape = RoundedCornerShape(8.dp)
+                                    shape = RoundedCornerShape(10.dp),
+                                    border = BorderStroke(1.dp, AppColors.Border)
                                 ) {
                                     Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -257,20 +274,21 @@ fun DonorCard(
                             if (onUpdateDonationDate != null) {
                                 Button(
                                     onClick = onUpdateDonationDate,
-                                    shape = RoundedCornerShape(8.dp),
+                                    shape = RoundedCornerShape(10.dp),
                                     colors = ButtonDefaults.buttonColors(containerColor = AppColors.Secondary)
                                 ) {
                                     Icon(Icons.Default.Event, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text(AppStrings.updateLastDonation, style = MaterialTheme.typography.labelSmall)
+                                    Text(AppStrings.updateLastDonation, style = MaterialTheme.typography.labelSmall, color = Color.White)
                                 }
                             }
 
                             if (onSuspend != null && !donor.isSuspended) {
                                 OutlinedButton(
                                     onClick = onSuspend,
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Warning)
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Warning),
+                                    border = BorderStroke(1.dp, AppColors.Warning.copy(alpha = 0.5f))
                                 ) {
                                     Icon(Icons.Default.Block, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -281,8 +299,9 @@ fun DonorCard(
                             if (showAdminActions && onDelete != null) {
                                 OutlinedButton(
                                     onClick = onDelete,
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Error)
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Error),
+                                    border = BorderStroke(1.dp, AppColors.Error.copy(alpha = 0.5f))
                                 ) {
                                     Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -294,62 +313,81 @@ fun DonorCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            // الأزرار السفلية الافتراضية (اتصال سريع + واتساب + إبلاغ)
+            // الأزرار السفلية الأساسية (اتصال فوري + واتساب + زر الإبلاغ والتفاصيل)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // زر الاتصال
                 Button(
                     onClick = { IntentUtils.dialPhoneNumber(context, donor.phoneNumber) },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(44.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Call,
                         contentDescription = null,
-                        modifier = Modifier.size(16.dp)
+                        tint = Color.White,
+                        modifier = Modifier.size(17.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = AppStrings.call, fontWeight = FontWeight.Bold)
+                    Text(text = AppStrings.call, fontWeight = FontWeight.Bold, color = Color.White)
                 }
 
+                // زر الواتساب
                 Button(
                     onClick = { IntentUtils.openWhatsApp(context, donor.phoneNumber) },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Success)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(44.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp)
                 ) {
                     Text(text = "💬", fontSize = 16.sp)
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = AppStrings.whatsapp, fontWeight = FontWeight.Bold)
+                    Text(text = AppStrings.whatsapp, fontWeight = FontWeight.Bold, color = Color.White)
                 }
 
                 if (onReport != null) {
-                    IconButton(
-                        onClick = onReport,
-                        modifier = Modifier.size(40.dp)
+                    Surface(
+                        modifier = Modifier.size(44.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = AppColors.SurfaceVariant,
+                        border = BorderStroke(1.dp, AppColors.Border)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Report,
-                            contentDescription = AppStrings.reportDonor,
-                            tint = AppColors.TextSecondary
-                        )
+                        IconButton(onClick = onReport) {
+                            Icon(
+                                imageVector = Icons.Default.Report,
+                                contentDescription = AppStrings.reportDonor,
+                                tint = AppColors.Warning,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
 
-                IconButton(
-                    onClick = { expanded = !expanded },
-                    modifier = Modifier.size(40.dp)
+                Surface(
+                    modifier = Modifier.size(44.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    color = AppColors.SurfaceVariant,
+                    border = BorderStroke(1.dp, AppColors.Border)
                 ) {
-                    Icon(
-                        imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        contentDescription = null,
-                        tint = AppColors.TextSecondary
-                    )
+                    IconButton(onClick = { expanded = !expanded }) {
+                        Icon(
+                            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                            contentDescription = null,
+                            tint = AppColors.TextSecondary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
         }
@@ -357,7 +395,7 @@ fun DonorCard(
 }
 
 @Composable
-private fun StatusBadge(text: String, bgColor: Color, textColor: Color) {
+private fun StatusPillBadge(text: String, bgColor: Color, textColor: Color) {
     Surface(
         shape = RoundedCornerShape(8.dp),
         color = bgColor
@@ -366,13 +404,13 @@ private fun StatusBadge(text: String, bgColor: Color, textColor: Color) {
             text = text,
             color = textColor,
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
         )
     }
 }
 
 @Composable
-private fun InfoTag(label: String, value: String) {
+private fun MetaInfoItem(label: String, value: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = "$label: ",
@@ -382,7 +420,7 @@ private fun InfoTag(label: String, value: String) {
         Text(
             text = value,
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-            color = MaterialTheme.colorScheme.onSurface
+            color = AppColors.TextPrimary
         )
     }
 }

@@ -3,63 +3,71 @@ package com.bagomri.yemenbloodbank.core.constants
 import androidx.compose.ui.graphics.Color
 
 /**
- * ألوان التطبيق الأساسية
- * التصميم يعتمد على الأحمر الطبي المتطور + الأبيض مع دعم الوضع الليلي
+ * نظام الألوان المعتمد لتطبيق بنك دم اليمن (Visual Design System 2.0)
+ * ألوان رسمية مريحة للعين، متناسقة، ذات تباين عالٍ ومعتمدة طبياً
  */
 object AppColors {
-    // اللون الأساسي - الأحمر الطبي
-    val Primary = Color(0xFFE63946)
-    val PrimaryDark = Color(0xFFB8262F)
-    val PrimaryLight = Color(0xFFFF6B77)
-    val PrimaryContainer = Color(0xFFFFEBEE)
-    val OnPrimaryContainer = Color(0xFF680008)
+    // 🔴 الألوان الأساسية - الأحمر الطبي النبيل (Medical Crimson)
+    val Primary = Color(0xFFDC2626)
+    val PrimaryDark = Color(0xFF991B1B)
+    val PrimaryLight = Color(0xFFEF4444)
+    val PrimaryContainer = Color(0xFFFEE2E2)
+    val OnPrimaryContainer = Color(0xFF991B1B)
 
-    // ألوان ثانوية ولهجات
-    val Secondary = Color(0xFF1D3557)
-    val SecondaryLight = Color(0xFF457B9D)
-    val SecondaryContainer = Color(0xFFD9E2EC)
-    val Accent = Color(0xFFA8DADC)
+    // 🔵 ألوان ثانوية ولهجات (Slate & Deep Navy)
+    val Secondary = Color(0xFF0F172A)
+    val SecondaryLight = Color(0xFF334155)
+    val SecondaryContainer = Color(0xFFE2E8F0)
+    val Accent = Color(0xFF0284C7)
 
-    // الخلفية والبطاقات
-    val Background = Color(0xFFF8F9FA)
+    // ⚪ ألوان اللوحة والخلفيات (Slate Light Canvas)
+    val Background = Color(0xFFF8FAFC)
     val Surface = Color(0xFFFFFFFF)
-    val SurfaceVariant = Color(0xFFF1F3F5)
+    val SurfaceVariant = Color(0xFFF1F5F9)
     val CardBackground = Color(0xFFFFFFFF)
 
-    // الوضع الليلي
-    val DarkBackground = Color(0xFF121212)
-    val DarkSurface = Color(0xFF1E1E1E)
-    val DarkSurfaceVariant = Color(0xFF2C2C2C)
-    val DarkPrimaryContainer = Color(0xFF4A1015)
-    val DarkOnPrimaryContainer = Color(0xFFFFD1D6)
+    // ⚫ الوضع الليلي (Dark Palette)
+    val DarkBackground = Color(0xFF0F172A)
+    val DarkSurface = Color(0xFF1E293B)
+    val DarkSurfaceVariant = Color(0xFF334155)
+    val DarkPrimaryContainer = Color(0xFF450A0A)
+    val DarkOnPrimaryContainer = Color(0xFFFEE2E2)
 
-    // النصوص
-    val TextPrimary = Color(0xFF212529)
-    val TextSecondary = Color(0xFF6C757D)
-    val TextHint = Color(0xFFADB5BD)
+    // ✍️ نصوص الحبر والتباين (Typography Ink - WCAG AAA Compliant)
+    val TextPrimary = Color(0xFF0F172A)
+    val TextSecondary = Color(0xFF475569)
+    val TextHint = Color(0xFF94A3B8)
     val TextOnPrimary = Color(0xFFFFFFFF)
 
-    // الحالات
-    val Success = Color(0xFF28A745)
-    val SuccessContainer = Color(0xFFE8F5E9)
-    val Warning = Color(0xFFFFC107)
-    val WarningContainer = Color(0xFFFFF8E1)
-    val Error = Color(0xFFDC3545)
-    val ErrorContainer = Color(0xFFFFEBEE)
-    val Info = Color(0xFF17A2B8)
-    val InfoContainer = Color(0xFFE0F7FA)
+    // 🟢 الحالات والإشعارات (Semantic States)
+    val Success = Color(0xFF15803D)
+    val SuccessContainer = Color(0xFFDCFCE7)
+    val Warning = Color(0xFFD97706)
+    val WarningContainer = Color(0xFFFEF3C7)
+    val Error = Color(0xFFDC2626)
+    val ErrorContainer = Color(0xFFFEE2E2)
+    val Info = Color(0xFF0284C7)
+    val InfoContainer = Color(0xFFE0F2FE)
 
-    // الحدود والفواصل
-    val Border = Color(0xFFDEE2E6)
-    val Divider = Color(0xFFE9ECEF)
+    // 🔲 الحدود والفواصل الدقيقة (Micro-Borders & Dividers)
+    val Border = Color(0xFFE2E8F0)
+    val BorderFocused = Color(0xFFDC2626)
+    val Divider = Color(0xFFEDF2F7)
 
-    // فصائل الدم - ألوان مميزة
-    val BloodTypeA = Color(0xFFE63946)
-    val BloodTypeB = Color(0xFF1D3557)
-    val BloodTypeAB = Color(0xFFAB47BC)
-    val BloodTypeO = Color(0xFF2E7D32)
+    // 🩸 شارات فصائل الدم - تناسق لوني مميز
+    val BloodTypeA = Color(0xFFDC2626)
+    val BloodTypeAContainer = Color(0xFFFEE2E2)
 
-    fun forBloodType(bloodType: String): Color {
+    val BloodTypeB = Color(0xFF1D4ED8)
+    val BloodTypeBContainer = Color(0xFFEFF6FF)
+
+    val BloodTypeAB = Color(0xFF7E22CE)
+    val BloodTypeABContainer = Color(0xFFF3E8FF)
+
+    val BloodTypeO = Color(0xFF15803D)
+    val BloodTypeOContainer = Color(0xFFDCFCE7)
+
+    fun getBloodTypeColor(bloodType: String): Color {
         return when {
             bloodType.startsWith("A") && !bloodType.startsWith("AB") -> BloodTypeA
             bloodType.startsWith("B") -> BloodTypeB
@@ -69,5 +77,13 @@ object AppColors {
         }
     }
 
-    fun getBloodTypeColor(bloodType: String): Color = forBloodType(bloodType)
+    fun getBloodTypeContainerColor(bloodType: String): Color {
+        return when {
+            bloodType.startsWith("A") && !bloodType.startsWith("AB") -> BloodTypeAContainer
+            bloodType.startsWith("B") -> BloodTypeBContainer
+            bloodType.startsWith("AB") -> BloodTypeABContainer
+            bloodType.startsWith("O") -> BloodTypeOContainer
+            else -> PrimaryContainer
+        }
+    }
 }

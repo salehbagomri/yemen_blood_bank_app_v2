@@ -4,9 +4,15 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bloodtype
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,23 +30,27 @@ import com.bagomri.yemenbloodbank.core.constants.AppColors
 fun BloodTypeBadge(
     bloodType: String,
     modifier: Modifier = Modifier,
-    size: Int = 44
+    size: Int = 46
 ) {
-    val bg = AppColors.forBloodType(bloodType)
+    val badgeColor = AppColors.getBloodTypeColor(bloodType)
+    val containerColor = AppColors.getBloodTypeContainerColor(bloodType)
+
     Surface(
         modifier = modifier.size(size.dp),
         shape = RoundedCornerShape(12.dp),
-        color = bg,
-        shadowElevation = 2.dp
+        color = containerColor,
+        border = BorderStroke(1.dp, badgeColor.copy(alpha = 0.25f)),
+        shadowElevation = 0.dp
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
                 text = bloodType,
                 style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = if (size > 40) 16.sp else 13.sp
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = if (size > 40) 17.sp else 13.sp,
+                    letterSpacing = 0.5.sp
                 ),
-                color = Color.White
+                color = badgeColor
             )
         }
     }
@@ -53,9 +63,11 @@ fun BloodTypeSelectorChip(
     onSelect: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val typeColor = AppColors.forBloodType(bloodType)
+    val typeColor = AppColors.getBloodTypeColor(bloodType)
+    val containerColor = AppColors.getBloodTypeContainerColor(bloodType)
+
     val bgColor by animateColorAsState(
-        targetValue = if (isSelected) typeColor else Color.Transparent,
+        targetValue = if (isSelected) typeColor else containerColor.copy(alpha = 0.6f),
         label = "chipBg"
     )
     val textColor by animateColorAsState(
@@ -67,18 +79,25 @@ fun BloodTypeSelectorChip(
         modifier = modifier
             .padding(4.dp)
             .clickable { onSelect(bloodType) },
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(12.dp),
         color = bgColor,
         border = BorderStroke(
-            width = if (isSelected) 0.dp else 1.5.dp,
-            color = typeColor
+            width = if (isSelected) 0.dp else 1.dp,
+            color = if (isSelected) Color.Transparent else typeColor.copy(alpha = 0.3f)
         ),
         shadowElevation = if (isSelected) 3.dp else 0.dp
     ) {
-        Box(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-            contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Icon(
+                imageVector = Icons.Default.Bloodtype,
+                contentDescription = null,
+                tint = textColor,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = bloodType,
                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),

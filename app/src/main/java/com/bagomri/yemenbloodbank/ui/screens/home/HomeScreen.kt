@@ -16,27 +16,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.Bloodtype
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Report
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -72,7 +67,6 @@ import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
 import com.bagomri.yemenbloodbank.core.util.IntentUtils
 import com.bagomri.yemenbloodbank.ui.components.BannerSlider
-import com.bagomri.yemenbloodbank.ui.components.StatCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -243,38 +237,7 @@ fun HomeScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // إحصائيات سريعة
-                    if (uiState.statistics.totalDonors > 0) {
-                        Text(
-                            text = AppStrings.statistics,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        StatCard(
-                            title = AppStrings.totalDonors,
-                            value = "${uiState.statistics.totalDonors} متبرع",
-                            icon = Icons.Default.People,
-                            gradientColors = listOf(Color(0xFF1D3557), Color(0xFF457B9D))
-                        )
-
-                        if (!uiState.statistics.mostCommonBloodType.isNullOrEmpty()) {
-                            Spacer(modifier = Modifier.height(6.dp))
-                            StatCard(
-                                title = AppStrings.mostCommonBloodType,
-                                value = uiState.statistics.mostCommonBloodType ?: "-",
-                                subtitle = "${uiState.statistics.mostCommonBloodTypeCount} متبرع مسجل",
-                                icon = Icons.Default.Bloodtype,
-                                gradientColors = listOf(Color(0xFFB71C1C), Color(0xFFE63946))
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     // تذييل الصفحة (Footer)
                     Column(

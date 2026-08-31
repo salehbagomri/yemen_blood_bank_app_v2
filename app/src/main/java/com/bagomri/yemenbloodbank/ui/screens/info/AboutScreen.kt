@@ -124,7 +124,7 @@ fun AboutScreen(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(
-                        painter = painterResource(id = R.drawable.app_logo),
+                        painter = painterResource(id = R.drawable.ic_logo_vector),
                         contentDescription = null,
                         modifier = Modifier.size(100.dp)
                     )

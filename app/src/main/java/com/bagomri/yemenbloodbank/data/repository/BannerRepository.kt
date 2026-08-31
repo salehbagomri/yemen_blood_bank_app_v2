@@ -111,6 +111,8 @@ class BannerRepository(
         }
     }
 
+    suspend fun addBanner(banner: Banner): Result<Banner> = createBanner(banner)
+
     /**
      * تحديث بيانات بانر
      */

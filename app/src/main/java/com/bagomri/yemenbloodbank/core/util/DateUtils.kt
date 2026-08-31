@@ -20,7 +20,6 @@ object DateUtils {
     fun parseIsoDate(isoString: String?): Date? {
         if (isoString.isNullOrEmpty()) return null
         return try {
-            // معالجة الأجزاء الإضافية مثل microsecond و offset (+00:00 or Z)
             val cleaned = isoString.substringBefore(".").substringBefore("+").substringBefore("Z")
             isoFormat.parse(cleaned)
         } catch (e: Exception) {
@@ -37,6 +36,8 @@ object DateUtils {
         val date = parseIsoDate(isoString) ?: return isoString ?: "-"
         return displayFormat.format(date)
     }
+
+    fun formatIsoToDisplay(isoString: String?): String = formatDate(isoString)
 
     fun formatDateTime(date: Date?): String {
         if (date == null) return "-"

@@ -29,6 +29,8 @@ object IntentUtils {
         }
     }
 
+    fun makePhoneCall(context: Context, phoneNumber: String) = dialPhoneNumber(context, phoneNumber)
+
     /**
      * فتح محادثة WhatsApp مباشرة مع رسالة افتراضية
      */

@@ -12,7 +12,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.bagomri.yemenbloodbank.core.constants.AppColors
@@ -21,8 +20,8 @@ import com.bagomri.yemenbloodbank.core.constants.AppColors
 fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    label: String,
     modifier: Modifier = Modifier,
+    label: String = "",
     placeholder: String? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
@@ -41,7 +40,7 @@ fun CustomTextField(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            label = { Text(text = label) },
+            label = if (label.isNotEmpty()) { { Text(text = label) } } else null,
             placeholder = placeholder?.let { { Text(text = it, color = AppColors.TextHint) } },
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,

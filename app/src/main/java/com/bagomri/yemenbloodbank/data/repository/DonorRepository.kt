@@ -1,20 +1,19 @@
 package com.bagomri.yemenbloodbank.data.repository
 
 import com.bagomri.yemenbloodbank.core.network.SupabaseProvider
+import com.bagomri.yemenbloodbank.data.model.DashboardStatistics
 import com.bagomri.yemenbloodbank.data.model.Donor
 import io.github.jan.supabase.postgrest.Postgrest
-import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.intOrNull
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import java.text.SimpleDateFormat
@@ -61,13 +60,13 @@ class DonorRepository(
     /**
      * الحصول على متبرع بواسطة المعرّف
      */
-    suspend fun getDonorById(id: String): Result<Donor?> = withContext(Dispatchers.IO) {
+    suspend fun getDonorById(id: String): Result<Donor> = withContext(Dispatchers.IO) {
         try {
             val donor = postgrest.from("donors")
                 .select {
                     filter { eq("id", id) }
                     limit(1)
-                }.decodeSingleOrNull<Donor>()
+                }.decodeSingle<Donor>()
             Result.success(donor)
         } catch (e: Exception) {
             Result.failure(e)
@@ -176,7 +175,6 @@ class DonorRepository(
                 return@withContext Result.success(response.first())
             }
 
-            // محاولة بدون صفر البداية إذا كان موجوداً
             if (cleanPhone.startsWith("0")) {
                 val withoutZero = cleanPhone.substring(1)
                 val fallbackResponse = postgrest.from("donors")
@@ -233,6 +231,8 @@ class DonorRepository(
         }
     }
 
+    suspend fun suspendDonor(id: String): Result<Donor> = suspendDonorFor6Months(id)
+
     /**
      * تحديث تاريخ آخر تبرع لمتبرع
      */
@@ -249,6 +249,33 @@ class DonorRepository(
             }
             val updated = postgrest.rpc("update_donor_donation_date", params).decodeAs<Donor>()
             Result.success(updated)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateDonationDate(donorId: String): Result<Donor> = withContext(Dispatchers.IO) {
+        try {
+            val cal = Calendar.getInstance()
+            val now = isoDateFormat.format(cal.time)
+            cal.add(Calendar.MONTH, 6)
+            val suspendedUntil = isoDateFormat.format(cal.time)
+            updateDonorDonationDate(donorId, now, suspendedUntil)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * تغيير حالة تفعيل المتبرع
+     */
+    suspend fun toggleDonorStatus(id: String, isActive: Boolean): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val updateData = buildJsonObject { put("is_active", isActive) }
+            postgrest.from("donors").update(updateData) {
+                filter { eq("id", id) }
+            }
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -277,26 +304,6 @@ class DonorRepository(
     }
 
     /**
-     * الحصول على عدد المتبرعين المعطلين
-     */
-    suspend fun getInactiveDonorsCount(governorate: String? = null): Result<Int> = withContext(Dispatchers.IO) {
-        try {
-            val rows = postgrest.from("donors")
-                .select(Columns.list("id")) {
-                    filter {
-                        eq("is_active", false)
-                        if (!governorate.isNullOrEmpty()) {
-                            eq("governorate", governorate)
-                        }
-                    }
-                }.decodeList<JsonObject>()
-            Result.success(rows.size)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    /**
      * الحصول على جميع المتبرعين (مع Pagination)
      */
     suspend fun getAllDonors(limit: Int? = null, offset: Int? = null): Result<List<Donor>> = withContext(Dispatchers.IO) {
@@ -319,11 +326,13 @@ class DonorRepository(
     /**
      * الحصول على متبرعي محافظة معينة (للوحة المستشفى)
      */
-    suspend fun getDonorsByGovernorate(governorate: String, limit: Int? = null): Result<List<Donor>> = withContext(Dispatchers.IO) {
+    suspend fun getDonorsByGovernorate(governorate: String?, limit: Int? = null): Result<List<Donor>> = withContext(Dispatchers.IO) {
         try {
             val donors = postgrest.from("donors")
                 .select {
-                    filter { eq("governorate", governorate) }
+                    if (!governorate.isNullOrEmpty()) {
+                        filter { eq("governorate", governorate) }
+                    }
                     order("created_at", Order.DESCENDING)
                     if (limit != null) limit(limit.toLong())
                 }.decodeList<Donor>()
@@ -334,83 +343,36 @@ class DonorRepository(
     }
 
     /**
-     * البحث بالاسم أو رقم الهاتف
+     * إحصائيات لوحة التحكم لمحافظة معينة أو عامة
      */
-    suspend fun searchByNameOrPhone(query: String, governorate: String? = null): Result<List<Donor>> = withContext(Dispatchers.IO) {
+    suspend fun getDashboardStatistics(governorate: String? = null): Result<DashboardStatistics> = coroutineScope {
         try {
-            val donors = postgrest.from("donors")
-                .select {
-                    filter {
-                        or {
-                            ilike("name", "%$query%")
-                            ilike("phone_number", "%$query%")
-                            ilike("phone_number_2", "%$query%")
-                            ilike("phone_number_3", "%$query%")
-                        }
-                        eq("is_active", true)
-                        if (!governorate.isNullOrEmpty()) {
-                            eq("governorate", governorate)
-                        }
+            val totalAsync = async {
+                postgrest.from("donors").select(Columns.list("id")) {
+                    if (!governorate.isNullOrEmpty()) {
+                        filter { eq("governorate", governorate) }
                     }
-                    order("name", Order.ASCENDING)
-                    limit(50)
-                }.decodeList<Donor>()
-            Result.success(donors)
+                }.decodeList<JsonObject>().size
+            }
+
+            val availableAsync = async { getAvailableDonorsCount(governorate).getOrDefault(0) }
+            val suspendedAsync = async { getSuspendedDonors(governorate).getOrDefault(emptyList()).size }
+            val newThisMonthAsync = async { getNewDonorsThisMonth(governorate).getOrDefault(0) }
+
+            val stats = DashboardStatistics(
+                totalDonors = totalAsync.await(),
+                availableDonors = availableAsync.await(),
+                suspendedDonors = suspendedAsync.await(),
+                newDonorsThisMonth = newThisMonthAsync.await()
+            )
+            Result.success(stats)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    /**
-     * الحصول على إحصائيات المحافظات عبر RPC
-     */
-    suspend fun getGovernorateStats(governorate: String? = null): Result<List<JsonObject>> = withContext(Dispatchers.IO) {
-        try {
-            val params = buildJsonObject {
-                put("p_governorate", governorate)
-            }
-            val list = postgrest.rpc("get_governorate_stats", params).decodeList<JsonObject>()
-            Result.success(list)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    /**
-     * إحصائيات فصائل الدم
-     */
-    suspend fun getDonorCountByBloodType(): Result<Map<String, Int>> = withContext(Dispatchers.IO) {
-        try {
-            val rows = postgrest.rpc("get_bloodtype_stats").decodeList<JsonObject>()
-            val map = mutableMapOf<String, Int>()
-            rows.forEach { row ->
-                val type = row["blood_type"]?.jsonPrimitive?.content ?: ""
-                val count = row["cnt"]?.jsonPrimitive?.intOrNull ?: 0
-                if (type.isNotEmpty()) map[type] = count
-            }
-            Result.success(map)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    /**
-     * إحصائيات المديريات
-     */
-    suspend fun getDonorCountByDistrict(): Result<Map<String, Int>> = withContext(Dispatchers.IO) {
-        try {
-            val rows = postgrest.rpc("get_district_stats").decodeList<JsonObject>()
-            val map = mutableMapOf<String, Int>()
-            rows.forEach { row ->
-                val dist = row["district"]?.jsonPrimitive?.content ?: ""
-                val count = row["cnt"]?.jsonPrimitive?.intOrNull ?: 0
-                if (dist.isNotEmpty()) map[dist] = count
-            }
-            Result.success(map)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+    suspend fun getGovernorateStats(governorate: String? = null): Result<DashboardStatistics> =
+        getDashboardStatistics(governorate)
 
     /**
      * عدد المتبرعين المتاحين للتبرع الآن
@@ -461,49 +423,6 @@ class DonorRepository(
                     }
                 }.decodeList<JsonObject>()
             Result.success(rows.size)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    /**
-     * آخر المتبرعين المضافين
-     */
-    suspend fun getRecentDonors(limit: Int = 5, governorate: String? = null): Result<List<Donor>> = withContext(Dispatchers.IO) {
-        try {
-            val donors = postgrest.from("donors")
-                .select {
-                    filter {
-                        if (!governorate.isNullOrEmpty()) {
-                            eq("governorate", governorate)
-                        }
-                    }
-                    order("created_at", Order.DESCENDING)
-                    limit(limit.toLong())
-                }.decodeList<Donor>()
-            Result.success(donors)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    /**
-     * آخر التبرعات
-     */
-    suspend fun getRecentDonations(limit: Int = 5, governorate: String? = null): Result<List<Donor>> = withContext(Dispatchers.IO) {
-        try {
-            val donors = postgrest.from("donors")
-                .select {
-                    filter {
-                        gt("last_donation_date", "1970-01-01")
-                        if (!governorate.isNullOrEmpty()) {
-                            eq("governorate", governorate)
-                        }
-                    }
-                    order("last_donation_date", Order.DESCENDING)
-                    limit(limit.toLong())
-                }.decodeList<Donor>()
-            Result.success(donors)
         } catch (e: Exception) {
             Result.failure(e)
         }

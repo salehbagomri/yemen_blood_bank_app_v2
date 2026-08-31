@@ -50,6 +50,32 @@ class HospitalRepository(
     }
 
     /**
+     * إضافة مستشفى جديد
+     */
+    suspend fun addHospital(hospital: Hospital): Result<Hospital> = withContext(Dispatchers.IO) {
+        try {
+            val insertData = buildJsonObject {
+                put("name", hospital.name.trim())
+                put("email", hospital.email.trim())
+                put("district", hospital.district)
+                put("governorate", hospital.governorate)
+                put("phone_number", hospital.phoneNumber?.trim()?.ifEmpty { null })
+                put("address", hospital.address?.trim()?.ifEmpty { null })
+                put("is_active", hospital.isActive)
+            }
+
+            val created = postgrest.from("hospitals")
+                .insert(insertData) {
+                    select()
+                }.decodeSingle<Hospital>()
+
+            Result.success(created)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
      * تحديث بيانات مستشفى
      */
     suspend fun updateHospital(hospital: Hospital): Result<Hospital> = withContext(Dispatchers.IO) {
@@ -61,6 +87,7 @@ class HospitalRepository(
                 put("governorate", hospital.governorate)
                 put("phone_number", hospital.phoneNumber?.trim()?.ifEmpty { null })
                 put("address", hospital.address?.trim()?.ifEmpty { null })
+                put("is_active", hospital.isActive)
             }
 
             val updated = postgrest.from("hospitals")
@@ -70,6 +97,21 @@ class HospitalRepository(
                 }.decodeSingle<Hospital>()
 
             Result.success(updated)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * تفعيل أو تعطيل مستشفى
+     */
+    suspend fun toggleHospitalStatus(id: String, isActive: Boolean): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val updateData = buildJsonObject { put("is_active", isActive) }
+            postgrest.from("hospitals").update(updateData) {
+                filter { eq("id", id) }
+            }
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }

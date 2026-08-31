@@ -68,4 +68,6 @@ object AppColors {
             else -> Primary
         }
     }
+
+    fun getBloodTypeColor(bloodType: String): Color = forBloodType(bloodType)
 }

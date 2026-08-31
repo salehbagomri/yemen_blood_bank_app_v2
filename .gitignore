@@ -11,3 +11,11 @@ app/build/
 .externalNativeBuild
 .cxx
 local.properties
+.kotlin
+.agents
+*.log
+
+# Keystore files (safety precaution)
+*.jks
+*.keystore
+keystore.properties

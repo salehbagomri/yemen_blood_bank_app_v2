@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="طلب حذف الحساب والبيانات لتطبيق بنك دم اليمن - Account and Data Deletion Request for Yemen Blood Bank App">
+    <meta name="author" content="Saleh Bagomri">
+    <title>طلب حذف الحساب والبيانات - بنك دم اليمن | Data Deletion Request - Yemen Blood Bank</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #475569;
+            --accent-color: #2563eb;
+            --border-color: #e2e8f0;
+            --bg-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-color: #334155;
+            --sidebar-width: 240px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+        .layout-wrapper { max-width: 1100px; margin: 0 auto; padding: 60px 24px; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 32px;
+            margin-bottom: 48px;
+            gap: 20px;
+        }
+        .header-title h1 { font-size: 28px; font-weight: 700; color: var(--primary-color); margin-bottom: 6px; }
+        .header-title p { font-size: 14px; color: var(--secondary-color); }
+        .language-toggle {
+            display: inline-flex;
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 3px;
+            flex-shrink: 0;
+        }
+        .language-toggle button {
+            background: transparent;
+            color: var(--secondary-color);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .language-toggle button.active {
+            background: var(--surface-color);
+            color: var(--primary-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .main-layout { display: flex; gap: 48px; }
+        .sidebar { width: var(--sidebar-width); position: sticky; top: 40px; height: fit-content; flex-shrink: 0; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 4px; border-right: 2px solid var(--border-color); }
+        [dir="ltr"] .sidebar-nav { border-right: none; border-left: 2px solid var(--border-color); }
+        .sidebar-nav a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            transition: all 0.2s;
+            border-right: 2px solid transparent;
+            margin-right: -2px;
+            text-align: right;
+            display: block;
+        }
+        [dir="ltr"] .sidebar-nav a {
+            border-right: none;
+            border-left: 2px solid transparent;
+            margin-right: 0;
+            margin-left: -2px;
+            text-align: left;
+        }
+        .sidebar-nav a:hover { color: var(--primary-color); }
+        .sidebar-nav a.active { color: var(--accent-color); border-right-color: var(--accent-color); font-weight: 600; }
+        [dir="ltr"] .sidebar-nav a.active { border-left-color: var(--accent-color); }
+        .content-area { flex-grow: 1; max-width: 780px; }
+        .section { margin-bottom: 56px; scroll-margin-top: 40px; }
+        .section h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .section h3 { font-size: 15px; font-weight: 600; color: var(--primary-color); margin: 24px 0 10px; }
+        .section p { margin-bottom: 16px; font-size: 14px; color: var(--text-color); text-align: justify; }
+        .section ul { list-style: none; margin-bottom: 20px; }
+        .section ul li {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            position: relative;
+            padding-right: 18px;
+        }
+        [dir="ltr"] .section ul li { padding-right: 0; padding-left: 18px; }
+        .section ul li::before { content: "•"; color: var(--secondary-color); position: absolute; right: 0; top: 0; font-weight: bold; }
+        [dir="ltr"] .section ul li::before { right: auto; left: 0; }
+        .section ul li strong { color: var(--primary-color); }
+        .callout-box { background: #fafafa; border: 1px solid var(--border-color); border-radius: 8px; padding: 24px; margin: 24px 0; }
+        .callout-box h3 { margin-top: 0; font-size: 14px; font-weight: 600; color: var(--primary-color); margin-bottom: 12px; }
+        .callout-box ul { margin-bottom: 0; }
+        .callout-box p { font-size: 14px; color: var(--text-color); margin-bottom: 12px; }
+        .callout-box p:last-child { margin-bottom: 0; }
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 20px; }
+        .contact-item { background: #fafafa; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; }
+        .contact-item-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--secondary-color); margin-bottom: 6px; letter-spacing: 0.5px; }
+        .contact-item-value { font-size: 14px; color: var(--primary-color); font-weight: 500; word-break: break-all; }
+        .contact-item-value a { color: var(--accent-color); text-decoration: none; }
+        .contact-item-value a:hover { text-decoration: underline; }
+        .footer { border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 80px; text-align: center; font-size: 13px; color: var(--secondary-color); }
+        .footer p { margin-bottom: 6px; }
+        .footer a { color: var(--accent-color); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .en { display: none; }
+        @media (max-width: 768px) {
+            .layout-wrapper { padding: 24px 16px; }
+            .header { flex-direction: column; align-items: stretch; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; }
+            .main-layout { flex-direction: column; gap: 24px; }
+            .sidebar {
+                width: 100%;
+                position: sticky;
+                top: 0;
+                background-color: var(--bg-color);
+                z-index: 100;
+                padding-top: 12px;
+                padding-bottom: 12px;
+                margin-top: -12px;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .sidebar-nav {
+                border-right: none;
+                border-left: none;
+                border-bottom: none;
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 0;
+                gap: 8px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .sidebar-nav::-webkit-scrollbar { display: none; }
+            .sidebar-nav a { border-right: none; border-bottom: 2px solid transparent; margin-right: 0; padding: 6px 14px; white-space: nowrap; text-align: center; font-size: 13px; }
+            [dir="ltr"] .sidebar-nav a { border-left: none; margin-left: 0; text-align: center; }
+            .sidebar-nav a.active { border-right-color: transparent; border-bottom-color: var(--accent-color); }
+            .section { scroll-margin-top: 72px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout-wrapper">
+        <div class="header">
+            <div class="header-title" id="arabicHeaderTitle">
+                <h1>طلب حذف الحساب والبيانات</h1>
+                <p>تطبيق بنك دم اليمن — مبادرة صالح باقمري التطوعية</p>
+                <p style="font-size: 12px; margin-top: 6px; color: var(--secondary-color);">آخر تحديث: يونيو 2026</p>
+            </div>
+            <div class="header-title en" id="englishHeaderTitle">
+                <h1>Account &amp; Data Deletion</h1>
+                <p>Yemen Blood Bank App — Volunteer Initiative by Saleh Bagomri</p>
+                <p style="font-size: 12px; margin-top: 6px; color: var(--secondary-color);">Last Updated: June 2026</p>
+            </div>
+            <div class="language-toggle">
+                <button id="btnArabic" class="active" onclick="showArabic()">العربية</button>
+                <button id="btnEnglish" onclick="showEnglish()">English</button>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <aside class="sidebar" id="arabicSidebar">
+                <nav class="sidebar-nav">
+                    <a href="#ar-intro" class="active">المقدمة</a>
+                    <a href="#ar-option1">الطريقة 1: من التطبيق</a>
+                    <a href="#ar-option2">الطريقة 2: عبر البريد</a>
+                    <a href="#ar-data">البيانات التي تُحذف</a>
+                    <a href="#ar-contact">الاتصال بنا</a>
+                </nav>
+            </aside>
+
+            <aside class="sidebar en" id="englishSidebar">
+                <nav class="sidebar-nav">
+                    <a href="#en-intro">Introduction</a>
+                    <a href="#en-option1">Method 1: In-App Request</a>
+                    <a href="#en-option2">Method 2: Via Email</a>
+                    <a href="#en-data">Data Types Deleted</a>
+                    <a href="#en-contact">Contact Us</a>
+                </nav>
+            </aside>
+
+            <div class="content-area">
+                <!-- Arabic Version -->
+                <div class="content ar" id="arabicContent">
+                    <div class="section" id="ar-intro">
+                        <h2>طلب حذف الحساب والبيانات</h2>
+                        <p>تطبيق <strong>بنك دم اليمن</strong> يلتزم بالخصوصية والشفافية التامة فيما يتعلق ببيانات المستخدمين. إذا كنت قد سجلت كمتبرع بالدم أو مستخدم للتطبيق، فيمكنك في أي وقت طلب حذف حسابك وكامل بياناتك الشخصية والطبية المسجلة لدينا بشكل نهائي وبأثر فوري.</p>
+                    </div>
+
+                    <div class="section" id="ar-option1">
+                        <h2>الطريقة 1 — من داخل التطبيق (الموصى بها)</h2>
+                        <div class="callout-box">
+                            <p>يمكنك تقديم طلب حذف بياناتك مباشرة من داخل التطبيق دون الحاجة لمراسلتنا خارجياً:</p>
+                            <ul style="margin-top: 12px;">
+                                <li>اذهب إلى القائمة الرئيسية أو قائمة الإعدادات في التطبيق.</li>
+                                <li>انقر على قسم <strong>"البلاغات"</strong>.</li>
+                                <li>قدّم بلاغاً جديداً تطلب فيه صراحة (طلب حذف الحساب والبيانات).</li>
+                                <li><strong>إجراء الحماية والتأكيد:</strong> لحماية مستخدمينا من طلبات الحذف العشوائية أو غير المصرح بها، سيتواصل معك فريق الإدارة هاتفياً عبر رقمك المسجّل للتأكد من رغبتك الفعلية في الحذف.</li>
+                                <li>بمجرد تأكيد هويتك، سيقوم المسؤول بحذف بطاقتك وكافة بياناتك نهائياً من النظام فوراً.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="section" id="ar-option2">
+                        <h2>الطريقة 2 — عبر البريد الإلكتروني</h2>
+                        <div class="callout-box">
+                            <p>إذا لم تكن تملك التطبيق حالياً أو تفضل مراسلتنا بالبريد الإلكتروني:</p>
+                            <ul style="margin-top: 12px;">
+                                <li>أرسل رسالة إلكترونية إلى العنوان: <a href="mailto:s.bagomri@gmail.com" style="color: var(--accent-color);">s.bagomri@gmail.com</a></li>
+                                <li>اجعل عنوان الرسالة: <strong>"طلب حذف بيانات - بنك دم اليمن"</strong>.</li>
+                                <li>يرجى تضمين <strong>الاسم المسجّل</strong> و<strong>رقم الهاتف</strong> الذي تم استخدامه للتسجيل في التطبيق.</li>
+                                <li>سيقوم فريق الدعم بالتواصل معك هاتفياً أو عبر البريد لتأكيد طلبك، وسيتم حذف البيانات نهائياً خلال 30 يوماً من تاريخ تقديم الطلب.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="section" id="ar-data">
+                        <h2>أنواع البيانات التي تُحذف</h2>
+                        <p>عند تأكيد طلب الحذف الخاص بك، سيقوم التطبيق بمسح البيانات التالية نهائياً وبشكل غير قابل للاسترجاع:</p>
+                        <ul>
+                            <li><strong>المعلومات الشخصية:</strong> الاسم الكامل، والجنس، والعمر.</li>
+                            <li><strong>معلومات الاتصال:</strong> جميع أرقام الهواتف المسجلة المرتبطة بملفك (حتى 3 أرقام).</li>
+                            <li><strong>المعلومات الطبية والجغرافية:</strong> فصيلة الدم، والمحافظة، والمديرية.</li>
+                            <li><strong>بيانات النظام:</strong> تاريخ آخر تبرع، وتاريخ الإضافة والتعديل، وأي بيانات حساب إداري مرتبطة.</li>
+                        </ul>
+                        <div class="callout-box" style="border-left: 4px solid #ef4444;">
+                            <p><strong>سياسة الاحتفاظ بالبيانات:</strong> لا يحتفظ تطبيق بنك دم اليمن بأي نسخ احتياطية أو سجلات تاريخية للبيانات المحذوفة. الحذف نهائي وتام فور اكتمال الإجراء.</p>
+                        </div>
+                    </div>
+
+                    <div class="section" id="ar-contact">
+                        <h2>الاتصال بنا</h2>
+                        <p>إذا كانت لديك أي أسئلة أو استفسارات إضافية بخصوص سياسة حذف البيانات، يسعدنا تواصلك معنا:</p>
+                        <div class="contact-grid">
+                            <div class="contact-item">
+                                <div class="contact-item-label">البريد الإلكتروني</div>
+                                <div class="contact-item-value"><a href="mailto:s.bagomri@gmail.com">s.bagomri@gmail.com</a></div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-item-label">واتساب الدعم الفني</div>
+                                <div class="contact-item-value"><a href="https://wa.me/967770727055" dir="ltr">+967 770727055</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- English Version -->
+                <div class="content en" id="englishContent">
+                    <div class="section" id="en-intro">
+                        <h2>Account &amp; Data Deletion Request</h2>
+                        <p><strong>Yemen Blood Bank</strong> is fully committed to user privacy and transparency. If you have registered as a blood donor or user in our application, you can request the permanent and irreversible deletion of your account and all associated personal and medical data at any time.</p>
+                    </div>
+
+                    <div class="section" id="en-option1">
+                        <h2>Method 1 — From Within the App (Recommended)</h2>
+                        <div class="callout-box">
+                            <p>You can request the deletion of your data directly through the application:</p>
+                            <ul style="margin-top: 12px;">
+                                <li>Navigate to the main menu or settings panel inside the application.</li>
+                                <li>Click on the <strong>"Reports"</strong> section.</li>
+                                <li>Submit a new report requesting account and data deletion.</li>
+                                <li><strong>Security &amp; Verification Step:</strong> To safeguard our users against unauthorized deletion requests, the administration team will contact you via your registered phone number to verify your request.</li>
+                                <li>Once your identity is verified, your donor card and all associated details will be permanently deleted from our servers immediately.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="section" id="en-option2">
+                        <h2>Method 2 — Via Email</h2>
+                        <div class="callout-box">
+                            <p>If you do not have the app installed or prefer to contact us externally:</p>
+                            <ul style="margin-top: 12px;">
+                                <li>Send an email to: <a href="mailto:s.bagomri@gmail.com" style="color: var(--accent-color);">s.bagomri@gmail.com</a></li>
+                                <li>Subject the email: <strong>"Data Deletion Request - Yemen Blood Bank"</strong>.</li>
+                                <li>Please provide your <strong>registered name</strong> and the <strong>phone number</strong> used to register.</li>
+                                <li>Our support team will contact you to verify your identity, and all data will be permanently purged within 30 days of the request.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="section" id="en-data">
+                        <h2>Data Types Deleted</h2>
+                        <p>Upon confirmation of your deletion request, the following data points will be permanently deleted and cannot be recovered:</p>
+                        <ul>
+                            <li><strong>Personal Info:</strong> Full name, gender, and age.</li>
+                            <li><strong>Contact Details:</strong> All registered phone numbers associated with your profile (up to 3 numbers).</li>
+                            <li><strong>Medical &amp; Geographic Details:</strong> Blood type, Governorate, and District.</li>
+                            <li><strong>System Logs:</strong> Last donation date, creation and modification timestamps, and any linked administrative account details.</li>
+                        </ul>
+                        <div class="callout-box" style="border-left: 4px solid #ef4444;">
+                            <p><strong>Data Retention Policy:</strong> Yemen Blood Bank does not retain any backup copies or historical logs of deleted data. Purges are absolute and irreversible.</p>
+                        </div>
+                    </div>
+
+                    <div class="section" id="en-contact">
+                        <h2>Contact Us</h2>
+                        <p>If you have any questions or queries regarding this data deletion policy, feel free to reach out:</p>
+                        <div class="contact-grid">
+                            <div class="contact-item">
+                                <div class="contact-item-label">Email</div>
+                                <div class="contact-item-value"><a href="mailto:s.bagomri@gmail.com">s.bagomri@gmail.com</a></div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-item-label">WhatsApp Support</div>
+                                <div class="contact-item-value"><a href="https://wa.me/967770727055" dir="ltr">+967 770727055</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer" id="arabicFooter">
+            <p>إصدار التطبيق: 1.0.0</p>
+            <p>آخر تحديث: يونيو 2026</p>
+            <p>بنك دم اليمن — تطبيق التبرع بالدم</p>
+            <p><a href="index.html">سياسة الخصوصية</a> | <a href="terms.html">شروط الاستخدام</a></p>
+            <p style="margin-top: 20px;">&copy; 2026 Saleh Bagomri - جميع الحقوق محفوظة</p>
+        </div>
+
+        <div class="footer en" id="englishFooter">
+            <p>App Version: 1.0.0</p>
+            <p>Last Updated: June 2026</p>
+            <p>Yemen Blood Bank — Blood Donation App</p>
+            <p><a href="index.html">Privacy Policy</a> | <a href="terms.html">Terms of Use</a></p>
+            <p style="margin-top: 20px;">&copy; 2026 Saleh Bagomri - All Rights Reserved</p>
+        </div>
+    </div>
+
+    <script>
+        function showArabic() {
+            document.getElementById('arabicContent').style.display = 'block';
+            document.getElementById('englishContent').style.display = 'none';
+            document.getElementById('arabicSidebar').style.display = 'block';
+            document.getElementById('englishSidebar').style.display = 'none';
+            document.getElementById('arabicHeaderTitle').style.display = 'block';
+            document.getElementById('englishHeaderTitle').style.display = 'none';
+            document.getElementById('arabicFooter').style.display = 'block';
+            document.getElementById('englishFooter').style.display = 'none';
+
+            document.getElementById('btnArabic').classList.add('active');
+            document.getElementById('btnEnglish').classList.remove('active');
+            document.body.setAttribute('dir', 'rtl');
+            document.documentElement.setAttribute('lang', 'ar');
+            updateActiveLinkOnLanguageChange();
+        }
+
+        function showEnglish() {
+            document.getElementById('arabicContent').style.display = 'none';
+            document.getElementById('englishContent').style.display = 'block';
+            document.getElementById('arabicSidebar').style.display = 'none';
+            document.getElementById('englishSidebar').style.display = 'block';
+            document.getElementById('arabicHeaderTitle').style.display = 'none';
+            document.getElementById('englishHeaderTitle').style.display = 'block';
+            document.getElementById('arabicFooter').style.display = 'none';
+            document.getElementById('englishFooter').style.display = 'block';
+
+            document.getElementById('btnArabic').classList.remove('active');
+            document.getElementById('btnEnglish').classList.add('active');
+            document.body.setAttribute('dir', 'ltr');
+            document.documentElement.setAttribute('lang', 'en');
+            updateActiveLinkOnLanguageChange();
+        }
+
+        const observerOptions = { root: null, rootMargin: '-10% 0px -70% 0px', threshold: 0 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    if (id) {
+                        const isRtl = document.body.getAttribute('dir') === 'rtl';
+                        const prefix = isRtl ? 'ar-' : 'en-';
+                        if (!id.startsWith(prefix)) return;
+                        const activeSidebar = isRtl ? 'arabicSidebar' : 'englishSidebar';
+                        document.querySelectorAll(`#${activeSidebar} .sidebar-nav a`).forEach(a => a.classList.remove('active'));
+                        const currentLink = document.querySelector(`#${activeSidebar} .sidebar-nav a[href="#${id}"]`);
+                        if (currentLink) {
+                            currentLink.classList.add('active');
+                            if (window.innerWidth <= 768) {
+                                currentLink.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                            }
+                        }
+                    }
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('.section').forEach(section => observer.observe(section));
+
+        function updateActiveLinkOnLanguageChange() {
+            const isRtl = document.body.getAttribute('dir') === 'rtl';
+            const prefix = isRtl ? 'ar-' : 'en-';
+            const activeSidebar = isRtl ? 'arabicSidebar' : 'englishSidebar';
+            const sections = Array.from(document.querySelectorAll('.section')).filter(s => s.id.startsWith(prefix));
+            let currentSection = sections[0];
+            let minDiff = Infinity;
+            sections.forEach(s => {
+                const rect = s.getBoundingClientRect();
+                const diff = Math.abs(rect.top);
+                if (diff < minDiff) { minDiff = diff; currentSection = s; }
+            });
+            if (currentSection) {
+                const id = currentSection.getAttribute('id');
+                document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+                const currentLink = document.querySelector(`#${activeSidebar} .sidebar-nav a[href="#${id}"]`);
+                if (currentLink) {
+                    currentLink.classList.add('active');
+                    if (window.innerWidth <= 768) {
+                        currentLink.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    }
+                }
+            }
+        }
+
+        document.querySelectorAll('.sidebar-nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                    const isRtl = document.body.getAttribute('dir') === 'rtl';
+                    const activeSidebar = isRtl ? 'arabicSidebar' : 'englishSidebar';
+                    document.querySelectorAll(`#${activeSidebar} .sidebar-nav a`).forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        showArabic();
+    </script>
+</body>
+</html>

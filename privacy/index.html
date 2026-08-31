@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="سياسة الخصوصية لتطبيق بنك دم اليمن - Privacy Policy for Yemen Blood Bank App">
+    <meta name="author" content="Saleh Bagomri">
+    <title>سياسة الخصوصية - بنك دم اليمن | Privacy Policy - Yemen Blood Bank</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #475569;
+            --accent-color: #2563eb;
+            --border-color: #e2e8f0;
+            --bg-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-color: #334155;
+            --sidebar-width: 240px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+        .layout-wrapper { max-width: 1100px; margin: 0 auto; padding: 60px 24px; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 32px;
+            margin-bottom: 48px;
+            gap: 20px;
+        }
+        .header-title h1 { font-size: 28px; font-weight: 700; color: var(--primary-color); margin-bottom: 6px; }
+        .header-title p { font-size: 14px; color: var(--secondary-color); }
+        .language-toggle {
+            display: inline-flex;
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 3px;
+            flex-shrink: 0;
+        }
+        .language-toggle button {
+            background: transparent;
+            color: var(--secondary-color);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .language-toggle button.active {
+            background: var(--surface-color);
+            color: var(--primary-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .main-layout { display: flex; gap: 48px; }
+        .sidebar { width: var(--sidebar-width); position: sticky; top: 40px; height: fit-content; flex-shrink: 0; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 4px; border-right: 2px solid var(--border-color); }
+        [dir="ltr"] .sidebar-nav { border-right: none; border-left: 2px solid var(--border-color); }
+        .sidebar-nav a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            transition: all 0.2s;
+            border-right: 2px solid transparent;
+            margin-right: -2px;
+            text-align: right;
+            display: block;
+        }
+        [dir="ltr"] .sidebar-nav a {
+            border-right: none;
+            border-left: 2px solid transparent;
+            margin-right: 0;
+            margin-left: -2px;
+            text-align: left;
+        }
+        .sidebar-nav a:hover { color: var(--primary-color); }
+        .sidebar-nav a.active { color: var(--accent-color); border-right-color: var(--accent-color); font-weight: 600; }
+        [dir="ltr"] .sidebar-nav a.active { border-left-color: var(--accent-color); }
+        .content-area { flex-grow: 1; max-width: 780px; }
+        .section { margin-bottom: 56px; scroll-margin-top: 40px; }
+        .section h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .section h3 { font-size: 15px; font-weight: 600; color: var(--primary-color); margin: 24px 0 10px; }
+        .section p { margin-bottom: 16px; font-size: 14px; color: var(--text-color); text-align: justify; }
+        .section ul { list-style: none; margin-bottom: 20px; }
+        .section ul li {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            position: relative;
+            padding-right: 18px;
+        }
+        [dir="ltr"] .section ul li { padding-right: 0; padding-left: 18px; }
+        .section ul li::before { content: "•"; color: var(--secondary-color); position: absolute; right: 0; top: 0; font-weight: bold; }
+        [dir="ltr"] .section ul li::before { right: auto; left: 0; }
+        .section ul li strong { color: var(--primary-color); }
+        .callout-box { background: #fafafa; border: 1px solid var(--border-color); border-radius: 8px; padding: 24px; margin: 24px 0; }
+        .callout-box h3 { margin-top: 0; font-size: 14px; font-weight: 600; color: var(--primary-color); margin-bottom: 12px; }
+        .callout-box ul { margin-bottom: 0; }
+        .callout-box p { font-size: 14px; color: var(--text-color); margin-bottom: 12px; }
+        .callout-box p:last-child { margin-bottom: 0; }
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 20px; }
+        .contact-item { background: #fafafa; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; }
+        .contact-item-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--secondary-color); margin-bottom: 6px; letter-spacing: 0.5px; }
+        .contact-item-value { font-size: 14px; color: var(--primary-color); font-weight: 500; word-break: break-all; }
+        .contact-item-value a { color: var(--accent-color); text-decoration: none; }
+        .contact-item-value a:hover { text-decoration: underline; }
+        .footer { border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 80px; text-align: center; font-size: 13px; color: var(--secondary-color); }
+        .footer p { margin-bottom: 6px; }
+        .footer a { color: var(--accent-color); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .en { display: none; }
+        @media (max-width: 768px) {
+            .layout-wrapper { padding: 24px 16px; }
+            .header { flex-direction: column; align-items: stretch; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; }
+            .main-layout { flex-direction: column; gap: 24px; }
+            .sidebar {
+                width: 100%;
+                position: sticky;
+                top: 0;
+                background-color: var(--bg-color);
+                z-index: 100;
+                padding-top: 12px;
+                padding-bottom: 12px;
+                margin-top: -12px;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .sidebar-nav {
+                border-right: none;
+                border-left: none;
+                border-bottom: none;
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 0;
+                gap: 8px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .sidebar-nav::-webkit-scrollbar { display: none; }
+            .sidebar-nav a { border-right: none; border-bottom: 2px solid transparent; margin-right: 0; padding: 6px 14px; white-space: nowrap; text-align: center; font-size: 13px; }
+            [dir="ltr"] .sidebar-nav a { border-left: none; margin-left: 0; text-align: center; }
+            .sidebar-nav a.active { border-right-color: transparent; border-bottom-color: var(--accent-color); }
+            .section { scroll-margin-top: 72px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout-wrapper">
+        <div class="header">
+            <div class="header-title" id="arabicHeaderTitle">
+                <h1>بنك دم اليمن</h1>
+                <p>تطبيق التبرع بالدم — سياسة الخصوصية</p>
+                <p style="font-size: 12px; margin-top: 6px; color: var(--secondary-color);">آخر تحديث: مايو 2026</p>
+            </div>
+            <div class="header-title en" id="englishHeaderTitle">
+                <h1>Yemen Blood Bank</h1>
+                <p>Blood Donation App — Privacy Policy</p>
+                <p style="font-size: 12px; margin-top: 6px; color: var(--secondary-color);">Last Updated: May 2026</p>
+            </div>
+            <div class="language-toggle">
+                <button id="btnArabic" class="active" onclick="showArabic()">العربية</button>
+                <button id="btnEnglish" onclick="showEnglish()">English</button>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <aside class="sidebar" id="arabicSidebar">
+                <nav class="sidebar-nav">
+                    <a href="#ar-intro" class="active">المقدمة</a>
+                    <a href="#ar-data">البيانات التي نجمعها</a>
+                    <a href="#ar-usage">كيفية استخدام البيانات</a>
+                    <a href="#ar-storage">تخزين وأمان البيانات</a>
+                    <a href="#ar-sharing">مشاركة البيانات</a>
+                    <a href="#ar-rights">حقوق المستخدمين</a>
+                    <a href="#ar-permissions">الأذونات المطلوبة</a>
+                    <a href="#ar-disclaimer">إخلاء المسؤولية</a>
+                    <a href="#ar-consent">الموافقة والإقرار</a>
+                    <a href="#ar-contact">الاتصال بنا</a>
+                </nav>
+            </aside>
+
+            <aside class="sidebar en" id="englishSidebar">
+                <nav class="sidebar-nav">
+                    <a href="#en-intro">Introduction</a>
+                    <a href="#en-data">Data We Collect</a>
+                    <a href="#en-usage">Data Usage</a>
+                    <a href="#en-storage">Storage and Security</a>
+                    <a href="#en-sharing">Data Sharing</a>
+                    <a href="#en-rights">User Rights</a>
+                    <a href="#en-permissions">Required Permissions</a>
+                    <a href="#en-disclaimer">Disclaimer</a>
+                    <a href="#en-consent">Consent & Acknowledgment</a>
+                    <a href="#en-contact">Contact Us</a>
+                </nav>
+            </aside>
+
+            <div class="content-area">
+                <!-- Arabic Version -->
+                <div class="content ar" id="arabicContent">
+                    <div class="section" id="ar-intro">
+                        <h2>المقدمة</h2>
+                        <p>مرحباً بك في تطبيق بنك دم اليمن. التطبيق خدمة مجانية غير ربحية تهدف إلى تسهيل التواصل بين المتبرعين بالدم والمحتاجين إليه في عموم محافظات اليمن. نلتزم بحماية خصوصيتك، وتوضح هذه السياسة كيفية جمع واستخدام وحماية معلوماتك عند استخدام التطبيق.</p>
+                    </div>
+
+                    <div class="section" id="ar-data">
+                        <h2>البيانات التي نجمعها</h2>
+                        <h3>معلومات المتبرع</h3>
+                        <p>عند تسجيل متبرع جديد، يتم جمع المعطيات التالية:</p>
+                        <ul>
+                            <li><strong>الاسم الكامل:</strong> لتحديد هوية المتبرع.</li>
+                            <li><strong>رقم الهاتف:</strong> للتواصل مع المتبرع عند الحاجة (يمكن إضافة حتى ثلاثة أرقام).</li>
+                            <li><strong>فصيلة الدم:</strong> لمطابقة المتبرعين مع المحتاجين.</li>
+                            <li><strong>المحافظة والمديرية:</strong> لتحديد الموقع الجغرافي داخل اليمن.</li>
+                            <li><strong>الجنس والعمر:</strong> لأغراض إحصائية وللتأكد من أهلية التبرع.</li>
+                            <li><strong>تاريخ آخر تبرع (اختياري):</strong> لضمان مرور الفترة الآمنة بين التبرعات.</li>
+                            <li><strong>ملاحظات (اختياري):</strong> أي معلومات إضافية يرغب المتبرع بإضافتها.</li>
+                        </ul>
+                        <div class="callout-box">
+                            <p><strong>ملاحظة:</strong> المستخدم العادي لا يحتاج إلى إنشاء حساب أو كلمة مرور لاستخدام التطبيق. الحسابات مخصصة فقط للمستشفيات والمسؤولين.</p>
+                        </div>
+                    </div>
+
+                    <div class="section" id="ar-usage">
+                        <h2>كيفية استخدام البيانات</h2>
+                        <div class="callout-box">
+                            <h3>الأغراض الأساسية</h3>
+                            <ul>
+                                <li><strong>ربط المتبرعين بالمحتاجين:</strong> مطابقة فصائل الدم والموقع الجغرافي.</li>
+                                <li><strong>البحث عن متبرعين:</strong> تمكين المستشفيات والمحتاجين من إيجاد متبرعين مناسبين.</li>
+                                <li><strong>إدارة سجل التبرعات:</strong> تتبّع تواريخ التبرع السابقة للحفاظ على سلامة المتبرع.</li>
+                            </ul>
+                        </div>
+                        <h3>الأغراض الفنية</h3>
+                        <ul>
+                            <li>تحسين الخدمة وتطوير التطبيق.</li>
+                            <li>تقديم الدعم الفني وحل المشاكل التقنية.</li>
+                            <li>إعداد إحصائيات عامة غير معرّفة بالهوية.</li>
+                        </ul>
+                    </div>
+
+                    <div class="section" id="ar-storage">
+                        <h2>تخزين وأمان البيانات</h2>
+                        <div class="callout-box">
+                            <h3>قاعدة البيانات السحابية - Supabase</h3>
+                            <ul>
+                                <li>منصة تخزين سحابية آمنة ومحمية بالكامل.</li>
+                                <li>تُشفّر جميع البيانات أثناء النقل باستخدام بروتوكولات (SSL/TLS).</li>
+                                <li>مستضافة في مراكز بيانات معتمدة وتخضع لسياسات أمان صارمة.</li>
+                            </ul>
+                        </div>
+                        <div class="callout-box">
+                            <h3>تحليل الأخطاء - Firebase Crashlytics</h3>
+                            <ul>
+                                <li>لرصد الأخطاء التقنية وتحسين استقرار التطبيق.</li>
+                                <li>لا يتم جمع أي معلومات شخصية؛ تقتصر البيانات على نوع الجهاز وإصدار النظام وتقارير الأعطال.</li>
+                            </ul>
+                        </div>
+                        <div class="callout-box">
+                            <h3>التخزين المحلي (وضع بدون إنترنت)</h3>
+                            <ul>
+                                <li>يحتفظ التطبيق بنسخة محلية على جهازك لتمكين البحث دون اتصال بالإنترنت.</li>
+                                <li>تُحدَّث تلقائياً عند توفر الاتصال.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="section" id="ar-sharing">
+                        <h2>مشاركة البيانات</h2>
+                        <div class="callout-box">
+                            <h3>الممارسات المحظورة</h3>
+                            <ul>
+                                <li>لا نبيع أو نؤجّر بياناتك لأي طرف ثالث.</li>
+                                <li>لا نشارك معلوماتك مع أي شبكات أو شركات إعلانية.</li>
+                                <li>لا نستخدم بياناتك لأي أغراض تجارية، والتطبيق خالٍ تماماً من الإعلانات.</li>
+                            </ul>
+                        </div>
+                        <div class="callout-box">
+                            <h3>المشاركة المحدودة</h3>
+                            <p><strong>مع المحتاجين للدم:</strong> يمكن للباحثين رؤية اسم المتبرع ورقم هاتفه وفصيلة دمه ومنطقته (يُعرض المتبرعون المتاحون فقط).</p>
+                            <p><strong>مع المستشفيات والمسؤولين:</strong> للإشراف على النظام وإدارة البلاغات ضمن نطاق الخدمة.</p>
+                        </div>
+                    </div>
+
+                    <div class="section" id="ar-rights">
+                        <h2>حقوق المستخدمين</h2>
+                        <ul>
+                            <li><strong>الوصول والمعاينة:</strong> الاطلاع على بياناتك المخزنة في التطبيق.</li>
+                            <li><strong>التصحيح والتعديل:</strong> طلب تحديث معلوماتك عبر المستشفى أو المسؤول.</li>
+                            <li><strong>الحذف النهائي:</strong> طلب حذف بياناتك نهائياً وبشكل غير قابل للاسترجاع.</li>
+                        </ul>
+                        <p>لممارسة هذه الحقوق، يُرجى التواصل معنا عبر القنوات الموضحة في قسم "الاتصال بنا".</p>
+                    </div>
+
+                    <div class="section" id="ar-permissions">
+                        <h2>الأذونات المطلوبة</h2>
+                        <ul>
+                            <li><strong>الاتصال بالإنترنت:</strong> للاتصال بقاعدة البيانات وعرض بيانات المتبرعين. وهو الإذن الوحيد الذي يطلبه التطبيق.</li>
+                        </ul>
+                    </div>
+
+                    <div class="section" id="ar-disclaimer">
+                        <h2>إخلاء المسؤولية وحماية الأطفال</h2>
+                        <div class="callout-box">
+                            <p>التطبيق أداة مساعدة لتسهيل التواصل بين المتبرعين والمحتاجين، ولا يُغني عن الاستشارة الطبية المتخصصة. يجب التأكد من الأهلية الطبية للتبرع عبر الجهات الصحية المختصة.</p>
+                            <p>التطبيق مخصص للبالغين (18 سنة فأكثر)، ولا نجمع عمداً أي معلومات من القاصرين. وعند اكتشاف ذلك تُحذف البيانات فوراً.</p>
+                        </div>
+                    </div>
+
+                    <div class="section" id="ar-consent">
+                        <h2>الموافقة والإقرار</h2>
+                        <div class="callout-box">
+                            <p>باستخدامك تطبيق بنك دم اليمن، فإنك تقرّ وتوافق على:</p>
+                            <ul style="margin-top: 12px;">
+                                <li>جمع البيانات وتخزينها بالشكل الموضح في هذه السياسة.</li>
+                                <li>استخدام بياناتك للأغراض المذكورة.</li>
+                                <li>تخزين بياناتك ومعالجتها عبر خوادم Supabase السحابية.</li>
+                                <li>مشاركة معلومات الاتصال مع المحتاجين للدم.</li>
+                            </ul>
+                            <p style="margin-top: 12px;">يمكنك سحب موافقتك في أي وقت عبر طلب حذف بياناتك. وللاطلاع على شروط الاستخدام، راجع <a href="terms.html" style="color: var(--accent-color);">صفحة شروط الاستخدام</a>.</p>
+                        </div>
+                    </div>
+
+                    <div class="section" id="ar-contact">
+                        <h2>الاتصال بنا</h2>
+                        <p>لأي استفسار أو شكوى بخصوص الخصوصية، يُرجى التواصل معنا عبر القنوات التالية:</p>
+                        <div class="contact-grid">
+                            <div class="contact-item">
+                                <div class="contact-item-label">البريد الإلكتروني / الدعم الفني</div>
+                                <div class="contact-item-value"><a href="mailto:s.bagomri@gmail.com">s.bagomri@gmail.com</a></div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-item-label">الدعم عبر الواتساب</div>
+                                <div class="contact-item-value"><a href="https://wa.me/967770727055" dir="ltr">+967 770727055</a></div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-item-label">الموقع الإلكتروني</div>
+                                <div class="contact-item-value"><a href="https://www.bagomri.com" target="_blank">www.bagomri.com</a></div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-item-label">العنوان</div>
+                                <div class="contact-item-value">حضرموت، الجمهورية اليمنية</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- English Version -->
+                <div class="content en" id="englishContent">
+                    <div class="section" id="en-intro">
+                        <h2>Introduction</h2>
+                        <p>Welcome to Yemen Blood Bank. The app is a free, non-profit service that facilitates connecting blood donors with those in need across all governorates of Yemen. We are committed to protecting your privacy. This policy explains how we collect, use, and protect your information when using the app.</p>
+                    </div>
+
+                    <div class="section" id="en-data">
+                        <h2>Data We Collect</h2>
+                        <h3>Donor Information</h3>
+                        <p>When registering a new donor, we collect the following data:</p>
+                        <ul>
+                            <li><strong>Full Name:</strong> To identify the donor.</li>
+                            <li><strong>Phone Number:</strong> To contact the donor when needed (up to three numbers).</li>
+                            <li><strong>Blood Type:</strong> To match donors with recipients.</li>
+                            <li><strong>Governorate &amp; District:</strong> To determine the geographic location within Yemen.</li>
+                            <li><strong>Gender &amp; Age:</strong> For statistical purposes and to verify donation eligibility.</li>
+                            <li><strong>Last Donation Date (Optional):</strong> To ensure a safe interval between donations.</li>
+                            <li><strong>Notes (Optional):</strong> Any additional information the donor wishes to add.</li>
+                        </ul>
+                        <div class="callout-box">
+                            <p><strong>Note:</strong> Regular users do not need an account or password to use the app. Accounts are only for hospitals and administrators.</p>
+                        </div>
+                    </div>
+
+                    <div class="section" id="en-usage">
+                        <h2>Data Usage</h2>
+                        <div class="callout-box">
+                            <h3>Primary Purposes</h3>
+                            <ul>
+                                <li><strong>Connecting Donors with Recipients:</strong> Matching blood types and location.</li>
+                                <li><strong>Donor Search:</strong> Enabling hospitals and people in need to find suitable donors.</li>
+                                <li><strong>Donation Records:</strong> Tracking previous donation dates to protect donor safety.</li>
+                            </ul>
+                        </div>
+                        <h3>Technical Purposes</h3>
+                        <ul>
+                            <li>Improving the service and developing the app.</li>
+                            <li>Providing technical support and troubleshooting.</li>
+                            <li>Generating anonymized general statistics.</li>
+                        </ul>
+                    </div>
+
+                    <div class="section" id="en-storage">
+                        <h2>Storage and Security</h2>
+                        <div class="callout-box">
+                            <h3>Cloud Database - Supabase</h3>
+                            <ul>
+                                <li>A secure, fully protected cloud storage platform.</li>
+                                <li>All data is encrypted in transit using SSL/TLS protocols.</li>
+                                <li>Hosted in certified data centers under strict security policies.</li>
+                            </ul>
+                        </div>
+                        <div class="callout-box">
+                            <h3>Error Analysis - Firebase Crashlytics</h3>
+                            <ul>
+                                <li>To monitor technical errors and improve app stability.</li>
+                                <li>No personal information is collected; data is limited to device type, OS version, and crash reports.</li>
+                            </ul>
+                        </div>
+                        <div class="callout-box">
+                            <h3>Local Storage (Offline Mode)</h3>
+                            <ul>
+                                <li>The app keeps a local copy on your device to enable offline donor search.</li>
+                                <li>Automatically updated when a connection is available.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="section" id="en-sharing">
+                        <h2>Data Sharing</h2>
+                        <div class="callout-box">
+                            <h3>Prohibited Practices</h3>
+                            <ul>
+                                <li>We never sell or rent your data to any third party.</li>
+                                <li>We do not share your information with advertising networks or companies.</li>
+                                <li>We do not use your data for commercial purposes, and the app is entirely ad-free.</li>
+                            </ul>
+                        </div>
+                        <div class="callout-box">
+                            <h3>Limited Sharing</h3>
+                            <p><strong>With blood recipients:</strong> Searchers can see the donor's name, phone number, blood type, and area (only available donors are shown).</p>
+                            <p><strong>With hospitals and administrators:</strong> For system supervision and report management within the scope of the service.</p>
+                        </div>
+                    </div>
+
+                    <div class="section" id="en-rights">
+                        <h2>User Rights</h2>
+                        <ul>
+                            <li><strong>Access:</strong> View your data stored in the app.</li>
+                            <li><strong>Modify:</strong> Request updates to your information through a hospital or admin.</li>
+                            <li><strong>Erasure:</strong> Request permanent, irreversible deletion of your data.</li>
+                        </ul>
+                        <p>To exercise these rights, please contact us via the channels in the "Contact Us" section.</p>
+                    </div>
+
+                    <div class="section" id="en-permissions">
+                        <h2>Required Permissions</h2>
+                        <ul>
+                            <li><strong>Internet Access:</strong> To connect to the database and display donor information. This is the only permission the app requests.</li>
+                        </ul>
+                    </div>
+
+                    <div class="section" id="en-disclaimer">
+                        <h2>Disclaimer &amp; Children's Protection</h2>
+                        <div class="callout-box">
+                            <p>The app is a tool to facilitate communication between donors and recipients and does not replace professional medical advice. Donation eligibility must be confirmed through qualified health authorities.</p>
+                            <p>The app is intended for adults (18+). We do not knowingly collect information from minors; if discovered, such data is deleted immediately.</p>
+                        </div>
+                    </div>
+
+                    <div class="section" id="en-consent">
+                        <h2>Consent and Acknowledgment</h2>
+                        <div class="callout-box">
+                            <p>By using Yemen Blood Bank, you acknowledge and agree to:</p>
+                            <ul style="margin-top: 12px;">
+                                <li>The collection and storage of data as described in this policy.</li>
+                                <li>The use of your data for the stated purposes.</li>
+                                <li>Storage and processing of your data via Supabase cloud servers.</li>
+                                <li>Sharing contact information with blood recipients.</li>
+                            </ul>
+                            <p style="margin-top: 12px;">You can withdraw consent at any time by requesting data deletion. See also our <a href="terms.html" style="color: var(--accent-color);">Terms of Use</a>.</p>
+                        </div>
+                    </div>
+
+                    <div class="section" id="en-contact">
+                        <h2>Contact Us</h2>
+                        <p>For any questions or concerns regarding privacy, please contact us via the channels below:</p>
+                        <div class="contact-grid">
+                            <div class="contact-item">
+                                <div class="contact-item-label">Email / Technical Support</div>
+                                <div class="contact-item-value"><a href="mailto:s.bagomri@gmail.com">s.bagomri@gmail.com</a></div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-item-label">WhatsApp Support</div>
+                                <div class="contact-item-value"><a href="https://wa.me/967770727055" dir="ltr">+967 770727055</a></div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-item-label">Website</div>
+                                <div class="contact-item-value"><a href="https://www.bagomri.com" target="_blank">www.bagomri.com</a></div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-item-label">Address</div>
+                                <div class="contact-item-value">Hadhramout, Yemen</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer" id="arabicFooter">
+            <p>إصدار التطبيق: 1.0.0</p>
+            <p>آخر تحديث: مايو 2026</p>
+            <p>بنك دم اليمن — تطبيق التبرع بالدم</p>
+            <p><a href="terms.html">شروط الاستخدام</a></p>
+            <p style="margin-top: 20px;">&copy; 2026 Saleh Bagomri - جميع الحقوق محفوظة</p>
+        </div>
+
+        <div class="footer en" id="englishFooter">
+            <p>App Version: 1.0.0</p>
+            <p>Last Updated: May 2026</p>
+            <p>Yemen Blood Bank — Blood Donation App</p>
+            <p><a href="terms.html">Terms of Use</a></p>
+            <p style="margin-top: 20px;">&copy; 2026 Saleh Bagomri - All Rights Reserved</p>
+        </div>
+    </div>
+
+    <script>
+        function showArabic() {
+            document.getElementById('arabicContent').style.display = 'block';
+            document.getElementById('englishContent').style.display = 'none';
+            document.getElementById('arabicSidebar').style.display = 'block';
+            document.getElementById('englishSidebar').style.display = 'none';
+            document.getElementById('arabicHeaderTitle').style.display = 'block';
+            document.getElementById('englishHeaderTitle').style.display = 'none';
+            document.getElementById('arabicFooter').style.display = 'block';
+            document.getElementById('englishFooter').style.display = 'none';
+
+            document.getElementById('btnArabic').classList.add('active');
+            document.getElementById('btnEnglish').classList.remove('active');
+            document.body.setAttribute('dir', 'rtl');
+            document.documentElement.setAttribute('lang', 'ar');
+            updateActiveLinkOnLanguageChange();
+        }
+
+        function showEnglish() {
+            document.getElementById('arabicContent').style.display = 'none';
+            document.getElementById('englishContent').style.display = 'block';
+            document.getElementById('arabicSidebar').style.display = 'none';
+            document.getElementById('englishSidebar').style.display = 'block';
+            document.getElementById('arabicHeaderTitle').style.display = 'none';
+            document.getElementById('englishHeaderTitle').style.display = 'block';
+            document.getElementById('arabicFooter').style.display = 'none';
+            document.getElementById('englishFooter').style.display = 'block';
+
+            document.getElementById('btnArabic').classList.remove('active');
+            document.getElementById('btnEnglish').classList.add('active');
+            document.body.setAttribute('dir', 'ltr');
+            document.documentElement.setAttribute('lang', 'en');
+            updateActiveLinkOnLanguageChange();
+        }
+
+        const observerOptions = { root: null, rootMargin: '-10% 0px -70% 0px', threshold: 0 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    if (id) {
+                        const isRtl = document.body.getAttribute('dir') === 'rtl';
+                        const prefix = isRtl ? 'ar-' : 'en-';
+                        if (!id.startsWith(prefix)) return;
+                        const activeSidebar = isRtl ? 'arabicSidebar' : 'englishSidebar';
+                        document.querySelectorAll(`#${activeSidebar} .sidebar-nav a`).forEach(a => a.classList.remove('active'));
+                        const currentLink = document.querySelector(`#${activeSidebar} .sidebar-nav a[href="#${id}"]`);
+                        if (currentLink) {
+                            currentLink.classList.add('active');
+                            if (window.innerWidth <= 768) {
+                                currentLink.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                            }
+                        }
+                    }
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('.section').forEach(section => observer.observe(section));
+
+        function updateActiveLinkOnLanguageChange() {
+            const isRtl = document.body.getAttribute('dir') === 'rtl';
+            const prefix = isRtl ? 'ar-' : 'en-';
+            const activeSidebar = isRtl ? 'arabicSidebar' : 'englishSidebar';
+            const sections = Array.from(document.querySelectorAll('.section')).filter(s => s.id.startsWith(prefix));
+            let currentSection = sections[0];
+            let minDiff = Infinity;
+            sections.forEach(s => {
+                const rect = s.getBoundingClientRect();
+                const diff = Math.abs(rect.top);
+                if (diff < minDiff) { minDiff = diff; currentSection = s; }
+            });
+            if (currentSection) {
+                const id = currentSection.getAttribute('id');
+                document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+                const currentLink = document.querySelector(`#${activeSidebar} .sidebar-nav a[href="#${id}"]`);
+                if (currentLink) {
+                    currentLink.classList.add('active');
+                    if (window.innerWidth <= 768) {
+                        currentLink.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    }
+                }
+            }
+        }
+
+        document.querySelectorAll('.sidebar-nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                    const isRtl = document.body.getAttribute('dir') === 'rtl';
+                    const activeSidebar = isRtl ? 'arabicSidebar' : 'englishSidebar';
+                    document.querySelectorAll(`#${activeSidebar} .sidebar-nav a`).forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        showArabic();
+    </script>
+</body>
+</html>

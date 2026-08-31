@@ -147,12 +147,13 @@ fun AboutScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
+                    val versionName = com.bagomri.yemenbloodbank.BuildConfig.VERSION_NAME
                     Surface(
                         shape = RoundedCornerShape(20.dp),
                         color = Color.White.copy(alpha = 0.2f)
                     ) {
                         Text(
-                            text = "الإصدار 2.0.0 (Native Jetpack Compose)",
+                            text = "الإصدار $versionName (Native Jetpack Compose)",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
                             color = Color.White,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)

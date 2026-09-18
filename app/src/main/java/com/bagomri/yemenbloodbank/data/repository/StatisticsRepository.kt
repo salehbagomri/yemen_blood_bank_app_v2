@@ -49,20 +49,25 @@ class StatisticsRepository(
     suspend fun getSimpleStatistics(): Result<Statistics> = withContext(Dispatchers.IO) {
         try {
             // إجمالي المتبرعين النشطين
-            val totalRows = postgrest.from("donors")
-                .select(Columns.list("id")) {
-                    filter { eq("is_active", true) }
-                }.decodeList<JsonObject>()
-            val totalDonors = totalRows.size
+            var totalDonors = 0
+            try {
+                val totalRows = postgrest.from("donors")
+                    .select(Columns.list("id")) {
+                        filter { eq("is_active", true) }
+                    }.decodeList<JsonObject>()
+                totalDonors = totalRows.size
+            } catch (_: Exception) {}
 
             // أكثر فصيلة متوفرة
-            val bloodTypeRows = postgrest.rpc("get_bloodtype_stats").decodeList<JsonObject>()
             val bloodMap = mutableMapOf<String, Int>()
-            bloodTypeRows.forEach { row ->
-                val type = row["blood_type"]?.jsonPrimitive?.content ?: ""
-                val count = row["cnt"]?.jsonPrimitive?.intOrNull ?: 0
-                if (type.isNotEmpty()) bloodMap[type] = count
-            }
+            try {
+                val bloodTypeRows = postgrest.rpc("get_bloodtype_stats").decodeList<JsonObject>()
+                bloodTypeRows.forEach { row ->
+                    val type = row["blood_type"]?.jsonPrimitive?.content ?: ""
+                    val count = row["cnt"]?.jsonPrimitive?.intOrNull ?: 0
+                    if (type.isNotEmpty()) bloodMap[type] = count
+                }
+            } catch (_: Exception) {}
 
             var mostCommonBloodType: String? = null
             var mostCommonBloodTypeCount = 0
@@ -73,13 +78,15 @@ class StatisticsRepository(
             }
 
             // أكثر مديرية نشاطاً
-            val districtRows = postgrest.rpc("get_district_stats").decodeList<JsonObject>()
             val districtMap = mutableMapOf<String, Int>()
-            districtRows.forEach { row ->
-                val dist = row["district"]?.jsonPrimitive?.content ?: ""
-                val count = row["cnt"]?.jsonPrimitive?.intOrNull ?: 0
-                if (dist.isNotEmpty()) districtMap[dist] = count
-            }
+            try {
+                val districtRows = postgrest.rpc("get_district_stats").decodeList<JsonObject>()
+                districtRows.forEach { row ->
+                    val dist = row["district"]?.jsonPrimitive?.content ?: ""
+                    val count = row["cnt"]?.jsonPrimitive?.intOrNull ?: 0
+                    if (dist.isNotEmpty()) districtMap[dist] = count
+                }
+            } catch (_: Exception) {}
 
             var mostActiveDistrict: String? = null
             var mostActiveDistrictCount = 0
@@ -90,20 +97,22 @@ class StatisticsRepository(
             }
 
             // أحدث متبرع
-            val latestDonorRows = postgrest.from("donors")
-                .select(Columns.list("name", "created_at")) {
-                    filter { eq("is_active", true) }
-                    order("created_at", Order.DESCENDING)
-                    limit(1)
-                }.decodeList<JsonObject>()
-
             var latestDonorName: String? = null
             var latestDonorDate: String? = null
-            if (latestDonorRows.isNotEmpty()) {
-                val row = latestDonorRows.first()
-                latestDonorName = row["name"]?.jsonPrimitive?.content
-                latestDonorDate = row["created_at"]?.jsonPrimitive?.content
-            }
+            try {
+                val latestDonorRows = postgrest.from("donors")
+                    .select(Columns.list("name", "created_at")) {
+                        filter { eq("is_active", true) }
+                        order("created_at", Order.DESCENDING)
+                        limit(1)
+                    }.decodeList<JsonObject>()
+
+                if (latestDonorRows.isNotEmpty()) {
+                    val row = latestDonorRows.first()
+                    latestDonorName = row["name"]?.jsonPrimitive?.content
+                    latestDonorDate = row["created_at"]?.jsonPrimitive?.content
+                }
+            } catch (_: Exception) {}
 
             val stats = Statistics(
                 totalDonors = totalDonors,

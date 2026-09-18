@@ -24,6 +24,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocalHospital
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,11 +61,21 @@ import kotlinx.coroutines.delay
 @Composable
 fun BannerSlider(
     banners: List<Banner>,
+    totalDonors: Int = 0,
     modifier: Modifier = Modifier,
     onNavigate: ((String) -> Unit)? = null
 ) {
     val context = LocalContext.current
-    val effectiveBanners = if (banners.isNotEmpty()) banners else defaultFallbackBanners()
+    val effectiveBanners = remember(banners, totalDonors) {
+        val list = if (banners.isNotEmpty()) banners else defaultFallbackBanners(totalDonors)
+        val countStr = if (totalDonors > 0) totalDonors.toString() else "0"
+        list.map { banner ->
+            banner.copy(
+                title = banner.title.replace("{{total_donors}}", countStr),
+                subtitle = banner.subtitle?.replace("{{total_donors}}", countStr)
+            )
+        }
+    }
 
     val pagerState = rememberPagerState(pageCount = { effectiveBanners.size })
     val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
@@ -236,7 +249,7 @@ private fun getGradient(type: String?): List<Color> {
         "green" -> listOf(Color(0xFF1B5E20), Color(0xFF43A047))
         "orange" -> listOf(Color(0xFFE65100), Color(0xFFFB8C00))
         "blue" -> listOf(Color(0xFF0D47A1), Color(0xFF1976D2))
-        "crimson" -> listOf(Color(0xFF880E4F), Color(0xFFC2185B))
+        "crimson" -> listOf(Color(0xFF9E0018), Color(0xFFB8262F))
         else -> listOf(Color(0xFFB71C1C), Color(0xFFE63946)) // Red default
     }
 }
@@ -245,18 +258,21 @@ private fun getBannerIcon(iconName: String?): ImageVector? {
     return when (iconName) {
         "favorite" -> Icons.Default.Favorite
         "timer" -> Icons.Default.Timer
-        "hospital" -> Icons.Default.LocalHospital
+        "hospital", "health_and_safety" -> Icons.Default.LocalHospital
+        "people" -> Icons.Default.People
+        "military_tech" -> Icons.Default.Star
         "info" -> Icons.Default.Info
         else -> Icons.Default.Favorite
     }
 }
 
-private fun defaultFallbackBanners(): List<Banner> {
+private fun defaultFallbackBanners(totalDonors: Int = 0): List<Banner> {
+    val countStr = if (totalDonors > 0) totalDonors.toString() else "0"
     return listOf(
         Banner(
             id = "f1",
-            title = "تبرعك ينقذ حياة إنسان",
-            subtitle = "قطرة دم واحدة قد تصنع فارقاً كبيراً في حياة مريض",
+            title = "التبرع بالدم ينقذ الأرواح",
+            subtitle = "كل تبرع بالدم يمكن أن ينقذ حياة ثلاثة أشخاص",
             iconName = "favorite",
             bgGradient = "red",
             actionType = "internal_route",
@@ -264,21 +280,39 @@ private fun defaultFallbackBanners(): List<Banner> {
         ),
         Banner(
             id = "f2",
-            title = "شروط التبرع بالدم",
-            subtitle = "أن يكون العمر بين 17 و 70 سنة وبصحة جيدة",
-            iconName = "info",
-            bgGradient = "blue",
+            title = "فوائد التبرع بالدم",
+            subtitle = "التبرع بالدم يحسن صحتك ويجدد خلايا الدم ويحفز الدورة الدموية",
+            iconName = "health_and_safety",
+            bgGradient = "green",
             actionType = "internal_route",
             actionValue = "/awareness"
         ),
         Banner(
             id = "f3",
-            title = "المدة بين التبرعات",
-            subtitle = "يجب أن يفصل بين كل تبرع 6 أشهر على الأقل",
+            title = "كل 3 ثواني",
+            subtitle = "يحتاج شخص ما إلى نقل دم في مكان ما كل ثلاث ثوانٍ فقط",
             iconName = "timer",
-            bgGradient = "green",
+            bgGradient = "orange",
             actionType = "internal_route",
             actionValue = "/awareness"
+        ),
+        Banner(
+            id = "f4",
+            title = "كن بطلاً ومتبرعاً",
+            subtitle = "انضم لآلاف الأبطال المتبرعين بالدم في اليمن واصنع فرقاً حقيقياً",
+            iconName = "people",
+            bgGradient = "blue",
+            actionType = "internal_route",
+            actionValue = "/donor/add"
+        ),
+        Banner(
+            id = "f5",
+            title = "أبطال اليمن",
+            subtitle = "هناك $countStr بطل تبرع بدمه لينقذ الأرواح في مجتمعنا",
+            iconName = "military_tech",
+            bgGradient = "crimson",
+            actionType = "internal_route",
+            actionValue = "/donor/search"
         )
     )
 }

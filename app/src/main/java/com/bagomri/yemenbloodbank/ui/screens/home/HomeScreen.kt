@@ -187,6 +187,7 @@ fun HomeScreen(
                 // سلايدر البانرات التفاعلي
                 BannerSlider(
                     banners = uiState.banners,
+                    totalDonors = uiState.statistics.totalDonors,
                     onNavigate = onNavigateByRoute
                 )
 

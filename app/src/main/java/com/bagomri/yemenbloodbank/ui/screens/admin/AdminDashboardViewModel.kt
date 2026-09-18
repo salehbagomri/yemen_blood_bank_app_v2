@@ -150,6 +150,30 @@ class AdminDashboardViewModel(
         }
     }
 
+    fun suspendDonor(donorId: String, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            donorRepository.suspendDonorFor6Months(donorId)
+            refresh()
+            onComplete()
+        }
+    }
+
+    fun cancelDonorSuspension(donorId: String, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            donorRepository.cancelDonorSuspension(donorId)
+            refresh()
+            onComplete()
+        }
+    }
+
+    fun updateDonorDonationDate(donorId: String, lastDonationDate: String, suspendedUntil: String?, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            donorRepository.updateDonorDonationDate(donorId, lastDonationDate, suspendedUntil)
+            refresh()
+            onComplete()
+        }
+    }
+
     // إدارة المستشفيات
     fun deleteHospital(hospitalId: String, onComplete: () -> Unit) {
         viewModelScope.launch {

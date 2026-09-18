@@ -112,30 +112,38 @@ class DonorRepository(
      */
     suspend fun updateDonor(donor: Donor): Result<Donor> = withContext(Dispatchers.IO) {
         try {
+            val now = isoDateFormat.format(Date())
             val updateData = buildJsonObject {
                 put("name", donor.name.trim())
                 put("phone_number", donor.phoneNumber.trim())
-                put("phone_number_2", donor.phoneNumber2?.trim()?.ifEmpty { null })
-                put("phone_number_3", donor.phoneNumber3?.trim()?.ifEmpty { null })
+                put("phone_number_2", donor.phoneNumber2?.trim()?.ifBlank { null })
+                put("phone_number_3", donor.phoneNumber3?.trim()?.ifBlank { null })
                 put("blood_type", donor.bloodType)
                 put("district", donor.district)
                 put("governorate", donor.governorate)
                 put("age", donor.age)
                 put("gender", donor.gender)
-                put("notes", donor.notes?.trim()?.ifEmpty { null })
+                put("notes", donor.notes?.trim()?.ifBlank { null })
                 put("is_available", donor.isAvailable)
-                put("last_donation_date", donor.lastDonationDate)
-                put("suspended_until", donor.suspendedUntil)
+                if (donor.lastDonationDate.isNullOrBlank()) {
+                    put("last_donation_date", null as String?)
+                } else {
+                    put("last_donation_date", donor.lastDonationDate)
+                }
+                if (donor.suspendedUntil.isNullOrBlank()) {
+                    put("suspended_until", null as String?)
+                } else {
+                    put("suspended_until", donor.suspendedUntil)
+                }
                 put("is_active", donor.isActive)
+                put("updated_at", now)
             }
 
-            val updated = postgrest.from("donors")
-                .update(updateData) {
-                    filter { eq("id", donor.id) }
-                    select()
-                }.decodeSingle<Donor>()
+            postgrest.from("donors").update(updateData) {
+                filter { eq("id", donor.id) }
+            }
 
-            Result.success(updated)
+            Result.success(donor.copy(updatedAt = now))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -223,15 +231,54 @@ class DonorRepository(
      */
     suspend fun suspendDonorFor6Months(id: String): Result<Donor> = withContext(Dispatchers.IO) {
         try {
-            val params = buildJsonObject { put("p_donor_id", id) }
-            val suspended = postgrest.rpc("suspend_donor_by_hospital", params).decodeAs<Donor>()
-            Result.success(suspended)
+            val cal = Calendar.getInstance()
+            val now = isoDateFormat.format(cal.time)
+            cal.add(Calendar.DAY_OF_YEAR, 180)
+            val suspendedUntil = isoDateFormat.format(cal.time)
+
+            val updateData = buildJsonObject {
+                put("is_available", false)
+                put("last_donation_date", now)
+                put("suspended_until", suspendedUntil)
+                put("updated_at", now)
+            }
+            postgrest.from("donors").update(updateData) {
+                filter { eq("id", id) }
+            }
+            val donor = getDonorById(id).getOrNull()
+            Result.success(donor ?: Donor(id = id, isAvailable = false, lastDonationDate = now, suspendedUntil = suspendedUntil))
         } catch (e: Exception) {
-            Result.failure(e)
+            try {
+                val params = buildJsonObject { put("p_donor_id", id) }
+                val suspended = postgrest.rpc("suspend_donor_by_hospital", params).decodeAs<Donor>()
+                Result.success(suspended)
+            } catch (e2: Exception) {
+                Result.failure(e)
+            }
         }
     }
 
     suspend fun suspendDonor(id: String): Result<Donor> = suspendDonorFor6Months(id)
+
+    /**
+     * إلغاء إيقاف متبرع
+     */
+    suspend fun cancelDonorSuspension(id: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val now = isoDateFormat.format(Date())
+            val updateData = buildJsonObject {
+                put("suspended_until", null as String?)
+                put("is_available", true)
+                put("updated_at", now)
+            }
+            postgrest.from("donors").update(updateData) {
+                filter { eq("id", id) }
+            }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     /**
      * تحديث تاريخ آخر تبرع لمتبرع
@@ -242,15 +289,35 @@ class DonorRepository(
         suspendedUntil: String?
     ): Result<Donor> = withContext(Dispatchers.IO) {
         try {
-            val params = buildJsonObject {
-                put("p_donor_id", donorId)
-                put("p_last_donation_date", lastDonationDate)
-                put("p_suspended_until", suspendedUntil)
+            val now = isoDateFormat.format(Date())
+            val willBeSuspended = !suspendedUntil.isNullOrBlank()
+            val updateData = buildJsonObject {
+                put("last_donation_date", lastDonationDate)
+                if (suspendedUntil.isNullOrBlank()) {
+                    put("suspended_until", null as String?)
+                } else {
+                    put("suspended_until", suspendedUntil)
+                }
+                put("is_available", !willBeSuspended)
+                put("updated_at", now)
             }
-            val updated = postgrest.rpc("update_donor_donation_date", params).decodeAs<Donor>()
-            Result.success(updated)
+            postgrest.from("donors").update(updateData) {
+                filter { eq("id", donorId) }
+            }
+            val donor = getDonorById(donorId).getOrNull()
+            Result.success(donor ?: Donor(id = donorId, isAvailable = !willBeSuspended, lastDonationDate = lastDonationDate, suspendedUntil = suspendedUntil))
         } catch (e: Exception) {
-            Result.failure(e)
+            try {
+                val params = buildJsonObject {
+                    put("p_donor_id", donorId)
+                    put("p_last_donation_date", lastDonationDate)
+                    put("p_suspended_until", suspendedUntil)
+                }
+                val updated = postgrest.rpc("update_donor_donation_date", params).decodeAs<Donor>()
+                Result.success(updated)
+            } catch (e2: Exception) {
+                Result.failure(e)
+            }
         }
     }
 

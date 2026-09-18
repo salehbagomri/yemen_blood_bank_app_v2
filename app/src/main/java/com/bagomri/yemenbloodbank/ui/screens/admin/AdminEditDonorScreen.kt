@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bloodtype
 import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.People
@@ -32,6 +35,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -77,6 +81,7 @@ fun AdminEditDonorScreen(
     var isLoading by remember { mutableStateOf(true) }
     var isSaving by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var showConfirmDialog by remember { mutableStateOf(false) }
 
     var donor by remember { mutableStateOf<Donor?>(null) }
     var name by remember { mutableStateOf("") }
@@ -96,20 +101,33 @@ fun AdminEditDonorScreen(
 
     LaunchedEffect(donorId) {
         val locations = locationRepository.getActiveLocations()
-        governorates = locations.governorates
-
         val result = donorRepository.getDonorById(donorId)
         result.fold(
             onSuccess = { d ->
                 donor = d
                 name = d.name
-                phone = d.phoneNumber
-                phone2 = d.phoneNumber2 ?: ""
-                phone3 = d.phoneNumber3 ?: ""
+                phone = d.phoneNumber.filter { it.isDigit() }.takeLast(9)
+                phone2 = d.phoneNumber2?.filter { it.isDigit() }?.takeLast(9) ?: ""
+                phone3 = d.phoneNumber3?.filter { it.isDigit() }?.takeLast(9) ?: ""
                 bloodType = d.bloodType
                 governorate = d.governorate
-                subDistricts = locations.districtsByGov[d.governorate] ?: emptyList()
-                subDistrict = d.subDistrict
+
+                governorates = if (d.governorate.isNotBlank() && !locations.governorates.contains(d.governorate)) {
+                    listOf(d.governorate) + locations.governorates
+                } else {
+                    locations.governorates
+                }
+
+                val districtList = locations.districtsByGov[d.governorate] ?: emptyList()
+                val parts = d.district.split(" - ")
+                val currentSub = if (parts.size > 1) parts[1] else ""
+                subDistrict = currentSub
+                subDistricts = if (currentSub.isNotBlank() && !districtList.contains(currentSub)) {
+                    listOf(currentSub) + districtList
+                } else {
+                    districtList
+                }
+
                 age = d.age.toString()
                 gender = if (d.gender == "female") "أنثى" else "ذكر"
                 isActive = d.isActive
@@ -119,6 +137,84 @@ fun AdminEditDonorScreen(
             onFailure = { error ->
                 errorMessage = ErrorHandler.getArabicMessage(error)
                 isLoading = false
+            }
+        )
+    }
+
+    val validateAndTriggerSave = {
+        when {
+            name.isBlank() -> {
+                Toast.makeText(context, "يرجى إدخال اسم المتبرع", Toast.LENGTH_SHORT).show()
+            }
+            phone.length != 9 -> {
+                Toast.makeText(context, "يرجى إدخال رقم هاتف صحيح (9 أرقام)", Toast.LENGTH_SHORT).show()
+            }
+            bloodType.isBlank() -> {
+                Toast.makeText(context, "يرجى اختيار فصيلة الدم", Toast.LENGTH_SHORT).show()
+            }
+            governorate.isBlank() -> {
+                Toast.makeText(context, "يرجى اختيار المحافظة", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                showConfirmDialog = true
+            }
+        }
+    }
+
+    val executeSave = {
+        if (donor != null) {
+            val combinedDistrict = if (subDistrict.isNotBlank()) "$governorate - $subDistrict" else governorate
+            val updatedDonor = donor!!.copy(
+                name = name.trim(),
+                phoneNumber = phone.trim(),
+                phoneNumber2 = phone2.trim().ifBlank { null },
+                phoneNumber3 = phone3.trim().ifBlank { null },
+                bloodType = bloodType,
+                district = combinedDistrict,
+                rawGovernorate = governorate,
+                age = age.toIntOrNull() ?: 18,
+                gender = if (gender == "أنثى") "female" else "male",
+                isActive = isActive,
+                notes = notes.trim().ifBlank { null }
+            )
+
+            isSaving = true
+            scope.launch {
+                val res = donorRepository.updateDonor(updatedDonor)
+                isSaving = false
+                res.fold(
+                    onSuccess = {
+                        Toast.makeText(context, "تم تحديث بيانات المتبرع بنجاح", Toast.LENGTH_SHORT).show()
+                        onNavigateBack()
+                    },
+                    onFailure = { err ->
+                        Toast.makeText(context, "خطأ: ${ErrorHandler.getArabicMessage(err)}", Toast.LENGTH_LONG).show()
+                    }
+                )
+            }
+        }
+    }
+
+    if (showConfirmDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showConfirmDialog = false },
+            title = { Text("تأكيد التعديل", fontWeight = FontWeight.Bold) },
+            text = { Text("هل تريد حفظ التعديلات على بيانات ${donor?.name}؟") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showConfirmDialog = false
+                        executeSave()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Success)
+                ) {
+                    Text("حفظ")
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showConfirmDialog = false }) {
+                    Text(AppStrings.cancel)
+                }
             }
         )
     }
@@ -140,6 +236,17 @@ fun AdminEditDonorScreen(
                             contentDescription = AppStrings.back,
                             tint = Color.White
                         )
+                    }
+                },
+                actions = {
+                    if (!isLoading && !isSaving) {
+                        IconButton(onClick = { validateAndTriggerSave() }) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "حفظ التعديلات",
+                                tint = Color.White
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -173,8 +280,8 @@ fun AdminEditDonorScreen(
 
                     CustomTextField(
                         value = phone,
-                        onValueChange = { phone = it },
-                        label = AppStrings.phoneNumber,
+                        onValueChange = { phone = it.filter { c -> c.isDigit() }.take(9) },
+                        label = "${AppStrings.phoneNumber} (رئيسي - 9 أرقام)",
                         leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = AppColors.Primary) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                     )
@@ -185,14 +292,16 @@ fun AdminEditDonorScreen(
                     ) {
                         CustomTextField(
                             value = phone2,
-                            onValueChange = { phone2 = it },
-                            label = "هاتف 2",
+                            onValueChange = { phone2 = it.filter { c -> c.isDigit() }.take(9) },
+                            label = "هاتف 2 (اختياري)",
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                             modifier = Modifier.weight(1f)
                         )
                         CustomTextField(
                             value = phone3,
-                            onValueChange = { phone3 = it },
-                            label = "هاتف 3",
+                            onValueChange = { phone3 = it.filter { c -> c.isDigit() }.take(9) },
+                            label = "هاتف 3 (اختياري)",
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -234,7 +343,7 @@ fun AdminEditDonorScreen(
                     ) {
                         CustomTextField(
                             value = age,
-                            onValueChange = { age = it },
+                            onValueChange = { age = it.filter { c -> c.isDigit() }.take(2) },
                             label = AppStrings.age,
                             leadingIcon = { Icon(Icons.Default.Cake, contentDescription = null, tint = AppColors.Primary) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -288,50 +397,41 @@ fun AdminEditDonorScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Button(
-                        onClick = {
-                            if (donor != null) {
-                                val combinedDistrict = "$governorate - $subDistrict"
-                                val updatedDonor = donor!!.copy(
-                                    name = name.trim(),
-                                    phoneNumber = phone.trim(),
-                                    phoneNumber2 = phone2.trim().ifEmpty { null },
-                                    phoneNumber3 = phone3.trim().ifEmpty { null },
-                                    bloodType = bloodType,
-                                    district = combinedDistrict,
-                                    rawGovernorate = governorate,
-                                    age = age.toIntOrNull() ?: 18,
-                                    gender = if (gender == "أنثى") "female" else "male",
-                                    isActive = isActive,
-                                    notes = notes.trim().ifEmpty { null }
-                                )
-
-                                isSaving = true
-                                scope.launch {
-                                    val res = donorRepository.updateDonor(updatedDonor)
-                                    isSaving = false
-                                    res.fold(
-                                        onSuccess = {
-                                            Toast.makeText(context, "تم حفظ التعديلات بنجاح", Toast.LENGTH_SHORT).show()
-                                            onNavigateBack()
-                                        },
-                                        onFailure = { err ->
-                                            Toast.makeText(context, ErrorHandler.getArabicMessage(err), Toast.LENGTH_LONG).show()
-                                        }
-                                    )
-                                }
-                            }
-                        },
+                        onClick = { validateAndTriggerSave() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Success)
                     ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = AppStrings.save,
+                            text = "حفظ التعديلات",
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
+                            )
+                        )
+                    }
+
+                    OutlinedButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Error),
+                        border = BorderStroke(1.dp, AppColors.Error.copy(alpha = 0.5f))
+                    ) {
+                        Text(
+                            text = AppStrings.cancel,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold
                             )
                         )
                     }

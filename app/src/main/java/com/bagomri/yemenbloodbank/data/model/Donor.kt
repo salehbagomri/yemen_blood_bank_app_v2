@@ -52,13 +52,36 @@ data class Donor(
         }
 
     /**
+     * النص النظيف لعرض الموقع الجغرافي (محافظة • مديرية) دون أي تكرار
+     */
+    val displayLocation: String
+        get() {
+            if (district.contains(" - ")) {
+                val gov = district.substringBefore(" - ").trim()
+                val sub = district.substringAfter(" - ").trim()
+                return if (gov.equals(sub, ignoreCase = true) || sub.isEmpty()) {
+                    gov
+                } else {
+                    "$gov • $sub"
+                }
+            }
+            val gov = rawGovernorate?.trim()
+            val dist = district.trim()
+            return if (!gov.isNullOrEmpty() && !gov.equals(dist, ignoreCase = true)) {
+                "$gov • $dist"
+            } else {
+                dist
+            }
+        }
+
+    /**
      * المديرية بدون اسم المحافظة
      */
     val subDistrict: String
         get() = if (district.contains(" - ")) {
-            district.substringAfter(" - ")
+            district.substringAfter(" - ").trim()
         } else {
-            district
+            district.trim()
         }
 
     /**

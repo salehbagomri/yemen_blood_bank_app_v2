@@ -1,10 +1,7 @@
 package com.bagomri.yemenbloodbank.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -19,12 +16,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
@@ -41,16 +39,15 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bagomri.yemenbloodbank.R
@@ -75,75 +72,38 @@ fun DonorCard(
     onReport: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    var expanded by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 5.dp)
-            .clickable { expanded = !expanded },
+            .padding(vertical = 5.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
         border = BorderStroke(1.dp, AppColors.Border)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // الصف العلوي: شارة الفصيلة + الاسم + المحافظة والمديرية والهاتف + حالة المتبرع
+        Column(modifier = Modifier.padding(14.dp)) {
+            // 1. الصف الأول: مربع الفصيلة + اسم المتبرع (بمحاذاة أفقية في المنتصف) + شارة الحالة
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                BloodTypeBadge(bloodType = donor.bloodType, size = 48)
+                BloodTypeBadge(bloodType = donor.bloodType, size = 46)
 
-                Spacer(modifier = Modifier.width(14.dp))
+                Spacer(modifier = Modifier.width(12.dp))
 
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = donor.name,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        ),
-                        color = AppColors.TextPrimary
-                    )
+                Text(
+                    text = donor.name,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    ),
+                    color = AppColors.TextPrimary,
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f)
+                )
 
-                    Spacer(modifier = Modifier.height(3.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.LocationOn,
-                            contentDescription = null,
-                            tint = AppColors.Primary,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(3.dp))
-                        Text(
-                            text = if (donor.subDistrict.isNullOrEmpty()) donor.district else "${donor.district} • ${donor.subDistrict}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = AppColors.TextSecondary,
-                            maxLines = 1
-                        )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Icon(
-                            imageVector = Icons.Default.Phone,
-                            contentDescription = null,
-                            tint = AppColors.TextSecondary,
-                            modifier = Modifier.size(13.dp)
-                        )
-                        Spacer(modifier = Modifier.width(3.dp))
-                        Text(
-                            text = PhoneUtils.formatDisplayPhone(donor.phoneNumber),
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                            color = AppColors.TextSecondary,
-                            maxLines = 1
-                        )
-                    }
-                }
+                Spacer(modifier = Modifier.width(8.dp))
 
                 // شارة الحالة
                 if (donor.isSuspended) {
@@ -167,184 +127,269 @@ fun DonorCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // شريط المعلومات الخفيفة: العمر، الجنس، آخر تبرع
+            // 2. الصف الثاني: سطر أنيق موحد للمعلومات بالأيقونات فقط (الموقع • العمر • الجنس • آخر تبرع) بدون عناوين مكررة
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                MetaInfoItem(label = "العمر", value = "${donor.age} سنة")
-                MetaInfoItem(
-                    label = "الجنس",
-                    value = if (donor.gender == "female") AppStrings.female else AppStrings.male
+                // الموقع الجغرافي (محافظة • مديرية بدون أي تكرار)
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = null,
+                    tint = AppColors.Primary,
+                    modifier = Modifier.size(15.dp)
                 )
+                Spacer(modifier = Modifier.width(3.dp))
+                Text(
+                    text = donor.displayLocation,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppColors.TextSecondary,
+                    maxLines = 1
+                )
+
+                Text(
+                    text = "  •  ",
+                    color = AppColors.TextHint,
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                // العمر بالأيقونة
+                Icon(
+                    imageVector = Icons.Default.Cake,
+                    contentDescription = null,
+                    tint = AppColors.TextSecondary,
+                    modifier = Modifier.size(14.dp)
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+                Text(
+                    text = "${donor.age} سنة",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppColors.TextSecondary
+                )
+
+                Text(
+                    text = "  •  ",
+                    color = AppColors.TextHint,
+                    style = MaterialTheme.typography.bodySmall
+                )
+
+                // الجنس بالأيقونة
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    tint = AppColors.TextSecondary,
+                    modifier = Modifier.size(14.dp)
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+                Text(
+                    text = if (donor.gender == "female") AppStrings.female else AppStrings.male,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppColors.TextSecondary
+                )
+
                 if (donor.lastDonationDate != null) {
-                    MetaInfoItem(
-                        label = "آخر تبرع",
-                        value = DateUtils.formatDate(donor.lastDonationDate)
+                    Text(
+                        text = "  •  ",
+                        color = AppColors.TextHint,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Icon(
+                        imageVector = Icons.Default.History,
+                        contentDescription = null,
+                        tint = AppColors.Success,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(
+                        text = DateUtils.formatDate(donor.lastDonationDate),
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                        color = AppColors.Success
                     )
                 }
             }
 
-            // التفاصيل الموسعة
-            AnimatedVisibility(visible = expanded) {
-                Column(modifier = Modifier.padding(top = 14.dp)) {
-                    HorizontalDivider(color = AppColors.Divider, thickness = 1.dp)
+            Spacer(modifier = Modifier.height(10.dp))
 
-                    Spacer(modifier = Modifier.height(10.dp))
+            // 3. أسطر أرقام التواصل مباشرة بدون كتابة عنوان "أرقام التواصل المسجلة"
+            donor.allPhoneNumbers.forEachIndexed { index, phone ->
+                val isPrimary = index == 0
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 3.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    color = AppColors.SurfaceVariant.copy(alpha = 0.55f),
+                    border = BorderStroke(0.8.dp, AppColors.Border.copy(alpha = 0.6f))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Phone,
+                                contentDescription = null,
+                                tint = if (isPrimary) AppColors.Primary else AppColors.TextSecondary,
+                                modifier = Modifier.size(15.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                                Text(
+                                    text = PhoneUtils.formatDisplayPhone(phone),
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp
+                                    ),
+                                    color = AppColors.TextPrimary
+                                )
+                            }
+                            if (donor.allPhoneNumbers.size > 1) {
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = if (isPrimary) "(رئيسي)" else "(إضافي $index)",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = AppColors.TextSecondary,
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
 
-                    // أرقام الهواتف المتعددة
-                    Text(
-                        text = "أرقام التواصل المسجلة:",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = AppColors.TextSecondary
-                    )
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    donor.allPhoneNumbers.forEach { phone ->
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 3.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            color = AppColors.SurfaceVariant
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            IconButton(
+                                onClick = { IntentUtils.dialPhoneNumber(context, phone) },
+                                modifier = Modifier.size(32.dp)
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Phone,
-                                        contentDescription = null,
-                                        tint = AppColors.TextSecondary,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = PhoneUtils.formatDisplayPhone(phone),
-                                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                        color = AppColors.TextPrimary
-                                    )
-                                }
+                                Icon(
+                                    imageVector = Icons.Default.Call,
+                                    contentDescription = AppStrings.call,
+                                    tint = AppColors.Primary,
+                                    modifier = Modifier.size(17.dp)
+                                )
+                            }
 
-                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(
-                                        onClick = { IntentUtils.dialPhoneNumber(context, phone) },
-                                        modifier = Modifier.size(32.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Call,
-                                            contentDescription = AppStrings.call,
-                                            tint = AppColors.Primary,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-
-                                    IconButton(
-                                        onClick = { IntentUtils.openWhatsApp(context, phone) },
-                                        modifier = Modifier.size(32.dp)
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.ic_whatsapp),
-                                            contentDescription = AppStrings.whatsapp,
-                                            tint = Color(0xFF25D366),
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                }
+                            IconButton(
+                                onClick = { IntentUtils.openWhatsApp(context, phone) },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_whatsapp),
+                                    contentDescription = AppStrings.whatsapp,
+                                    tint = Color(0xFF25D366),
+                                    modifier = Modifier.size(17.dp)
+                                )
                             }
                         }
                     }
+                }
+            }
 
-                    if (!donor.notes.isNullOrBlank()) {
-                        Spacer(modifier = Modifier.height(8.dp))
+            if (!donor.notes.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    color = AppColors.SurfaceVariant.copy(alpha = 0.35f)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = null,
+                            tint = AppColors.TextSecondary,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "ملاحظات: ${donor.notes}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AppColors.TextSecondary
+                            color = AppColors.TextSecondary,
+                            fontSize = 12.sp
                         )
                     }
+                }
+            }
 
-                    if (donor.isSuspended && donor.suspendedUntil != null) {
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "موقوف مؤقتاً حتى: ${DateUtils.formatDate(donor.suspendedUntil)}",
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                            color = AppColors.Warning
-                        )
-                    }
+            if (donor.isSuspended && donor.suspendedUntil != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "موقوف مؤقتاً حتى: ${DateUtils.formatDate(donor.suspendedUntil)}",
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = AppColors.Warning
+                )
+            }
 
-                    // أزرار الإجراءات الإدارية والمستشفيات
-                    if (showAdminActions || showHospitalActions) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        HorizontalDivider(color = AppColors.Divider, thickness = 1.dp)
-                        Spacer(modifier = Modifier.height(10.dp))
+            // خيارات إدارية ومستشفيات إن وجدت
+            if ((showAdminActions && onDelete != null) || (showHospitalActions && onUpdateDonationDate != null) || onEdit != null || onSuspend != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(color = AppColors.Divider, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(8.dp))
 
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (onEdit != null) {
+                        OutlinedButton(
+                            onClick = onEdit,
+                            shape = RoundedCornerShape(10.dp),
+                            border = BorderStroke(1.dp, AppColors.Border)
                         ) {
-                            if (onEdit != null) {
-                                OutlinedButton(
-                                    onClick = onEdit,
-                                    shape = RoundedCornerShape(10.dp),
-                                    border = BorderStroke(1.dp, AppColors.Border)
-                                ) {
-                                    Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(AppStrings.edit, style = MaterialTheme.typography.labelSmall)
-                                }
-                            }
+                            Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(AppStrings.edit, style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
 
-                            if (onUpdateDonationDate != null) {
-                                Button(
-                                    onClick = onUpdateDonationDate,
-                                    shape = RoundedCornerShape(10.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Secondary)
-                                ) {
-                                    Icon(Icons.Default.Event, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(AppStrings.updateLastDonation, style = MaterialTheme.typography.labelSmall, color = Color.White)
-                                }
-                            }
+                    if (onUpdateDonationDate != null) {
+                        Button(
+                            onClick = onUpdateDonationDate,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = AppColors.Secondary)
+                        ) {
+                            Icon(Icons.Default.Event, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(AppStrings.updateLastDonation, style = MaterialTheme.typography.labelSmall, color = Color.White)
+                        }
+                    }
 
-                            if (onSuspend != null && !donor.isSuspended) {
-                                OutlinedButton(
-                                    onClick = onSuspend,
-                                    shape = RoundedCornerShape(10.dp),
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Warning),
-                                    border = BorderStroke(1.dp, AppColors.Warning.copy(alpha = 0.5f))
-                                ) {
-                                    Icon(Icons.Default.Block, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(AppStrings.suspendFor6Months, style = MaterialTheme.typography.labelSmall)
-                                }
-                            }
+                    if (onSuspend != null && !donor.isSuspended) {
+                        OutlinedButton(
+                            onClick = onSuspend,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Warning),
+                            border = BorderStroke(1.dp, AppColors.Warning.copy(alpha = 0.5f))
+                        ) {
+                            Icon(Icons.Default.Block, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(AppStrings.suspendFor6Months, style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
 
-                            if (showAdminActions && onDelete != null) {
-                                OutlinedButton(
-                                    onClick = onDelete,
-                                    shape = RoundedCornerShape(10.dp),
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Error),
-                                    border = BorderStroke(1.dp, AppColors.Error.copy(alpha = 0.5f))
-                                ) {
-                                    Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(AppStrings.delete, style = MaterialTheme.typography.labelSmall)
-                                }
-                            }
+                    if (showAdminActions && onDelete != null) {
+                        OutlinedButton(
+                            onClick = onDelete,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Error),
+                            border = BorderStroke(1.dp, AppColors.Error.copy(alpha = 0.5f))
+                        ) {
+                            Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(AppStrings.delete, style = MaterialTheme.typography.labelSmall)
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // الأزرار السفلية الأساسية (اتصال فوري + واتساب + زر الإبلاغ والتفاصيل)
+            // 4. الأزرار السفلية الأساسية (اتصال فوري + واتساب + زر الإبلاغ)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -423,22 +468,6 @@ fun DonorCard(
                         }
                     }
                 }
-
-                Surface(
-                    modifier = Modifier.size(42.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = AppColors.SurfaceVariant,
-                    border = BorderStroke(1.dp, AppColors.Border)
-                ) {
-                    IconButton(onClick = { expanded = !expanded }) {
-                        Icon(
-                            imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                            contentDescription = null,
-                            tint = AppColors.TextSecondary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
             }
         }
     }
@@ -455,22 +484,6 @@ private fun StatusPillBadge(text: String, bgColor: Color, textColor: Color) {
             color = textColor,
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
-        )
-    }
-}
-
-@Composable
-private fun MetaInfoItem(label: String, value: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = "$label: ",
-            style = MaterialTheme.typography.bodySmall,
-            color = AppColors.TextSecondary
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-            color = AppColors.TextPrimary
         )
     }
 }

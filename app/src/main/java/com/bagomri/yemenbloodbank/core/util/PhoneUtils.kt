@@ -7,7 +7,8 @@ object PhoneUtils {
 
     /**
      * إزالة المفتاح الدولي (+967، 00967، 967) وأي أصفار بادئة،
-     * وعرض الرقم بتنسيق محلي أنيق ومريح للقراءة (مثال: 770 727 055).
+     * وعرض الرقم بتنسيق محلي أنيق ومريح للقراءة (مثال: 770 727 055)
+     * مع تضمين علامات التوجيه LTR لمنع انعكاس الكتل في الواجهات العربية.
      */
     fun formatDisplayPhone(phone: String?): String {
         if (phone.isNullOrBlank()) return ""
@@ -26,11 +27,11 @@ object PhoneUtils {
             digits = digits.substring(1)
         }
 
-        // تنسيق الرقم المكون من 9 أرقام إلى 3 كتل (مثال: 777 123 456) لسهولة القراءة
+        // تنسيق الرقم المكون من 9 أرقام إلى 3 كتل مع Left-to-Right Embedding لمنع انقلاب الكتل
         return if (digits.length == 9) {
-            "${digits.substring(0, 3)} ${digits.substring(3, 6)} ${digits.substring(6)}"
+            "\u202A${digits.substring(0, 3)} ${digits.substring(3, 6)} ${digits.substring(6)}\u202C"
         } else {
-            digits
+            "\u202A$digits\u202C"
         }
     }
 

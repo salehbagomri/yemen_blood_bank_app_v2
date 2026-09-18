@@ -54,6 +54,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,9 +65,11 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bagomri.yemenbloodbank.R
@@ -185,11 +188,13 @@ fun AdminDonorCard(
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = PhoneUtils.formatDisplayPhone(donor.phoneNumber),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = AppColors.TextSecondary
-                        )
+                        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                            Text(
+                                text = PhoneUtils.formatDisplayPhone(donor.phoneNumber),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = AppColors.TextSecondary
+                            )
+                        }
                     }
                 }
 
@@ -268,7 +273,7 @@ fun AdminDonorCard(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     // باقي التفاصيل
-                    AdminDetailRow(icon = Icons.Default.LocationOn, label = "المديرية", value = donor.district)
+                    AdminDetailRow(icon = Icons.Default.LocationOn, label = "الموقع", value = donor.displayLocation)
                     Spacer(modifier = Modifier.height(6.dp))
                     AdminDetailRow(
                         icon = Icons.Default.Person,
@@ -525,11 +530,13 @@ private fun AdminPhoneContactRow(
                     color = AppColors.TextSecondary,
                     fontSize = 11.sp
                 )
-                Text(
-                    text = PhoneUtils.formatDisplayPhone(phoneNumber),
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = AppColors.TextPrimary
-                )
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    Text(
+                        text = PhoneUtils.formatDisplayPhone(phoneNumber),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        color = AppColors.TextPrimary
+                    )
+                }
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {

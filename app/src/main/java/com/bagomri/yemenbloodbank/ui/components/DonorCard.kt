@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,13 +49,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bagomri.yemenbloodbank.R
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
 import com.bagomri.yemenbloodbank.core.util.DateUtils
 import com.bagomri.yemenbloodbank.core.util.IntentUtils
+import com.bagomri.yemenbloodbank.core.util.PhoneUtils
 import com.bagomri.yemenbloodbank.data.model.Donor
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -84,7 +88,7 @@ fun DonorCard(
         border = BorderStroke(1.dp, AppColors.Border)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // الصف العلوي: شارة الفصيلة + الاسم + المحافظة والمديرية + حالة المتبرع
+            // الصف العلوي: شارة الفصيلة + الاسم + المحافظة والمديرية والهاتف + حالة المتبرع
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -105,18 +109,38 @@ fun DonorCard(
 
                     Spacer(modifier = Modifier.height(3.dp))
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Icon(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = null,
                             tint = AppColors.Primary,
-                            modifier = Modifier.size(15.dp)
+                            modifier = Modifier.size(14.dp)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(3.dp))
                         Text(
                             text = if (donor.subDistrict.isNullOrEmpty()) donor.district else "${donor.district} • ${donor.subDistrict}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AppColors.TextSecondary
+                            color = AppColors.TextSecondary,
+                            maxLines = 1
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Icon(
+                            imageVector = Icons.Default.Phone,
+                            contentDescription = null,
+                            tint = AppColors.TextSecondary,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text(
+                            text = PhoneUtils.formatDisplayPhone(donor.phoneNumber),
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                            color = AppColors.TextSecondary,
+                            maxLines = 1
                         )
                     }
                 }
@@ -201,13 +225,13 @@ fun DonorCard(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = phone,
+                                        text = PhoneUtils.formatDisplayPhone(phone),
                                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                                         color = AppColors.TextPrimary
                                     )
                                 }
 
-                                Row {
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                     IconButton(
                                         onClick = { IntentUtils.dialPhoneNumber(context, phone) },
                                         modifier = Modifier.size(32.dp)
@@ -224,7 +248,12 @@ fun DonorCard(
                                         onClick = { IntentUtils.openWhatsApp(context, phone) },
                                         modifier = Modifier.size(32.dp)
                                     ) {
-                                        Text(text = "💬", fontSize = 16.sp)
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_whatsapp),
+                                            contentDescription = AppStrings.whatsapp,
+                                            tint = Color(0xFF25D366),
+                                            modifier = Modifier.size(18.dp)
+                                        )
                                     }
                                 }
                             }
@@ -318,7 +347,7 @@ fun DonorCard(
             // الأزرار السفلية الأساسية (اتصال فوري + واتساب + زر الإبلاغ والتفاصيل)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // زر الاتصال
@@ -326,8 +355,9 @@ fun DonorCard(
                     onClick = { IntentUtils.dialPhoneNumber(context, donor.phoneNumber) },
                     modifier = Modifier
                         .weight(1f)
-                        .height(44.dp),
+                        .height(42.dp),
                     shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp)
                 ) {
@@ -335,10 +365,17 @@ fun DonorCard(
                         imageVector = Icons.Default.Call,
                         contentDescription = null,
                         tint = Color.White,
-                        modifier = Modifier.size(17.dp)
+                        modifier = Modifier.size(16.dp)
                     )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = AppStrings.call, fontWeight = FontWeight.Bold, color = Color.White)
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = AppStrings.call,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        maxLines = 1,
+                        softWrap = false,
+                        color = Color.White
+                    )
                 }
 
                 // زر الواتساب
@@ -346,19 +383,32 @@ fun DonorCard(
                     onClick = { IntentUtils.openWhatsApp(context, donor.phoneNumber) },
                     modifier = Modifier
                         .weight(1f)
-                        .height(44.dp),
+                        .height(42.dp),
                     shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp)
                 ) {
-                    Text(text = "💬", fontSize = 16.sp)
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = AppStrings.whatsapp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_whatsapp),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(17.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = AppStrings.whatsapp,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        maxLines = 1,
+                        softWrap = false,
+                        color = Color.White
+                    )
                 }
 
                 if (onReport != null) {
                     Surface(
-                        modifier = Modifier.size(44.dp),
+                        modifier = Modifier.size(42.dp),
                         shape = RoundedCornerShape(12.dp),
                         color = AppColors.SurfaceVariant,
                         border = BorderStroke(1.dp, AppColors.Border)
@@ -368,14 +418,14 @@ fun DonorCard(
                                 imageVector = Icons.Default.Report,
                                 contentDescription = AppStrings.reportDonor,
                                 tint = AppColors.Warning,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(19.dp)
                             )
                         }
                     }
                 }
 
                 Surface(
-                    modifier = Modifier.size(44.dp),
+                    modifier = Modifier.size(42.dp),
                     shape = RoundedCornerShape(12.dp),
                     color = AppColors.SurfaceVariant,
                     border = BorderStroke(1.dp, AppColors.Border)

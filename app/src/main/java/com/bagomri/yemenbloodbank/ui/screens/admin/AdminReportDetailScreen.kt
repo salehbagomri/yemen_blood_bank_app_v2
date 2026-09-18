@@ -59,6 +59,7 @@ import com.bagomri.yemenbloodbank.core.constants.AppStrings
 import com.bagomri.yemenbloodbank.core.util.DateUtils
 import com.bagomri.yemenbloodbank.core.util.ErrorHandler
 import com.bagomri.yemenbloodbank.core.util.IntentUtils
+import com.bagomri.yemenbloodbank.core.util.PhoneUtils
 import com.bagomri.yemenbloodbank.data.model.Donor
 import com.bagomri.yemenbloodbank.data.model.Report
 import com.bagomri.yemenbloodbank.data.repository.DonorRepository
@@ -161,7 +162,7 @@ fun AdminReportDetailScreen(
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Column {
                                         Text(
-                                            text = rep.donorPhoneNumber,
+                                            text = PhoneUtils.formatDisplayPhone(rep.donorPhoneNumber),
                                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                             color = MaterialTheme.colorScheme.onSurface
                                         )

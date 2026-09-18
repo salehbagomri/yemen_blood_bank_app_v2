@@ -163,7 +163,7 @@ fun ContactScreen(
 
                 ContactCard(
                     title = "واتساب الدعم الفني",
-                    subtitle = "+967 770 727 055",
+                    subtitle = "770 727 055",
                     icon = Icons.AutoMirrored.Filled.Chat,
                     iconColor = AppColors.Success,
                     onClick = { IntentUtils.openWhatsApp(context, "967770727055") }
@@ -171,7 +171,7 @@ fun ContactScreen(
 
                 ContactCard(
                     title = "الاتصال الهاتفي",
-                    subtitle = "+967 770 727 055",
+                    subtitle = "770 727 055",
                     icon = Icons.Default.Phone,
                     iconColor = AppColors.Primary,
                     onClick = { IntentUtils.dialPhoneNumber(context, "770727055") }

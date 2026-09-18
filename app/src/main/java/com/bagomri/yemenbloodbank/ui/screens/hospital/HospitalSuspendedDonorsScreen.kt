@@ -43,13 +43,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bagomri.yemenbloodbank.R
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
 import com.bagomri.yemenbloodbank.core.util.DateUtils
 import com.bagomri.yemenbloodbank.core.util.IntentUtils
+import com.bagomri.yemenbloodbank.core.util.PhoneUtils
 import com.bagomri.yemenbloodbank.data.model.Donor
 import com.bagomri.yemenbloodbank.ui.components.BloodTypeBadge
 import com.bagomri.yemenbloodbank.ui.components.EmptyState
@@ -207,6 +210,19 @@ private fun SuspendedDonorCard(donor: Donor) {
                             style = MaterialTheme.typography.bodySmall,
                             color = AppColors.TextSecondary
                         )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            imageVector = Icons.Default.Call,
+                            contentDescription = null,
+                            tint = AppColors.TextSecondary,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text(
+                            text = PhoneUtils.formatDisplayPhone(donor.phoneNumber),
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                            color = AppColors.TextSecondary
+                        )
                     }
                 }
 
@@ -227,7 +243,7 @@ private fun SuspendedDonorCard(donor: Donor) {
                     modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Chat,
+                        painter = painterResource(id = R.drawable.ic_whatsapp),
                         contentDescription = "واتساب",
                         tint = AppColors.Success,
                         modifier = Modifier.size(20.dp)

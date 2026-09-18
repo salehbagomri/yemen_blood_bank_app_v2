@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,14 +64,17 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bagomri.yemenbloodbank.R
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
 import com.bagomri.yemenbloodbank.core.util.DateUtils
 import com.bagomri.yemenbloodbank.core.util.IntentUtils
+import com.bagomri.yemenbloodbank.core.util.PhoneUtils
 import com.bagomri.yemenbloodbank.data.model.Donor
 
 /**
@@ -182,7 +186,7 @@ fun AdminDonorCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = donor.phoneNumber,
+                            text = PhoneUtils.formatDisplayPhone(donor.phoneNumber),
                             style = MaterialTheme.typography.bodySmall,
                             color = AppColors.TextSecondary
                         )
@@ -419,9 +423,9 @@ fun AdminDonorCard(
                             val clipboardData = buildString {
                                 appendLine("الاسم: ${donor.name}")
                                 appendLine("فصيلة الدم: ${donor.bloodType}")
-                                appendLine("الهاتف 1: ${donor.phoneNumber}")
-                                if (!donor.phoneNumber2.isNullOrBlank()) appendLine("الهاتف 2: ${donor.phoneNumber2}")
-                                if (!donor.phoneNumber3.isNullOrBlank()) appendLine("الهاتف 3: ${donor.phoneNumber3}")
+                                appendLine("الهاتف 1: ${PhoneUtils.formatDisplayPhone(donor.phoneNumber)}")
+                                if (!donor.phoneNumber2.isNullOrBlank()) appendLine("الهاتف 2: ${PhoneUtils.formatDisplayPhone(donor.phoneNumber2)}")
+                                if (!donor.phoneNumber3.isNullOrBlank()) appendLine("الهاتف 3: ${PhoneUtils.formatDisplayPhone(donor.phoneNumber3)}")
                                 appendLine("المديرية: ${donor.district}")
                                 appendLine("الجنس: ${if (donor.gender == "female") "أنثى" else "ذكر"}")
                                 appendLine("العمر: ${donor.age} سنة")
@@ -522,7 +526,7 @@ private fun AdminPhoneContactRow(
                     fontSize = 11.sp
                 )
                 Text(
-                    text = phoneNumber,
+                    text = PhoneUtils.formatDisplayPhone(phoneNumber),
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                     color = AppColors.TextPrimary
                 )
@@ -535,6 +539,7 @@ private fun AdminPhoneContactRow(
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AppColors.Success),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                     modifier = Modifier.height(34.dp)
                 ) {
                     Icon(
@@ -550,7 +555,9 @@ private fun AdminPhoneContactRow(
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
                             fontSize = 11.sp
-                        )
+                        ),
+                        maxLines = 1,
+                        softWrap = false
                     )
                 }
 
@@ -560,9 +567,15 @@ private fun AdminPhoneContactRow(
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
                     modifier = Modifier.height(34.dp)
                 ) {
-                    Text(text = "💬", fontSize = 13.sp)
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_whatsapp),
+                        contentDescription = AppStrings.whatsapp,
+                        tint = Color.White,
+                        modifier = Modifier.size(14.dp)
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "واتساب",
@@ -570,7 +583,9 @@ private fun AdminPhoneContactRow(
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
                             fontSize = 11.sp
-                        )
+                        ),
+                        maxLines = 1,
+                        softWrap = false
                     )
                 }
             }

@@ -262,7 +262,7 @@ fun AboutScreen(
                                 )
                                 ContactRowItem(
                                     icon = Icons.AutoMirrored.Filled.Chat,
-                                    label = "+967 770 727 055",
+                                    label = "770 727 055",
                                     subtitle = "تواصل عبر واتساب",
                                     iconColor = AppColors.Success,
                                     onClick = { IntentUtils.openWhatsApp(context, "967770727055") }

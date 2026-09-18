@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
+import com.bagomri.yemenbloodbank.core.util.PhoneUtils
 import com.bagomri.yemenbloodbank.core.util.DateUtils
 import com.bagomri.yemenbloodbank.core.util.IntentUtils
 import com.bagomri.yemenbloodbank.data.model.Report
@@ -290,7 +291,7 @@ private fun ReportAdminCard(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "رقم المتبرع: ${report.donorPhoneNumber}",
+                        text = "رقم المتبرع: ${PhoneUtils.formatDisplayPhone(report.donorPhoneNumber)}",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )

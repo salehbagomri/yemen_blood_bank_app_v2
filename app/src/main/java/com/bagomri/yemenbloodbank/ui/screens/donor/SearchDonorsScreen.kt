@@ -130,6 +130,7 @@ fun SearchDonorsScreen(
                         onItemSelected = { viewModel.selectGovernorate(it) },
                         label = AppStrings.district,
                         placeholder = "اختر المحافظة",
+                        onClear = if (uiState.selectedGovernorate != null) { { viewModel.selectGovernorate(null) } } else null,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Map,
@@ -149,6 +150,7 @@ fun SearchDonorsScreen(
                         label = AppStrings.subDistrict,
                         placeholder = if (uiState.selectedGovernorate == null) "اختر المحافظة أولاً" else "اختر المديرية (اختياري)",
                         enabled = uiState.selectedGovernorate != null && uiState.subDistricts.isNotEmpty(),
+                        onClear = if (uiState.selectedSubDistrict != null) { { viewModel.selectSubDistrict(null) } } else null,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.LocationOn,
@@ -158,9 +160,9 @@ fun SearchDonorsScreen(
                         }
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
-                    // 3. فصيلة الدم (8 رقاقات ملوّنة)
+                    // 3. فصيلة الدم (8 رقاقات منظمة بدقة في سطرين: 4 في كل سطر)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -192,18 +194,39 @@ fun SearchDonorsScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    FlowRow(
+                    // السطر الأول (4 فصائل بنسب متساوية)
+                    val firstRowTypes = AppStrings.bloodTypes.take(4)
+                    val secondRowTypes = AppStrings.bloodTypes.drop(4)
+
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        AppStrings.bloodTypes.forEach { type ->
+                        firstRowTypes.forEach { type ->
                             BloodTypeSelectorChip(
                                 bloodType = type,
                                 isSelected = uiState.selectedBloodType == type,
-                                onSelect = { viewModel.selectBloodType(it) }
+                                onSelect = { viewModel.selectBloodType(it) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // السطر الثاني (4 فصائل بنسب متساوية)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        secondRowTypes.forEach { type ->
+                            BloodTypeSelectorChip(
+                                bloodType = type,
+                                isSelected = uiState.selectedBloodType == type,
+                                onSelect = { viewModel.selectBloodType(it) },
+                                modifier = Modifier.weight(1f)
                             )
                         }
                     }

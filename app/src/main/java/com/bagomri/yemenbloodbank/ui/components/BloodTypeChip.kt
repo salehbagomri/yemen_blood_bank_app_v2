@@ -4,15 +4,10 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bloodtype
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -67,7 +62,7 @@ fun BloodTypeSelectorChip(
     val containerColor = AppColors.getBloodTypeContainerColor(bloodType)
 
     val bgColor by animateColorAsState(
-        targetValue = if (isSelected) typeColor else containerColor.copy(alpha = 0.6f),
+        targetValue = if (isSelected) typeColor else containerColor.copy(alpha = 0.65f),
         label = "chipBg"
     )
     val textColor by animateColorAsState(
@@ -77,30 +72,28 @@ fun BloodTypeSelectorChip(
 
     Surface(
         modifier = modifier
-            .padding(4.dp)
             .clickable { onSelect(bloodType) },
         shape = RoundedCornerShape(12.dp),
         color = bgColor,
         border = BorderStroke(
-            width = if (isSelected) 0.dp else 1.dp,
-            color = if (isSelected) Color.Transparent else typeColor.copy(alpha = 0.3f)
+            width = if (isSelected) 0.dp else 1.2.dp,
+            color = if (isSelected) Color.Transparent else typeColor.copy(alpha = 0.35f)
         ),
         shadowElevation = if (isSelected) 3.dp else 0.dp
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.Bloodtype,
-                contentDescription = null,
-                tint = textColor,
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = bloodType,
-                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 15.sp,
+                    letterSpacing = 0.5.sp
+                ),
                 color = textColor
             )
         }

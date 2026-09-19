@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,15 +17,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Note
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
@@ -34,16 +38,18 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,24 +59,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
+import com.bagomri.yemenbloodbank.core.util.PhoneUtils
+import com.bagomri.yemenbloodbank.ui.components.BloodTypeBadge
 import com.bagomri.yemenbloodbank.ui.components.CustomTextField
 import com.bagomri.yemenbloodbank.ui.components.LoadingIndicator
 
+// قائمة الأسباب التسعة المطابقة تماماً لقيد قاعدة البيانات (PostgreSQL check constraint)
 private val REPORT_REASONS = listOf(
-    "number_not_working" to "الرقم مفصول أو مغلق",
-    "no_response" to "لا يتم الرد على الاتصال",
+    "number_not_working" to "الرقم مفصول أو خارج التغطية",
+    "no_answer" to "لا يتم الرد على الاتصال",
     "wrong_number" to "الرقم غير صحيح أو لشخص آخر",
-    "not_donor" to "الشخص يرفض التبرع أو لم يعد متبرعاً",
+    "refuses_to_donate" to "الشخص يرفض التبرع أو لم يعد متبرعاً",
+    "number_busy" to "الرقم مشغول دائماً",
+    "deceased" to "المتبرع متوفى (رحمه الله)",
+    "moved_away" to "انتقل إلى محافظة / منطقة أخرى",
+    "health_issues" to "أسباب صحية تمنع التبرع بالدم",
     "other" to "سبب آخر"
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ReportDonorScreen(
     donorId: String?,
@@ -180,31 +196,107 @@ fun ReportDonorScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = null,
                                 tint = AppColors.Warning,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(22.dp)
                             )
-                            Spacer(modifier = Modifier.width(12.dp))
+                            Spacer(modifier = Modifier.width(10.dp))
                             Text(
-                                text = "يساعدنا إبلاغك عن الأرقام غير الصحيحة أو التي لا ترد في الحفاظ على تحديث البيانات ومساعدة المرضى في الطوارئ.",
+                                text = "يساعدنا إبلاغك عن الأرقام غير الصالحة في الحفاظ على دقة البيانات وسرعة إنقاذ المرضى في حالات الطوارئ.",
                                 style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 20.sp),
                                 color = AppColors.Warning
                             )
                         }
                     }
 
-                    // رقم الهاتف المبلغ عنه
+                    // بيانات المتبرع إن كانت محملة
+                    if (uiState.donor != null) {
+                        val donor = uiState.donor!!
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surface,
+                            border = BorderStroke(1.dp, AppColors.Border),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                BloodTypeBadge(bloodType = donor.bloodType, size = 42)
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = donor.name,
+                                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = AppColors.TextPrimary
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = donor.displayLocation,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = AppColors.TextSecondary
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // خيارات أرقام المتبرع إن توفر أكثر من رقم (رئيسي وفرعي)
+                    if (uiState.availablePhones.size > 1) {
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text(
+                                text = "اختر الرقم المراد الإبلاغ عنه من أرقام المتبرع:",
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                color = AppColors.TextPrimary
+                            )
+
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                uiState.availablePhones.forEachIndexed { index, phone ->
+                                    val isSelected = PhoneUtils.cleanLocalPhone(uiState.phoneNumber) == PhoneUtils.cleanLocalPhone(phone)
+                                    val label = if (index == 0) "الرئيسي: $phone" else "إضافي ${index + 1}: $phone"
+
+                                    FilterChip(
+                                        selected = isSelected,
+                                        onClick = { viewModel.onPhoneNumberChange(phone) },
+                                        label = {
+                                            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                                                Text(
+                                                    text = label,
+                                                    style = MaterialTheme.typography.bodySmall.copy(
+                                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                                    )
+                                                )
+                                            }
+                                        },
+                                        leadingIcon = if (isSelected) {
+                                            { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                                        } else null,
+                                        colors = FilterChipDefaults.filterChipColors(
+                                            selectedContainerColor = AppColors.PrimaryContainer,
+                                            selectedLabelColor = AppColors.Primary
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // حقل رقم الهاتف المبلغ عنه (متاح للتعديل دائماً لتمكين تغيير الرقم أو إدخال الرقم الفرعي)
                     CustomTextField(
                         value = uiState.phoneNumber,
                         onValueChange = { viewModel.onPhoneNumberChange(it) },
                         label = AppStrings.phoneNumber,
-                        placeholder = "777123456",
-                        enabled = donorId == null,
+                        placeholder = "777123456 أو +967777123456",
+                        enabled = true, // متاح للتعديل دائماً بناءً على طلب المستخدم
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                         leadingIcon = {
                             Icon(Icons.Default.Phone, contentDescription = null, tint = AppColors.Primary)
                         }
@@ -235,7 +327,7 @@ fun ReportDonorScreen(
                                 )
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(14.dp),
+                                    modifier = Modifier.padding(12.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
@@ -270,7 +362,7 @@ fun ReportDonorScreen(
                         }
                     )
 
-                    // رسالة الخطأ
+                    // رسالة الخطأ إن وجدت
                     if (!uiState.errorMessage.isNullOrEmpty()) {
                         Card(
                             colors = CardDefaults.cardColors(containerColor = AppColors.ErrorContainer),
@@ -304,8 +396,8 @@ fun ReportDonorScreen(
                         onClick = { viewModel.submitReport() },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(14.dp),
+                            .height(50.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary),
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
                     ) {

@@ -26,6 +26,16 @@ class ReportRepository(
         timeZone = TimeZone.getTimeZone("UTC")
     }
 
+@kotlinx.serialization.Serializable
+private data class ReportInsertDto(
+    @kotlinx.serialization.SerialName("donor_id")
+    val donorId: String,
+    @kotlinx.serialization.SerialName("donor_phone_number")
+    val donorPhoneNumber: String,
+    val reason: String,
+    val notes: String? = null
+)
+
     /**
      * إرسال بلاغ جديد عن متبرع
      */
@@ -36,18 +46,19 @@ class ReportRepository(
         notes: String?
     ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val insertData = buildJsonObject {
-                put("donor_id", donorId)
-                put("donor_phone_number", donorPhoneNumber.trim())
-                put("reason", reason)
-                notes?.let { if (it.isNotBlank()) put("notes", it.trim()) }
-            }
+            val dto = ReportInsertDto(
+                donorId = donorId,
+                donorPhoneNumber = donorPhoneNumber.trim(),
+                reason = reason,
+                notes = notes?.trim()?.ifEmpty { null }
+            )
 
             // إرسال البلاغ بدون select() لتفادي رفض سياسة RLS لغير الأدمن
-            postgrest.from("reports").insert(insertData)
+            postgrest.from("reports").insert(dto)
 
             Result.success(Unit)
         } catch (e: Exception) {
+            android.util.Log.e("ReportRepository", "Error adding report: ${e.message}", e)
             Result.failure(e)
         }
     }

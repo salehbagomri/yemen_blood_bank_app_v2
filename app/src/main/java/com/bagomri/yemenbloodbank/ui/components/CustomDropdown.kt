@@ -71,14 +71,14 @@ fun CustomDropdown(
                     Text(
                         text = label,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 13.sp
+                        fontSize = 12.sp
                     )
                 },
                 placeholder = {
                     Text(
                         text = placeholder,
                         color = AppColors.TextHint,
-                        fontSize = 14.sp
+                        fontSize = 13.sp
                     )
                 },
                 trailingIcon = {
@@ -87,13 +87,13 @@ fun CustomDropdown(
                             if (!selectedValue.isNullOrEmpty() && onClear != null) {
                                 IconButton(
                                     onClick = onClear,
-                                    modifier = Modifier.size(28.dp)
+                                    modifier = Modifier.size(26.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Clear,
                                         contentDescription = "مسح",
                                         tint = AppColors.TextSecondary,
-                                        modifier = Modifier.size(16.dp)
+                                        modifier = Modifier.size(15.dp)
                                     )
                                 }
                             }
@@ -102,9 +102,9 @@ fun CustomDropdown(
                                 contentDescription = null,
                                 tint = if (expanded) AppColors.Primary else AppColors.TextSecondary,
                                 modifier = Modifier
-                                    .size(22.dp)
+                                    .size(20.dp)
                                     .rotate(rotation)
-                                    .padding(end = 4.dp)
+                                    .padding(end = 2.dp)
                             )
                         }
                     }
@@ -112,10 +112,10 @@ fun CustomDropdown(
                 leadingIcon = leadingIcon,
                 enabled = enabled,
                 isError = isError,
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(10.dp),
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Medium,
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     color = if (enabled) AppColors.TextPrimary else AppColors.TextSecondary
                 ),
                 colors = OutlinedTextFieldDefaults.colors(

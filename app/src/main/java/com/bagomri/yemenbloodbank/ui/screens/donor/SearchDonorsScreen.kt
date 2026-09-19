@@ -122,7 +122,7 @@ fun SearchDonorsScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 border = BorderStroke(1.dp, AppColors.Border)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
                     // 1. القائمة المنسدلة للمحافظة
                     CustomDropdown(
                         selectedValue = uiState.selectedGovernorate,
@@ -140,7 +140,7 @@ fun SearchDonorsScreen(
                         }
                     )
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     // 2. القائمة المنسدلة للمديرية (تظهر وتتحدث تلقائياً)
                     CustomDropdown(
@@ -160,7 +160,7 @@ fun SearchDonorsScreen(
                         }
                     )
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     // 3. فصيلة الدم (8 رقاقات منظمة بدقة في سطرين: 4 في كل سطر)
                     Row(
@@ -173,12 +173,12 @@ fun SearchDonorsScreen(
                                 imageVector = Icons.Default.Bloodtype,
                                 contentDescription = null,
                                 tint = AppColors.Primary,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(16.dp)
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
+                            Spacer(modifier = Modifier.width(5.dp))
                             Text(
                                 text = AppStrings.bloodType,
-                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                 color = AppColors.TextPrimary
                             )
                         }
@@ -194,7 +194,7 @@ fun SearchDonorsScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     // السطر الأول (4 فصائل بنسب متساوية)
                     val firstRowTypes = AppStrings.bloodTypes.take(4)
@@ -202,7 +202,7 @@ fun SearchDonorsScreen(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
                         firstRowTypes.forEach { type ->
                             BloodTypeSelectorChip(
@@ -214,7 +214,7 @@ fun SearchDonorsScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(5.dp))
 
                     // السطر الثاني (4 فصائل بنسب متساوية)
                     Row(

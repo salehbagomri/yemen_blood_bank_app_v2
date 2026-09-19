@@ -10,7 +10,11 @@ sealed class Screen(val route: String) {
     object AddDonor : Screen("donor/add")
     object SearchDonors : Screen("donor/search")
     object ReportDonor : Screen("donor/report?donorId={donorId}&phone={phone}") {
-        fun createRoute(donorId: String, phone: String) = "donor/report?donorId=$donorId&phone=$phone"
+        fun createRoute(donorId: String, phone: String): String {
+            val encId = java.net.URLEncoder.encode(donorId, "UTF-8")
+            val encPhone = java.net.URLEncoder.encode(phone, "UTF-8")
+            return "donor/report?donorId=$encId&phone=$encPhone"
+        }
     }
 
     // معلومات وتوعية

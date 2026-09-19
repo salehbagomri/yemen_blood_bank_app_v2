@@ -34,7 +34,7 @@ class ReportRepository(
         donorPhoneNumber: String,
         reason: String,
         notes: String?
-    ): Result<Report> = withContext(Dispatchers.IO) {
+    ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val insertData = buildJsonObject {
                 put("donor_id", donorId)
@@ -43,12 +43,10 @@ class ReportRepository(
                 notes?.let { if (it.isNotBlank()) put("notes", it.trim()) }
             }
 
-            val created = postgrest.from("reports")
-                .insert(insertData) {
-                    select()
-                }.decodeSingle<Report>()
+            // إرسال البلاغ بدون select() لتفادي رفض سياسة RLS لغير الأدمن
+            postgrest.from("reports").insert(insertData)
 
-            Result.success(created)
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }

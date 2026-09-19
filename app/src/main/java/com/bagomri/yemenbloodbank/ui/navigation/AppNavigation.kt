@@ -135,8 +135,10 @@ fun AppNavigation(
                 navArgument("phone") { type = NavType.StringType; defaultValue = "" }
             )
         ) { backStackEntry ->
-            val donorId = backStackEntry.arguments?.getString("donorId") ?: ""
-            val phone = backStackEntry.arguments?.getString("phone") ?: ""
+            val rawDonorId = backStackEntry.arguments?.getString("donorId") ?: ""
+            val rawPhone = backStackEntry.arguments?.getString("phone") ?: ""
+            val donorId = try { java.net.URLDecoder.decode(rawDonorId, "UTF-8") } catch (_: Exception) { rawDonorId }
+            val phone = try { java.net.URLDecoder.decode(rawPhone, "UTF-8") } catch (_: Exception) { rawPhone }
             ReportDonorScreen(
                 donorId = donorId,
                 donorPhone = phone,

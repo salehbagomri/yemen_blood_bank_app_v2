@@ -73,25 +73,25 @@ fun BloodTypeSelectorChip(
     Surface(
         modifier = modifier
             .clickable { onSelect(bloodType) },
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(9.dp),
         color = bgColor,
         border = BorderStroke(
-            width = if (isSelected) 0.dp else 1.2.dp,
+            width = if (isSelected) 0.dp else 1.dp,
             color = if (isSelected) Color.Transparent else typeColor.copy(alpha = 0.35f)
         ),
-        shadowElevation = if (isSelected) 3.dp else 0.dp
+        shadowElevation = if (isSelected) 1.5.dp else 0.dp
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 10.dp),
+                .padding(vertical = 5.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = bloodType,
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.ExtraBold,
-                    fontSize = 15.sp,
+                    fontSize = 13.sp,
                     letterSpacing = 0.5.sp
                 ),
                 color = textColor

@@ -3,6 +3,7 @@ package com.bagomri.yemenbloodbank.ui.screens.reports
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bagomri.yemenbloodbank.core.util.ErrorHandler
+import com.bagomri.yemenbloodbank.core.util.PhoneUtils
 import com.bagomri.yemenbloodbank.data.repository.DonorRepository
 import com.bagomri.yemenbloodbank.data.repository.ReportRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,13 +54,25 @@ class ReportDonorViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            // إذا لم يكن donorId موجوداً نبحث عنه برقم الهاتف أولاً
+            // البحث عن المتبرع إذا لم يكن معرفه موجوداً
             var resolvedDonorId = state.donorId
             if (resolvedDonorId.isBlank()) {
-                val foundDonor = donorRepository.findDonorByPhone(state.phoneNumber).getOrNull()
+                val clean = PhoneUtils.cleanLocalPhone(state.phoneNumber)
+                val foundDonor = donorRepository.findDonorByPhone(clean).getOrNull()
+                    ?: donorRepository.findDonorByPhone(state.phoneNumber.trim()).getOrNull()
                 if (foundDonor != null) {
                     resolvedDonorId = foundDonor.id
                 }
+            }
+
+            if (resolvedDonorId.isBlank()) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "رقم الهاتف غير مسجل في قاعدة بيانات المتبرعين"
+                    )
+                }
+                return@launch
             }
 
             val result = reportRepository.addReport(

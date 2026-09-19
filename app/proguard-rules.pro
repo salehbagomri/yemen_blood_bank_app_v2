@@ -34,3 +34,7 @@
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
 -keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
 -dontwarn kotlinx.coroutines.**
+
+# AndroidX Startup
+-keep class androidx.startup.** { *; }
+-dontwarn androidx.startup.**

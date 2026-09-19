@@ -76,32 +76,46 @@ data class ReportInsertDto(
                 }.decodeList<Report>()
             Result.success(reports)
         } catch (e: Exception) {
+            android.util.Log.e("ReportRepository", "Error getting reports: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * الحصول على بلاغ محدد بالمعرف
+     */
+    suspend fun getReportById(reportId: String): Result<Report?> = withContext(Dispatchers.IO) {
+        try {
+            val report = postgrest.from("reports")
+                .select {
+                    filter { eq("id", reportId) }
+                    limit(1)
+                }.decodeSingleOrNull<Report>()
+            Result.success(report)
+        } catch (e: Exception) {
+            android.util.Log.e("ReportRepository", "Error getting report by id: ${e.message}", e)
             Result.failure(e)
         }
     }
 
     /**
      * قبول بلاغ
+     * تنبيه: جدول reports يحتوي فقط على (id, donor_id, reason, status, created_at)
      */
-    suspend fun approveReport(reportId: String): Result<Report> = withContext(Dispatchers.IO) {
+    suspend fun approveReport(reportId: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val currentUserId = SupabaseProvider.auth.currentUserOrNull()?.id
-            val now = isoDateFormat.format(Date())
-
             val updateData = buildJsonObject {
                 put("status", "approved")
-                currentUserId?.let { put("reviewed_by", it) }
-                put("reviewed_at", now)
             }
 
-            val updated = postgrest.from("reports")
+            postgrest.from("reports")
                 .update(updateData) {
                     filter { eq("id", reportId) }
-                    select()
-                }.decodeSingle<Report>()
+                }
 
-            Result.success(updated)
+            Result.success(Unit)
         } catch (e: Exception) {
+            android.util.Log.e("ReportRepository", "Error approving report: ${e.message}", e)
             Result.failure(e)
         }
     }
@@ -109,25 +123,41 @@ data class ReportInsertDto(
     /**
      * رفض بلاغ
      */
-    suspend fun rejectReport(reportId: String): Result<Report> = withContext(Dispatchers.IO) {
+    suspend fun rejectReport(reportId: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val currentUserId = SupabaseProvider.auth.currentUserOrNull()?.id
-            val now = isoDateFormat.format(Date())
-
             val updateData = buildJsonObject {
                 put("status", "rejected")
-                currentUserId?.let { put("reviewed_by", it) }
-                put("reviewed_at", now)
             }
 
-            val updated = postgrest.from("reports")
+            postgrest.from("reports")
                 .update(updateData) {
                     filter { eq("id", reportId) }
-                    select()
-                }.decodeSingle<Report>()
+                }
 
-            Result.success(updated)
+            Result.success(Unit)
         } catch (e: Exception) {
+            android.util.Log.e("ReportRepository", "Error rejecting report: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * إعادة البلاغ لحالة قيد المراجعة
+     */
+    suspend fun resetReportToPending(reportId: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val updateData = buildJsonObject {
+                put("status", "pending")
+            }
+
+            postgrest.from("reports")
+                .update(updateData) {
+                    filter { eq("id", reportId) }
+                }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            android.util.Log.e("ReportRepository", "Error resetting report: ${e.message}", e)
             Result.failure(e)
         }
     }
@@ -142,6 +172,7 @@ data class ReportInsertDto(
             }
             Result.success(Unit)
         } catch (e: Exception) {
+            android.util.Log.e("ReportRepository", "Error deleting report: ${e.message}", e)
             Result.failure(e)
         }
     }

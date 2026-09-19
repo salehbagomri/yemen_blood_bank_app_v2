@@ -297,7 +297,10 @@ fun AppNavigation(
             val reportId = backStackEntry.arguments?.getString("reportId") ?: ""
             AdminReportDetailScreen(
                 reportId = reportId,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToEditDonor = { donorId ->
+                    navController.navigate(Screen.AdminEditDonor.createRoute(donorId))
+                }
             )
         }
 

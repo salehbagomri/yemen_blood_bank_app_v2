@@ -192,15 +192,18 @@ class AdminDashboardViewModel(
     }
 
     // إدارة البلاغات
-    fun approveReport(reportId: String, onComplete: () -> Unit) {
+    fun approveReport(reportId: String, deactivateDonorId: String? = null, onComplete: () -> Unit = {}) {
         viewModelScope.launch {
             reportRepository.approveReport(reportId)
+            if (!deactivateDonorId.isNullOrBlank()) {
+                donorRepository.toggleDonorStatus(deactivateDonorId, false)
+            }
             refresh()
             onComplete()
         }
     }
 
-    fun rejectReport(reportId: String, onComplete: () -> Unit) {
+    fun rejectReport(reportId: String, onComplete: () -> Unit = {}) {
         viewModelScope.launch {
             reportRepository.rejectReport(reportId)
             refresh()
@@ -208,7 +211,15 @@ class AdminDashboardViewModel(
         }
     }
 
-    fun deleteReport(reportId: String, onComplete: () -> Unit) {
+    fun resetReportToPending(reportId: String, onComplete: () -> Unit = {}) {
+        viewModelScope.launch {
+            reportRepository.resetReportToPending(reportId)
+            refresh()
+            onComplete()
+        }
+    }
+
+    fun deleteReport(reportId: String, onComplete: () -> Unit = {}) {
         viewModelScope.launch {
             reportRepository.deleteReport(reportId)
             refresh()

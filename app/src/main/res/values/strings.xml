@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">بنك دم اليمن</string>
+    <string name="androidx_startup" translatable="false">androidx.startup</string>
 </resources>

@@ -86,6 +86,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation("androidx.startup:startup-runtime:1.2.0")
 
     // Lifecycle & Architecture
     implementation(libs.androidx.lifecycle.runtime.compose)

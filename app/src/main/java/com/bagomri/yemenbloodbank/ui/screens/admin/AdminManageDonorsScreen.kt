@@ -3,11 +3,13 @@ package com.bagomri.yemenbloodbank.ui.screens.admin
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -374,7 +376,9 @@ fun AdminManageDonorsScreen(
                                 Spacer(modifier = Modifier.height(10.dp))
 
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .horizontalScroll(rememberScrollState()),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     FilterChip(
@@ -399,20 +403,42 @@ fun AdminManageDonorsScreen(
                                     )
                                 }
 
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(10.dp))
 
-                                FlowRow(
+                                // فلاتر الفصائل: سطرين متناسقين (4 في كل سطر) بنسب متساوية
+                                val firstRowBloodTypes = AppStrings.bloodTypes.take(4)
+                                val secondRowBloodTypes = AppStrings.bloodTypes.drop(4)
+
+                                Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
-                                    AppStrings.bloodTypes.forEach { type ->
+                                    firstRowBloodTypes.forEach { type ->
                                         BloodTypeSelectorChip(
                                             bloodType = type,
                                             isSelected = selectedBloodType == type,
                                             onSelect = {
                                                 selectedBloodType = if (selectedBloodType == it) null else it
-                                            }
+                                            },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    secondRowBloodTypes.forEach { type ->
+                                        BloodTypeSelectorChip(
+                                            bloodType = type,
+                                            isSelected = selectedBloodType == type,
+                                            onSelect = {
+                                                selectedBloodType = if (selectedBloodType == it) null else it
+                                            },
+                                            modifier = Modifier.weight(1f)
                                         )
                                     }
                                 }

@@ -280,20 +280,41 @@ fun HospitalManageDonorsScreen(
                                     style = MaterialTheme.typography.labelMedium,
                                     color = AppColors.TextSecondary
                                 )
-                                FlowRow(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 4.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                val firstRowTypes = AppStrings.bloodTypes.take(4)
+                                val secondRowTypes = AppStrings.bloodTypes.drop(4)
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
-                                    AppStrings.bloodTypes.forEach { type ->
+                                    firstRowTypes.forEach { type ->
                                         BloodTypeSelectorChip(
                                             bloodType = type,
                                             isSelected = selectedBloodType == type,
                                             onSelect = {
                                                 selectedBloodType = if (selectedBloodType == it) null else it
-                                            }
+                                            },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    secondRowTypes.forEach { type ->
+                                        BloodTypeSelectorChip(
+                                            bloodType = type,
+                                            isSelected = selectedBloodType == type,
+                                            onSelect = {
+                                                selectedBloodType = if (selectedBloodType == it) null else it
+                                            },
+                                            modifier = Modifier.weight(1f)
                                         )
                                     }
                                 }

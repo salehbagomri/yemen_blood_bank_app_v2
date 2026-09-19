@@ -27,30 +27,26 @@ class ReportRepository(
     }
 
 @kotlinx.serialization.Serializable
-private data class ReportInsertDto(
+data class ReportInsertDto(
     @kotlinx.serialization.SerialName("donor_id")
     val donorId: String,
-    @kotlinx.serialization.SerialName("donor_phone_number")
-    val donorPhoneNumber: String,
-    val reason: String,
-    val notes: String? = null
+    val reason: String
 )
 
     /**
      * إرسال بلاغ جديد عن متبرع
+     * جدول reports في Supabase يحتوي فقط على: id, donor_id, reason, status, created_at
      */
     suspend fun addReport(
         donorId: String,
-        donorPhoneNumber: String,
+        donorPhoneNumber: String = "",
         reason: String,
-        notes: String?
+        notes: String? = null
     ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val dto = ReportInsertDto(
                 donorId = donorId,
-                donorPhoneNumber = donorPhoneNumber.trim(),
-                reason = reason,
-                notes = notes?.trim()?.ifEmpty { null }
+                reason = reason
             )
 
             // إرسال البلاغ بدون select() لتفادي رفض سياسة RLS لغير الأدمن

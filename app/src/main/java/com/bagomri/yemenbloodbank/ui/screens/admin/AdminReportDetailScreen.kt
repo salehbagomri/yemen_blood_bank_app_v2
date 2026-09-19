@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhoneDisabled
 import androidx.compose.material.icons.filled.ReportProblem
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -98,7 +99,6 @@ fun AdminReportDetailScreen(
     var matchedDonor by remember { mutableStateOf<Donor?>(null) }
 
     var showDeleteReportDialog by remember { mutableStateOf(false) }
-    var showDeleteDonorDialog by remember { mutableStateOf(false) }
 
     fun loadData() {
         scope.launch {
@@ -193,6 +193,8 @@ fun AdminReportDetailScreen(
                 }
             } else {
                 val rep = report!!
+                val donor = matchedDonor
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -200,7 +202,9 @@ fun AdminReportDetailScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // كرت ملخص البلاغ
+                    // ==========================================
+                    // 1. الكارد الأول: درجة البلاغ (Priority & Impact)
+                    // ==========================================
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
@@ -210,55 +214,126 @@ fun AdminReportDetailScreen(
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Surface(
-                                        modifier = Modifier.size(46.dp),
-                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier.size(42.dp),
+                                        shape = RoundedCornerShape(10.dp),
                                         color = when (rep.priority) {
                                             "critical" -> AppColors.ErrorContainer
                                             "high" -> AppColors.WarningContainer
-                                            else -> AppColors.SurfaceVariant
+                                            else -> AppColors.SecondaryContainer
                                         }
                                     ) {
                                         Box(contentAlignment = Alignment.Center) {
                                             Icon(
-                                                imageVector = when (rep.reason) {
-                                                    "deceased" -> Icons.Default.Close
-                                                    "refuses_to_donate" -> Icons.Default.Block
-                                                    "wrong_number", "number_not_working" -> Icons.Default.PhoneDisabled
-                                                    else -> Icons.Default.ReportProblem
-                                                },
+                                                imageVector = Icons.Default.Security,
                                                 contentDescription = null,
                                                 tint = when (rep.priority) {
                                                     "critical" -> AppColors.Error
                                                     "high" -> AppColors.Warning
                                                     else -> AppColors.Primary
                                                 },
-                                                modifier = Modifier.size(26.dp)
+                                                modifier = Modifier.size(24.dp)
                                             )
                                         }
                                     }
-
                                     Spacer(modifier = Modifier.width(12.dp))
-
                                     Column {
                                         Text(
-                                            text = rep.reasonText,
+                                            text = "الكارد 1: درجة وأهمية البلاغ",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = AppColors.TextSecondary
+                                        )
+                                        Text(
+                                            text = "درجة البلاغ: ${rep.priorityText}",
                                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
-                                        Spacer(modifier = Modifier.height(2.dp))
+                                    }
+                                }
+
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = when (rep.priority) {
+                                        "critical" -> AppColors.Error
+                                        "high" -> AppColors.Warning
+                                        else -> AppColors.SecondaryContainer
+                                    }
+                                ) {
+                                    Text(
+                                        text = rep.priorityText,
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = when (rep.priority) {
+                                            "critical", "high" -> Color.White
+                                            else -> AppColors.Primary
+                                        },
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+                            HorizontalDivider(color = AppColors.Divider.copy(alpha = 0.6f))
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Text(
+                                text = when (rep.priority) {
+                                    "critical" -> "بلاغ عاجل جداً (حرج): يؤثر فورياً على أرواح المرضى المحتاجين ويجب اتخاذ إجراء سريع بتعديل بيانات المتبرع أو استبعاده من الظهور لطالبي الدم."
+                                    "high" -> "بلاغ عالي الأهمية: الرقم لا يمكن التواصل معه حالياً، يلزم مراجعة الأرقام البديلة وتحديثها لضمان سرعة الوصول."
+                                    "medium" -> "بلاغ متوسط: المتبرع انتقل أو يعاني من مانع تبرع مؤقت، يفضل مراجعة بياناته وتحديثها."
+                                    else -> "بلاغ عادي: الرقم مشغول أو لا يرد حالياً، قد يكون ذلك ظرفاً عارضاً."
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = AppColors.TextSecondary,
+                                lineHeight = 20.sp
+                            )
+                        }
+                    }
+
+                    // ==========================================
+                    // 2. الكارد الثاني: معلومات البلاغ (Report Info)
+                    // ==========================================
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Surface(
+                                        modifier = Modifier.size(42.dp),
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = AppColors.PrimaryContainer
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(
+                                                imageVector = Icons.Default.Info,
+                                                contentDescription = null,
+                                                tint = AppColors.Primary,
+                                                modifier = Modifier.size(24.dp)
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Column {
                                         Text(
-                                            text = "مستوى الأولوية: ${rep.priorityText}",
-                                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                            color = when (rep.priority) {
-                                                "critical" -> AppColors.Error
-                                                "high" -> AppColors.Warning
-                                                else -> AppColors.TextSecondary
-                                            }
+                                            text = "الكارد 2: معلومات البلاغ",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = AppColors.TextSecondary
+                                        )
+                                        Text(
+                                            text = "تفاصيل وسبب الإبلاغ",
+                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 }
@@ -284,241 +359,195 @@ fun AdminReportDetailScreen(
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(12.dp))
-                            HorizontalDivider(color = AppColors.Divider.copy(alpha = 0.5f))
+                            Spacer(modifier = Modifier.height(14.dp))
+                            HorizontalDivider(color = AppColors.Divider.copy(alpha = 0.6f))
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
+                            // سبب البلاغ
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = when (rep.reason) {
+                                        "deceased" -> Icons.Default.Close
+                                        "refuses_to_donate" -> Icons.Default.Block
+                                        "wrong_number", "number_not_working" -> Icons.Default.PhoneDisabled
+                                        else -> Icons.Default.Warning
+                                    },
+                                    contentDescription = null,
+                                    tint = AppColors.Primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "تاريخ البلاغ: ${DateUtils.formatIsoToDisplay(rep.createdAt)}",
-                                    style = MaterialTheme.typography.bodySmall,
+                                    text = "السبب: ${rep.reasonText}",
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // تاريخ البلاغ
+                            Text(
+                                text = "تاريخ الإرسال: ${DateUtils.formatIsoToDisplay(rep.createdAt)}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = AppColors.TextSecondary
+                            )
+
+                            // ملاحظات المبلغ إن وجدت
+                            if (!rep.notes.isNullOrEmpty()) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Text(
+                                    text = "ملاحظات المبلغ:",
+                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                     color = AppColors.TextSecondary
                                 )
-                                Text(
-                                    text = "الإجراء المقترح: ${rep.suggestedActionText}",
-                                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                    color = AppColors.Primary
-                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = AppColors.SurfaceVariant
+                                ) {
+                                    Text(
+                                        text = rep.notes,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.padding(10.dp)
+                                    )
+                                }
                             }
                         }
                     }
 
-                    // كرت بيانات المتبرع المرتبط
-                    Text(
-                        text = "بيانات المتبرع المبلّغ عنه",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    // ==========================================
+                    // 3. الكارد الثالث: بيانات المتبرع للرقم المبلغ عنه
+                    // ==========================================
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Surface(
+                                    modifier = Modifier.size(42.dp),
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = AppColors.PrimaryContainer
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            imageVector = Icons.Default.Person,
+                                            contentDescription = null,
+                                            tint = AppColors.Primary,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(
+                                        text = "الكارد 3: بيانات المتبرع للرقم المبلّغ عنه",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = AppColors.TextSecondary
+                                    )
+                                    Text(
+                                        text = donor?.name ?: "متبرع غير متوفر بقاعدة البيانات",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
 
-                    if (matchedDonor != null) {
-                        val donor = matchedDonor!!
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                // رأس المتبرع: الفصيلة والاسم والحالة
+                            Spacer(modifier = Modifier.height(12.dp))
+                            HorizontalDivider(color = AppColors.Divider.copy(alpha = 0.6f))
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            if (donor != null) {
+                                // رأس بيانات المتبرع: الفصيلة والحالة
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Surface(
-                                        modifier = Modifier.size(52.dp),
-                                        shape = CircleShape,
-                                        color = AppColors.getBloodTypeContainerColor(donor.bloodType)
-                                    ) {
-                                        Box(contentAlignment = Alignment.Center) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Surface(
+                                            modifier = Modifier.size(48.dp),
+                                            shape = CircleShape,
+                                            color = AppColors.getBloodTypeContainerColor(donor.bloodType)
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Text(
+                                                    text = donor.bloodType,
+                                                    fontWeight = FontWeight.ExtraBold,
+                                                    fontSize = 18.sp,
+                                                    color = AppColors.getBloodTypeColor(donor.bloodType)
+                                                )
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Column {
                                             Text(
-                                                text = donor.bloodType,
-                                                fontWeight = FontWeight.ExtraBold,
-                                                fontSize = 20.sp,
-                                                color = AppColors.getBloodTypeColor(donor.bloodType)
+                                                text = donor.name,
+                                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                            )
+                                            Text(
+                                                text = "الموقع: ${donor.displayLocation}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = AppColors.TextSecondary
                                             )
                                         }
                                     }
 
-                                    Spacer(modifier = Modifier.width(14.dp))
-
-                                    Column(modifier = Modifier.weight(1f)) {
+                                    // شارة حالة المتبرع
+                                    Surface(
+                                        shape = RoundedCornerShape(6.dp),
+                                        color = if (donor.isActive) AppColors.SuccessContainer else AppColors.SurfaceVariant
+                                    ) {
                                         Text(
-                                            text = donor.name,
-                                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                                            color = MaterialTheme.colorScheme.onSurface
+                                            text = if (donor.isActive) "حساب مفعل" else "حساب معطل",
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (donor.isActive) AppColors.Success else AppColors.TextSecondary,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                                         )
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                            Surface(
-                                                shape = RoundedCornerShape(4.dp),
-                                                color = if (donor.isActive) AppColors.SuccessContainer else AppColors.SurfaceVariant
-                                            ) {
-                                                Text(
-                                                    text = if (donor.isActive) "حساب مفعل" else "حساب معطل",
-                                                    fontSize = 12.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = if (donor.isActive) AppColors.Success else AppColors.TextSecondary,
-                                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                                                )
-                                            }
-
-                                            if (donor.isSuspended) {
-                                                Surface(
-                                                    shape = RoundedCornerShape(4.dp),
-                                                    color = AppColors.WarningContainer
-                                                ) {
-                                                    Text(
-                                                        text = "موقوف مؤقتاً",
-                                                        fontSize = 12.sp,
-                                                        fontWeight = FontWeight.SemiBold,
-                                                        color = AppColors.Warning,
-                                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                                                    )
-                                                }
-                                            }
-                                        }
                                     }
                                 }
 
-                                Spacer(modifier = Modifier.height(16.dp))
-                                HorizontalDivider(color = AppColors.Divider.copy(alpha = 0.5f))
                                 Spacer(modifier = Modifier.height(14.dp))
 
-                                // الموقع
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.LocationOn,
-                                        contentDescription = null,
-                                        tint = AppColors.Primary,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "الموقع: ${donor.displayLocation}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                // أرقام الهواتف التابعة للمتبرع
+                                // أرقام هواتف المتبرع
                                 Text(
                                     text = "أرقام هواتف المتبرع:",
-                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                    color = AppColors.TextSecondary
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                // الرقم الرئيسي
-                                val p1 = donor.phoneNumber
-                                if (p1.isNotBlank()) {
-                                    PhoneNumberRow(
-                                        phone = p1,
-                                        label = "الرقم الأساسي",
-                                        context = context
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                }
-
-                                // الرقم الثانوي 1
-                                val p2 = donor.phoneNumber2
-                                if (!p2.isNullOrBlank()) {
-                                    PhoneNumberRow(
-                                        phone = p2,
-                                        label = "رقم هاتف ثانٍ",
-                                        context = context
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                }
-
-                                // الرقم الثانوي 2
-                                val p3 = donor.phoneNumber3
-                                if (!p3.isNullOrBlank()) {
-                                    PhoneNumberRow(
-                                        phone = p3,
-                                        label = "رقم هاتف ثالث",
-                                        context = context
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                }
-
-                                Spacer(modifier = Modifier.height(10.dp))
-                                HorizontalDivider(color = AppColors.Divider.copy(alpha = 0.5f))
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                // أزرار إدارة المتبرع نفسه
-                                Text(
-                                    text = "إجراءات مباشرة على سجل المتبرع:",
                                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                     color = AppColors.TextSecondary
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
 
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    // زر تعديل المتبرع
-                                    Button(
-                                        onClick = { onNavigateToEditDonor(donor.id) },
-                                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary),
-                                        shape = RoundedCornerShape(10.dp),
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text("تعديل البيانات", fontSize = 13.sp)
-                                    }
-
-                                    // زر تفعيل/تعطيل المتبرع
-                                    OutlinedButton(
-                                        onClick = {
-                                            scope.launch {
-                                                donorRepository.toggleDonorStatus(donor.id, !donor.isActive)
-                                                val newStatus = if (!donor.isActive) "تفعيل" else "تعطيل"
-                                                Toast.makeText(context, "تم $newStatus المتبرع بنجاح", Toast.LENGTH_SHORT).show()
-                                                loadData()
-                                            }
-                                        },
-                                        shape = RoundedCornerShape(10.dp),
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Text(
-                                            text = if (donor.isActive) "تعطيل الحساب" else "تفعيل الحساب",
-                                            fontSize = 13.sp,
-                                            color = if (donor.isActive) AppColors.Error else AppColors.Success
-                                        )
-                                    }
+                                // الرقم الأساسي
+                                val p1 = donor.phoneNumber
+                                if (p1.isNotBlank()) {
+                                    PhoneNumberRow(phone = p1, label = "الرقم الأساسي", context = context)
+                                    Spacer(modifier = Modifier.height(6.dp))
                                 }
 
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                // زر حذف المتبرع نهائياً
-                                OutlinedButton(
-                                    onClick = { showDeleteDonorDialog = true },
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Error),
-                                    shape = RoundedCornerShape(10.dp),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text("حذف المتبرع نهائياً من قاعدة البيانات", fontSize = 13.sp)
+                                // الرقم الثاني
+                                val p2 = donor.phoneNumber2
+                                if (!p2.isNullOrBlank()) {
+                                    PhoneNumberRow(phone = p2, label = "رقم ثانٍ", context = context)
+                                    Spacer(modifier = Modifier.height(6.dp))
                                 }
-                            }
-                        }
-                    } else {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = AppColors.SurfaceVariant)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
+
+                                // الرقم الثالث
+                                val p3 = donor.phoneNumber3
+                                if (!p3.isNullOrBlank()) {
+                                    PhoneNumberRow(phone = p3, label = "رقم ثالث", context = context)
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                }
+                            } else {
                                 Text(
-                                    text = "لم يتم العثور على سجل متبرع مطابق لهذا المعرف في قاعدة البيانات (قد يكون محذوفاً بالفعل).",
+                                    text = "لم يتم العثور على سجل متبرع مطابق في قاعدة البيانات (قد يكون محذوفاً بالفعل).",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = AppColors.TextSecondary
                                 )
@@ -526,112 +555,169 @@ fun AdminReportDetailScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    // ==========================================
+                    // 4. الكارد الرابع: اتخاذ القرار والإجراء
+                    // ==========================================
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Surface(
+                                    modifier = Modifier.size(42.dp),
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = AppColors.SuccessContainer
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            imageVector = Icons.Default.Edit,
+                                            contentDescription = null,
+                                            tint = AppColors.Success,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(
+                                        text = "الكارد 4: اتخاذ القرار والإجراء",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = AppColors.TextSecondary
+                                    )
+                                    Text(
+                                        text = "إجراءات معالجة البلاغ",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
 
-                    // قرارات البلاغ
-                    Text(
-                        text = "القرار بشأن هذا البلاغ",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                            Spacer(modifier = Modifier.height(14.dp))
+                            HorizontalDivider(color = AppColors.Divider.copy(alpha = 0.6f))
+                            Spacer(modifier = Modifier.height(14.dp))
 
-                    if (rep.status == "pending") {
-                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            // قبول البلاغ وتعطيل المتبرع
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        reportRepository.approveReport(rep.id)
-                                        if (matchedDonor != null) {
-                                            donorRepository.toggleDonorStatus(matchedDonor!!.id, false)
+                            if (rep.status == "pending") {
+                                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    // الإجراء 1: قبول وتعديل البيانات (يفتح شاشة تعديل المتبرع)
+                                    Button(
+                                        onClick = {
+                                            scope.launch {
+                                                reportRepository.approveReport(rep.id)
+                                                Toast.makeText(context, "تم قبول البلاغ، جاري فتح تعديل بيانات المتبرع...", Toast.LENGTH_SHORT).show()
+                                                if (donor != null) {
+                                                    onNavigateToEditDonor(donor.id)
+                                                } else {
+                                                    onNavigateBack()
+                                                }
+                                            }
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Success),
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(48.dp)
+                                    ) {
+                                        Icon(Icons.Default.Edit, contentDescription = null)
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text("قبول وتعديل البيانات", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                    }
+
+                                    // الإجراء 2: قبول فقط (بدون إجراء)
+                                    OutlinedButton(
+                                        onClick = {
+                                            scope.launch {
+                                                reportRepository.approveReport(rep.id)
+                                                Toast.makeText(context, "تم قبول البلاغ بنجاح", Toast.LENGTH_SHORT).show()
+                                                onNavigateBack()
+                                            }
+                                        },
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(48.dp)
+                                    ) {
+                                        Icon(Icons.Default.Check, contentDescription = null, tint = AppColors.Primary)
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text("قبول فقط (بدون إجراء)", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                                    }
+
+                                    // الإجراء 3: رفض البلاغ
+                                    Button(
+                                        onClick = {
+                                            scope.launch {
+                                                reportRepository.rejectReport(rep.id)
+                                                Toast.makeText(context, "تم رفض البلاغ", Toast.LENGTH_SHORT).show()
+                                                onNavigateBack()
+                                            }
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Error),
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(48.dp)
+                                    ) {
+                                        Icon(Icons.Default.Close, contentDescription = null)
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text("رفض البلاغ", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                    }
+                                }
+                            } else {
+                                // إذا كان البلاغ معالجاً بالفعل
+                                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    if (donor != null) {
+                                        Button(
+                                            onClick = { onNavigateToEditDonor(donor.id) },
+                                            colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary),
+                                            shape = RoundedCornerShape(12.dp),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(48.dp)
+                                        ) {
+                                            Icon(Icons.Default.Edit, contentDescription = null)
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text("تعديل بيانات المتبرع الآن", fontWeight = FontWeight.Bold)
                                         }
-                                        Toast.makeText(context, "تم قبول البلاغ وتعطيل المتبرع بنجاح", Toast.LENGTH_SHORT).show()
-                                        onNavigateBack()
                                     }
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Success),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(48.dp)
-                            ) {
-                                Icon(Icons.Default.Check, contentDescription = null)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("قبول البلاغ وتعطيل حساب المتبرع", fontWeight = FontWeight.Bold)
-                            }
 
-                            // قبول البلاغ فقط
-                            OutlinedButton(
-                                onClick = {
-                                    scope.launch {
-                                        reportRepository.approveReport(rep.id)
-                                        Toast.makeText(context, "تم قبول البلاغ فقط دون تعطيل المتبرع", Toast.LENGTH_SHORT).show()
-                                        onNavigateBack()
-                                    }
-                                },
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(48.dp)
-                            ) {
-                                Text("قبول البلاغ فقط (مع إبقاء المتبرع مفعل)", fontWeight = FontWeight.SemiBold)
-                            }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        OutlinedButton(
+                                            onClick = {
+                                                scope.launch {
+                                                    reportRepository.resetReportToPending(rep.id)
+                                                    Toast.makeText(context, "تمت إعادة البلاغ لقيد المراجعة", Toast.LENGTH_SHORT).show()
+                                                    loadData()
+                                                }
+                                            },
+                                            shape = RoundedCornerShape(12.dp),
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .height(48.dp)
+                                        ) {
+                                            Icon(Icons.Default.LockReset, contentDescription = null)
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text("إعادة للمراجعة")
+                                        }
 
-                            // رفض البلاغ
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        reportRepository.rejectReport(rep.id)
-                                        Toast.makeText(context, "تم رفض البلاغ", Toast.LENGTH_SHORT).show()
-                                        onNavigateBack()
+                                        Button(
+                                            onClick = { showDeleteReportDialog = true },
+                                            colors = ButtonDefaults.buttonColors(containerColor = AppColors.Error),
+                                            shape = RoundedCornerShape(12.dp),
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .height(48.dp)
+                                        ) {
+                                            Icon(Icons.Default.Delete, contentDescription = null)
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text("حذف البلاغ")
+                                        }
                                     }
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Error),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(48.dp)
-                            ) {
-                                Icon(Icons.Default.Close, contentDescription = null)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("رفض هذا البلاغ", fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    } else {
-                        // البلاغ معالج مسبقاً: إمكانية إعادة تعيينه أو حذفه
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            OutlinedButton(
-                                onClick = {
-                                    scope.launch {
-                                        reportRepository.resetReportToPending(rep.id)
-                                        Toast.makeText(context, "تمت إعادة البلاغ لقيد المراجعة", Toast.LENGTH_SHORT).show()
-                                        loadData()
-                                    }
-                                },
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp)
-                            ) {
-                                Icon(Icons.Default.LockReset, contentDescription = null)
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("إعادة للمراجعة")
-                            }
-
-                            Button(
-                                onClick = { showDeleteReportDialog = true },
-                                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Error),
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp)
-                            ) {
-                                Icon(Icons.Default.Delete, contentDescription = null)
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("حذف البلاغ")
+                                }
                             }
                         }
                     }
@@ -665,38 +751,6 @@ fun AdminReportDetailScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteReportDialog = false }) {
-                    Text("إلغاء")
-                }
-            }
-        )
-    }
-
-    // تأكيد حذف المتبرع
-    if (showDeleteDonorDialog && matchedDonor != null) {
-        val donor = matchedDonor!!
-        AlertDialog(
-            onDismissRequest = { showDeleteDonorDialog = false },
-            title = { Text("حذف سجل المتبرع نهائياً", fontWeight = FontWeight.Bold, color = AppColors.Error) },
-            text = {
-                Text("هل أنت متأكد من حذف المتبرع (${donor.name}) نهائياً من قاعدة البيانات؟ لا يمكن التراجع عن هذا الإجراء.")
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        scope.launch {
-                            donorRepository.deleteDonor(donor.id)
-                            Toast.makeText(context, "تم حذف سجل المتبرع نهائياً", Toast.LENGTH_SHORT).show()
-                            showDeleteDonorDialog = false
-                            loadData()
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Error)
-                ) {
-                    Text("حذف المتبرع")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDonorDialog = false }) {
                     Text("إلغاء")
                 }
             }

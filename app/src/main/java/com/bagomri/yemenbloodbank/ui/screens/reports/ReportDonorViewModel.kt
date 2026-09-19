@@ -94,39 +94,38 @@ class ReportDonorViewModel(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
             val cleanEntered = PhoneUtils.cleanLocalPhone(enteredPhone)
-            var resolvedDonorId = state.donorId
+            var targetDonor: Donor? = null
 
-            // 1. هل يطابق الرقم المتبرع الموجود في الذاكرة؟
-            val matchesLoadedDonor = state.donor?.allPhoneNumbers?.any {
+            // 1. التحقق أولاً مما إذا كان الرقم يطابق المتبرع المحمل حالياً
+            val currentDonor = state.donor
+            val matchesCurrentDonor = currentDonor?.allPhoneNumbers?.any {
                 PhoneUtils.cleanLocalPhone(it) == cleanEntered || it.trim() == enteredPhone
             } == true
 
-            if (!matchesLoadedDonor || resolvedDonorId.isBlank()) {
-                // البحث في قاعدة البيانات عن المتبرع صاحب هذا الرقم
-                val foundDonor = donorRepository.findDonorByPhone(cleanEntered).getOrNull()
+            if (matchesCurrentDonor && currentDonor != null) {
+                targetDonor = currentDonor
+            } else {
+                // 2. التحقق المباشر من قاعدة البيانات لمعرفة ما إذا كان الرقم مسجلاً لأي متبرع
+                val dbDonor = donorRepository.findDonorByPhone(cleanEntered).getOrNull()
                     ?: donorRepository.findDonorByPhone(enteredPhone).getOrNull()
-                if (foundDonor != null) {
-                    resolvedDonorId = foundDonor.id
+                if (dbDonor != null) {
+                    targetDonor = dbDonor
                 }
             }
 
-            // إذا ما زال غير معروف وكان donorId موجوداً أصلاً، نستخدمه
-            if (resolvedDonorId.isBlank() && state.donorId.isNotBlank()) {
-                resolvedDonorId = state.donorId
-            }
-
-            if (resolvedDonorId.isBlank()) {
+            // إذا لم يتم العثور على الرقم بقاعدة البيانات مطلقاً: نرفض البلاغ ونظهر رسالة تنبيه واضحة
+            if (targetDonor == null) {
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = "رقم الهاتف غير مسجل في قاعدة بيانات المتبرعين"
+                        errorMessage = "عذراً، هذا الرقم غير مسجل لأي متبرع في قاعدة البيانات. لا يمكن إرسال بلاغ عن رقم غير موجود."
                     )
                 }
                 return@launch
             }
 
             val result = reportRepository.addReport(
-                donorId = resolvedDonorId,
+                donorId = targetDonor.id,
                 donorPhoneNumber = enteredPhone,
                 reason = state.selectedReason,
                 notes = state.notes.trim().ifEmpty { null }

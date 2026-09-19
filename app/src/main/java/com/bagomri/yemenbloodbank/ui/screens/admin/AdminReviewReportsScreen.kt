@@ -3,10 +3,10 @@ package com.bagomri.yemenbloodbank.ui.screens.admin
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,13 +17,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
@@ -33,6 +34,7 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhoneDisabled
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -42,10 +44,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -117,12 +119,14 @@ fun AdminReviewReportsScreen(
         val donorPhone = donor?.phoneNumber.orEmpty()
         val donorPhone2 = donor?.phoneNumber2.orEmpty()
         val donorPhone3 = donor?.phoneNumber3.orEmpty()
+        val reportPhone = report.donorPhoneNumber
         val reason = report.reasonText.lowercase()
         val gov = donor?.governorate?.lowercase().orEmpty()
         val district = donor?.district?.lowercase().orEmpty()
 
         donorName.contains(q) || donorPhone.contains(q) || donorPhone2.contains(q) ||
-                donorPhone3.contains(q) || reason.contains(q) || gov.contains(q) || district.contains(q)
+                donorPhone3.contains(q) || reportPhone.contains(q) || reason.contains(q) ||
+                gov.contains(q) || district.contains(q)
     }
 
     Scaffold(
@@ -168,7 +172,7 @@ fun AdminReviewReportsScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                // شريط البحث
+                // شريط البحث والفلاتر
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.surface,
@@ -178,7 +182,7 @@ fun AdminReviewReportsScreen(
                         OutlinedTextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
-                            placeholder = { Text("ابحث باسم المتبرع، رقمه، المحافظة أو سبب البلاغ...") },
+                            placeholder = { Text("ابحث بالرقم، اسم المتبرع، أو سبب البلاغ...") },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Search,
@@ -208,15 +212,17 @@ fun AdminReviewReportsScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // شريط الفلاتر
+                        // شريط الفلاتر مع سكرول أفقي لمنع النزول العمودي (حل مشكلة التفاف الشاشة)
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             FilterChip(
                                 selected = selectedStatus == "pending",
                                 onClick = { selectedStatus = "pending" },
-                                label = { Text("معلقة ($pendingCount)") },
+                                label = { Text("معلقة ($pendingCount)", fontWeight = FontWeight.SemiBold) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = AppColors.WarningContainer,
                                     selectedLabelColor = AppColors.Warning
@@ -225,7 +231,7 @@ fun AdminReviewReportsScreen(
                             FilterChip(
                                 selected = selectedStatus == "approved",
                                 onClick = { selectedStatus = "approved" },
-                                label = { Text("مقبولة ($approvedCount)") },
+                                label = { Text("مقبولة ($approvedCount)", fontWeight = FontWeight.SemiBold) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = AppColors.SuccessContainer,
                                     selectedLabelColor = AppColors.Success
@@ -234,7 +240,7 @@ fun AdminReviewReportsScreen(
                             FilterChip(
                                 selected = selectedStatus == "rejected",
                                 onClick = { selectedStatus = "rejected" },
-                                label = { Text("مرفوضة ($rejectedCount)") },
+                                label = { Text("مرفوضة ($rejectedCount)", fontWeight = FontWeight.SemiBold) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = AppColors.ErrorContainer,
                                     selectedLabelColor = AppColors.Error
@@ -243,7 +249,7 @@ fun AdminReviewReportsScreen(
                             FilterChip(
                                 selected = selectedStatus == "all",
                                 onClick = { selectedStatus = "all" },
-                                label = { Text("الكل (${uiState.reports.size})") }
+                                label = { Text("الكل (${uiState.reports.size})", fontWeight = FontWeight.SemiBold) }
                             )
                         }
                     }
@@ -285,38 +291,9 @@ fun AdminReviewReportsScreen(
                                     ReportAdminCard(
                                         report = report,
                                         donor = matchedDonor,
-                                        onApproveAndDeactivate = {
-                                            viewModel.approveReport(
-                                                reportId = report.id,
-                                                deactivateDonorId = report.donorId
-                                            ) {
-                                                Toast.makeText(context, "تم قبول البلاغ وتعطيل المتبرع بنجاح", Toast.LENGTH_SHORT).show()
-                                            }
-                                        },
-                                        onApproveOnly = {
-                                            viewModel.approveReport(
-                                                reportId = report.id,
-                                                deactivateDonorId = null
-                                            ) {
-                                                Toast.makeText(context, "تم قبول البلاغ فقط (دون تعطيل المتبرع)", Toast.LENGTH_SHORT).show()
-                                            }
-                                        },
-                                        onReject = {
-                                            viewModel.rejectReport(report.id) {
-                                                Toast.makeText(context, "تم رفض البلاغ", Toast.LENGTH_SHORT).show()
-                                            }
-                                        },
-                                        onResetToPending = {
-                                            viewModel.resetReportToPending(report.id) {
-                                                Toast.makeText(context, "تمت إعادة البلاغ لقيد المراجعة", Toast.LENGTH_SHORT).show()
-                                            }
-                                        },
-                                        onDelete = {
-                                            reportToDelete = report
-                                        },
                                         onClick = { onNavigateToReportDetail(report.id) }
                                     )
-                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Spacer(modifier = Modifier.height(12.dp))
                                 }
 
                                 item {
@@ -358,29 +335,24 @@ fun AdminReviewReportsScreen(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+/**
+ * كارد البلاغ في قسم الأدمن
+ * يعرض الرقم المبلغ عنه، حالة البلاغ، سبب البلاغ، تاريخ البلاغ، وبالأسفل زر واضح للدخول للتفاصيل واتخاذ الإجراء
+ */
 @Composable
 private fun ReportAdminCard(
     report: Report,
     donor: Donor?,
-    onApproveAndDeactivate: () -> Unit,
-    onApproveOnly: () -> Unit,
-    onReject: () -> Unit,
-    onResetToPending: () -> Unit,
-    onDelete: () -> Unit,
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val isPending = report.status == "pending"
 
     val donorPhone = donor?.phoneNumber
     val reportPhone = report.donorPhoneNumber
-    val displayPhone = if (!donorPhone.isNullOrBlank()) {
-        donorPhone
-    } else if (reportPhone.isNotBlank()) {
-        reportPhone
-    } else {
-        "غير مسجل"
+    val displayPhone = when {
+        !donorPhone.isNullOrBlank() -> donorPhone
+        reportPhone.isNotBlank() -> reportPhone
+        else -> "غير مسجل"
     }
 
     Card(
@@ -392,214 +364,172 @@ private fun ReportAdminCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // الصف العلوي: فصيلة الدم + اسم المتبرع وحالته + شارة حالة البلاغ
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // دائرة فصيلة الدم
-                val bgCol = if (donor != null) AppColors.getBloodTypeContainerColor(donor.bloodType) else AppColors.SurfaceVariant
-                val textCol = if (donor != null) AppColors.getBloodTypeColor(donor.bloodType) else AppColors.TextSecondary
-
-                Surface(
-                    modifier = Modifier.size(46.dp),
-                    shape = CircleShape,
-                    color = bgCol
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                // 1. رأس الكارد: الرقم المبلّغ عنه وحالة البلاغ
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        if (donor != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            modifier = Modifier.size(40.dp),
+                            shape = CircleShape,
+                            color = AppColors.PrimaryContainer
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.Phone,
+                                    contentDescription = null,
+                                    tint = AppColors.Primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        Column {
                             Text(
-                                text = donor.bloodType,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 16.sp,
-                                color = textCol
+                                text = "الرقم المبلّغ عنه",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = AppColors.TextSecondary
                             )
-                        } else {
+                            Text(
+                                text = PhoneUtils.formatDisplayPhone(displayPhone),
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+
+                    // شارة حالة البلاغ (قيد المراجعة / مقبول / مرفوض)
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = when (report.status) {
+                            "approved" -> AppColors.SuccessContainer
+                            "rejected" -> AppColors.ErrorContainer
+                            else -> AppColors.WarningContainer
+                        }
+                    ) {
+                        Text(
+                            text = report.statusText,
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = when (report.status) {
+                                "approved" -> AppColors.Success
+                                "rejected" -> AppColors.Error
+                                else -> AppColors.Warning
+                            },
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // 2. كرت سبب البلاغ ودرجة الأولوية
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    color = when (report.priority) {
+                        "critical" -> AppColors.ErrorContainer
+                        "high" -> AppColors.WarningContainer
+                        else -> AppColors.SurfaceVariant
+                    }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                imageVector = Icons.Default.Warning,
+                                imageVector = when (report.reason) {
+                                    "deceased" -> Icons.Default.Close
+                                    "refuses_to_donate" -> Icons.Default.Block
+                                    "wrong_number", "number_not_working" -> Icons.Default.PhoneDisabled
+                                    else -> Icons.Default.Warning
+                                },
                                 contentDescription = null,
-                                tint = AppColors.Warning,
-                                modifier = Modifier.size(24.dp)
+                                tint = when (report.priority) {
+                                    "critical" -> AppColors.Error
+                                    "high" -> AppColors.Warning
+                                    else -> AppColors.Primary
+                                },
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "سبب البلاغ: ${report.reasonText}",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                color = when (report.priority) {
+                                    "critical" -> AppColors.Error
+                                    "high" -> AppColors.Warning
+                                    else -> MaterialTheme.colorScheme.onSurface
+                                }
+                            )
+                        }
+
+                        // الأولوية
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = when (report.priority) {
+                                "critical" -> AppColors.Error
+                                "high" -> AppColors.Warning
+                                else -> AppColors.SecondaryContainer
+                            }
+                        ) {
+                            Text(
+                                text = report.priorityText,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = when (report.priority) {
+                                    "critical", "high" -> Color.White
+                                    else -> AppColors.Primary
+                                },
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.width(12.dp))
-
-                // اسم المتبرع وحالته في النظام
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = donor?.name ?: "متبرع غير متوفر بقاعدة البيانات",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
+                // 3. معلومات المتبرع إن توفر
+                if (donor != null) {
+                    Spacer(modifier = Modifier.height(10.dp))
                     Row(
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        if (donor != null) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            // دائرة فصيلة الدم
                             Surface(
-                                shape = RoundedCornerShape(4.dp),
-                                color = if (donor.isActive) AppColors.SuccessContainer else AppColors.SurfaceVariant
+                                modifier = Modifier.size(28.dp),
+                                shape = CircleShape,
+                                color = AppColors.getBloodTypeContainerColor(donor.bloodType)
                             ) {
-                                Text(
-                                    text = if (donor.isActive) "حساب مفعل" else "حساب معطل",
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = if (donor.isActive) AppColors.Success else AppColors.TextSecondary,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                )
-                            }
-
-                            if (donor.isSuspended) {
-                                Surface(
-                                    shape = RoundedCornerShape(4.dp),
-                                    color = AppColors.WarningContainer
-                                ) {
+                                Box(contentAlignment = Alignment.Center) {
                                     Text(
-                                        text = "موقوف مؤقتاً",
+                                        text = donor.bloodType,
+                                        fontWeight = FontWeight.ExtraBold,
                                         fontSize = 11.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = AppColors.Warning,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        color = AppColors.getBloodTypeColor(donor.bloodType)
                                     )
                                 }
                             }
-                        }
-                    }
-                }
-
-                // شارة حالة البلاغ
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = when (report.status) {
-                        "approved" -> AppColors.SuccessContainer
-                        "rejected" -> AppColors.ErrorContainer
-                        else -> AppColors.WarningContainer
-                    }
-                ) {
-                    Text(
-                        text = report.statusText,
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                        color = when (report.status) {
-                            "approved" -> AppColors.Success
-                            "rejected" -> AppColors.Error
-                            else -> AppColors.Warning
-                        },
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // كرت سبب البلاغ والأولوية
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
-                color = when (report.priority) {
-                    "critical" -> AppColors.ErrorContainer
-                    "high" -> AppColors.WarningContainer
-                    else -> AppColors.SurfaceVariant
-                }
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = when (report.reason) {
-                                "deceased" -> Icons.Default.Close
-                                "refuses_to_donate" -> Icons.Default.Block
-                                "wrong_number", "number_not_working" -> Icons.Default.PhoneDisabled
-                                else -> Icons.Default.Warning
-                            },
-                            contentDescription = null,
-                            tint = when (report.priority) {
-                                "critical" -> AppColors.Error
-                                "high" -> AppColors.Warning
-                                else -> AppColors.Primary
-                            },
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "السبب: ${report.reasonText}",
-                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            color = when (report.priority) {
-                                "critical" -> AppColors.Error
-                                "high" -> AppColors.Warning
-                                else -> MaterialTheme.colorScheme.onSurface
-                            }
-                        )
-                    }
-
-                    // أولوية البلاغ
-                    Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = when (report.priority) {
-                            "critical" -> AppColors.Error
-                            "high" -> AppColors.Warning
-                            else -> AppColors.SecondaryContainer
-                        }
-                    ) {
-                        Text(
-                            text = report.priorityText,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = when (report.priority) {
-                                "critical", "high" -> Color.White
-                                else -> AppColors.Primary
-                            },
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // معلومات الاتصال والموقع
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    // رقم الهاتف
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Phone,
-                            contentDescription = null,
-                            tint = AppColors.TextSecondary,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = PhoneUtils.formatDisplayPhone(displayPhone),
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    // الموقع إن توفر
-                    if (donor != null && (!donor.governorate.isBlank() || !donor.district.isBlank())) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = null,
-                                tint = AppColors.TextSecondary,
-                                modifier = Modifier.size(14.dp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = donor.name,
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = MaterialTheme.colorScheme.onSurface
                             )
-                            Spacer(modifier = Modifier.width(4.dp))
+                        }
+
+                        // المحافظة / المديرية
+                        if (donor.displayLocation.isNotBlank()) {
                             Text(
                                 text = donor.displayLocation,
                                 style = MaterialTheme.typography.labelSmall,
@@ -609,81 +539,72 @@ private fun ReportAdminCard(
                     }
                 }
 
-                // أزرار الاتصال السريع
-                if (displayPhone.isNotBlank() && displayPhone != "غير مسجل") {
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // 4. تاريخ البلاغ
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "تاريخ البلاغ: ${DateUtils.formatIsoToDisplay(report.createdAt)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AppColors.TextSecondary
+                    )
+
+                    // زر اتصال سريع اختياري
+                    if (displayPhone.isNotBlank() && displayPhone != "غير مسجل") {
                         IconButton(
                             onClick = { IntentUtils.makePhoneCall(context, displayPhone) },
-                            modifier = Modifier.size(34.dp)
+                            modifier = Modifier.size(28.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Call,
                                 contentDescription = "اتصال",
                                 tint = AppColors.Primary,
-                                modifier = Modifier.size(18.dp)
+                                modifier = Modifier.size(16.dp)
                             )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            // 5. الشريط السفلي: "اضغط لعرض التفاصيل واتخاذ الإجراء"
+            HorizontalDivider(color = AppColors.Divider.copy(alpha = 0.6f))
 
-            // التاريخ والأزرار الإجرائية
-            Row(
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                color = AppColors.SurfaceVariant.copy(alpha = 0.6f)
             ) {
-                Text(
-                    text = DateUtils.formatIsoToDisplay(report.createdAt),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = AppColors.TextSecondary
-                )
-
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (isPending) {
-                        Button(
-                            onClick = onApproveAndDeactivate,
-                            colors = ButtonDefaults.buttonColors(containerColor = AppColors.Success),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.height(34.dp)
-                        ) {
-                            Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("قبول وتعطيل", fontSize = 12.sp)
-                        }
-
-                        OutlinedButton(
-                            onClick = onReject,
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = AppColors.Error),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.height(34.dp)
-                        ) {
-                            Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(14.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("رفض", fontSize = 12.sp)
-                        }
-                    } else {
-                        TextButton(
-                            onClick = onResetToPending,
-                            modifier = Modifier.height(32.dp)
-                        ) {
-                            Text("إعادة للمراجعة", fontSize = 11.sp, color = AppColors.Primary)
-                        }
-
-                        IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = "حذف",
-                                tint = AppColors.Error,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.TouchApp,
+                            contentDescription = null,
+                            tint = AppColors.Primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "اضغط لعرض التفاصيل واتخاذ الإجراء",
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                            color = AppColors.Primary
+                        )
                     }
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "عرض التفاصيل",
+                        tint = AppColors.Primary,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             }
         }

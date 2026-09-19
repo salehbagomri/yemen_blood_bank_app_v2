@@ -1,6 +1,7 @@
 package com.bagomri.yemenbloodbank.data.repository
 
 import com.bagomri.yemenbloodbank.core.network.SupabaseProvider
+import com.bagomri.yemenbloodbank.data.model.Donor
 import com.bagomri.yemenbloodbank.data.model.Report
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -51,6 +52,26 @@ data class ReportInsertDto(
 
             // إرسال البلاغ بدون select() لتفادي رفض سياسة RLS لغير الأدمن
             postgrest.from("reports").insert(dto)
+
+            // حفظ الملاحظات المرفقة بالبلاغ ضمن ملاحظات المتبرع لتظهر للأدمن
+            if (!notes.isNullOrBlank()) {
+                try {
+                    val donor = postgrest.from("donors").select {
+                        filter { eq("id", donorId) }
+                        limit(1)
+                    }.decodeSingleOrNull<Donor>()
+
+                    val existing = donor?.notes?.takeIf { it.isNotBlank() }
+                    val appendNote = "[ملاحظة بلاغ]: $notes"
+                    val combined = if (existing != null) "$existing\n$appendNote" else appendNote
+                    val updateData = buildJsonObject { put("notes", combined) }
+                    postgrest.from("donors").update(updateData) {
+                        filter { eq("id", donorId) }
+                    }
+                } catch (_: Exception) {
+                    // عدم تعطيل نجاح البلاغ في حال تعذر تحديث الملاحظة
+                }
+            }
 
             Result.success(Unit)
         } catch (e: Exception) {

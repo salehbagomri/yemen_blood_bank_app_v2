@@ -23,21 +23,27 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.LockReset
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhoneDisabled
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -99,6 +105,9 @@ fun AdminReportDetailScreen(
     var matchedDonor by remember { mutableStateOf<Donor?>(null) }
 
     var showDeleteReportDialog by remember { mutableStateOf(false) }
+    var showDeleteDonorDialog by remember { mutableStateOf(false) }
+    var showSuspendDialog by remember { mutableStateOf(false) }
+    var showUpdateDonationDialog by remember { mutableStateOf(false) }
 
     fun loadData() {
         scope.launch {
@@ -195,6 +204,13 @@ fun AdminReportDetailScreen(
                 val rep = report!!
                 val donor = matchedDonor
 
+                // استخراج الملاحظات سواء من البلاغ أو من سجل المتبرع
+                val displayNotes = when {
+                    !rep.notes.isNullOrBlank() -> rep.notes
+                    donor != null && !donor.notes.isNullOrBlank() -> donor.notes
+                    else -> null
+                }
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -203,7 +219,7 @@ fun AdminReportDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // ==========================================
-                    // 1. الكارد الأول: درجة البلاغ (Priority & Impact)
+                    // 1. درجة وأهمية البلاغ (Priority & Impact)
                     // ==========================================
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -243,14 +259,18 @@ fun AdminReportDetailScreen(
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Column {
                                         Text(
-                                            text = "الكارد 1: درجة وأهمية البلاغ",
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = AppColors.TextSecondary
-                                        )
-                                        Text(
-                                            text = "درجة البلاغ: ${rep.priorityText}",
+                                            text = "درجة وأهمية البلاغ",
                                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                             color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = "المستوى: ${rep.priorityText}",
+                                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                                            color = when (rep.priority) {
+                                                "critical" -> AppColors.Error
+                                                "high" -> AppColors.Warning
+                                                else -> AppColors.Primary
+                                            }
                                         )
                                     }
                                 }
@@ -294,7 +314,7 @@ fun AdminReportDetailScreen(
                     }
 
                     // ==========================================
-                    // 2. الكارد الثاني: معلومات البلاغ (Report Info)
+                    // 2. معلومات وتفاصيل البلاغ (Report Info)
                     // ==========================================
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -326,14 +346,14 @@ fun AdminReportDetailScreen(
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Column {
                                         Text(
-                                            text = "الكارد 2: معلومات البلاغ",
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = AppColors.TextSecondary
-                                        )
-                                        Text(
-                                            text = "تفاصيل وسبب الإبلاغ",
+                                            text = "معلومات وتفاصيل البلاغ",
                                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                             color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = "سبب وتاريخ الإبلاغ",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = AppColors.TextSecondary
                                         )
                                     }
                                 }
@@ -393,32 +413,45 @@ fun AdminReportDetailScreen(
                                 color = AppColors.TextSecondary
                             )
 
-                            // ملاحظات المبلغ إن وجدت
-                            if (!rep.notes.isNullOrEmpty()) {
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Text(
-                                    text = "ملاحظات المبلغ:",
-                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = AppColors.TextSecondary
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Surface(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = AppColors.SurfaceVariant
+                            // عرض الملاحظات المرفقة مع البلاغ
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Surface(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(10.dp),
+                                color = if (displayNotes != null) AppColors.SurfaceVariant else AppColors.SurfaceVariant.copy(alpha = 0.5f)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(12.dp),
+                                    verticalAlignment = Alignment.Top
                                 ) {
-                                    Text(
-                                        text = rep.notes,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        modifier = Modifier.padding(10.dp)
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.Notes,
+                                        contentDescription = null,
+                                        tint = if (displayNotes != null) AppColors.Primary else AppColors.TextSecondary,
+                                        modifier = Modifier.size(20.dp)
                                     )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            text = "الملاحظات المرفقة مع البلاغ:",
+                                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = AppColors.TextPrimary
+                                        )
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(
+                                            text = displayNotes ?: "لا توجد ملاحظات إضافية مرفقة مع هذا البلاغ",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = if (displayNotes != null) AppColors.TextPrimary else AppColors.TextSecondary,
+                                            lineHeight = 18.sp
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
 
                     // ==========================================
-                    // 3. الكارد الثالث: بيانات المتبرع للرقم المبلغ عنه
+                    // 3. بيانات المتبرع للرقم المبلغ عنه
                     // ==========================================
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -448,14 +481,14 @@ fun AdminReportDetailScreen(
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text(
-                                        text = "الكارد 3: بيانات المتبرع للرقم المبلّغ عنه",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = AppColors.TextSecondary
+                                        text = "بيانات المتبرع للرقم المبلّغ عنه",
+                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
                                         text = donor?.name ?: "متبرع غير متوفر بقاعدة البيانات",
-                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                        color = MaterialTheme.colorScheme.onSurface
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = AppColors.TextSecondary
                                     )
                                 }
                             }
@@ -501,17 +534,34 @@ fun AdminReportDetailScreen(
                                     }
 
                                     // شارة حالة المتبرع
-                                    Surface(
-                                        shape = RoundedCornerShape(6.dp),
-                                        color = if (donor.isActive) AppColors.SuccessContainer else AppColors.SurfaceVariant
-                                    ) {
-                                        Text(
-                                            text = if (donor.isActive) "حساب مفعل" else "حساب معطل",
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = if (donor.isActive) AppColors.Success else AppColors.TextSecondary,
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                                        )
+                                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        Surface(
+                                            shape = RoundedCornerShape(6.dp),
+                                            color = if (donor.isActive) AppColors.SuccessContainer else AppColors.ErrorContainer
+                                        ) {
+                                            Text(
+                                                text = if (donor.isActive) "حساب مفعل" else "حساب معطل",
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = if (donor.isActive) AppColors.Success else AppColors.Error,
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                            )
+                                        }
+
+                                        if (donor.isSuspended) {
+                                            Surface(
+                                                shape = RoundedCornerShape(6.dp),
+                                                color = AppColors.WarningContainer
+                                            ) {
+                                                Text(
+                                                    text = "موقوف",
+                                                    fontSize = 11.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = AppColors.Warning,
+                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                                                )
+                                            }
+                                        }
                                     }
                                 }
 
@@ -545,6 +595,20 @@ fun AdminReportDetailScreen(
                                     PhoneNumberRow(phone = p3, label = "رقم ثالث", context = context)
                                     Spacer(modifier = Modifier.height(6.dp))
                                 }
+
+                                // تاريخ آخر تبرع
+                                if (!donor.lastDonationDate.isNullOrBlank()) {
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.DateRange, contentDescription = null, tint = AppColors.TextSecondary, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = "آخر تبرع: ${DateUtils.formatDate(donor.lastDonationDate)}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = AppColors.TextSecondary
+                                        )
+                                    }
+                                }
                             } else {
                                 Text(
                                     text = "لم يتم العثور على سجل متبرع مطابق في قاعدة البيانات (قد يكون محذوفاً بالفعل).",
@@ -556,7 +620,7 @@ fun AdminReportDetailScreen(
                     }
 
                     // ==========================================
-                    // 4. الكارد الرابع: اتخاذ القرار والإجراء
+                    // 4. اتخاذ القرار والإجراءات الشاملة
                     // ==========================================
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -569,13 +633,13 @@ fun AdminReportDetailScreen(
                                 Surface(
                                     modifier = Modifier.size(42.dp),
                                     shape = RoundedCornerShape(10.dp),
-                                    color = AppColors.SuccessContainer
+                                    color = AppColors.PrimaryContainer
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Icon(
                                             imageVector = Icons.Default.Edit,
                                             contentDescription = null,
-                                            tint = AppColors.Success,
+                                            tint = AppColors.Primary,
                                             modifier = Modifier.size(24.dp)
                                         )
                                     }
@@ -583,14 +647,14 @@ fun AdminReportDetailScreen(
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text(
-                                        text = "الكارد 4: اتخاذ القرار والإجراء",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = AppColors.TextSecondary
-                                    )
-                                    Text(
-                                        text = "إجراءات معالجة البلاغ",
+                                        text = "اتخاذ القرار والإجراء",
                                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                         color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = "القرارات المباشرة وإدارة المتبرع",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = AppColors.TextSecondary
                                     )
                                 }
                             }
@@ -598,6 +662,14 @@ fun AdminReportDetailScreen(
                             Spacer(modifier = Modifier.height(14.dp))
                             HorizontalDivider(color = AppColors.Divider.copy(alpha = 0.6f))
                             Spacer(modifier = Modifier.height(14.dp))
+
+                            // 1. أزرار معالجة البلاغ (قرارات البلاغ)
+                            Text(
+                                text = "أولاً: قرار البلاغ",
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                color = AppColors.Primary
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
 
                             if (rep.status == "pending") {
                                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -665,57 +737,171 @@ fun AdminReportDetailScreen(
                                     }
                                 }
                             } else {
-                                // إذا كان البلاغ معالجاً بالفعل
-                                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    if (donor != null) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    OutlinedButton(
+                                        onClick = {
+                                            scope.launch {
+                                                reportRepository.resetReportToPending(rep.id)
+                                                Toast.makeText(context, "تمت إعادة البلاغ لقيد المراجعة", Toast.LENGTH_SHORT).show()
+                                                loadData()
+                                            }
+                                        },
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(46.dp)
+                                    ) {
+                                        Icon(Icons.Default.LockReset, contentDescription = null)
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text("إعادة للمراجعة")
+                                    }
+
+                                    Button(
+                                        onClick = { showDeleteReportDialog = true },
+                                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Error),
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(46.dp)
+                                    ) {
+                                        Icon(Icons.Default.Delete, contentDescription = null)
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text("حذف البلاغ")
+                                    }
+                                }
+                            }
+
+                            // 2. بقية الإجراءات المباشرة على المتبرع
+                            if (donor != null) {
+                                Spacer(modifier = Modifier.height(18.dp))
+                                HorizontalDivider(color = AppColors.Divider.copy(alpha = 0.6f))
+                                Spacer(modifier = Modifier.height(14.dp))
+
+                                Text(
+                                    text = "ثانياً: إجراءات مباشرة على المتبرع",
+                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                    color = AppColors.Primary
+                                )
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        // زر إيقاف 6 أشهر / إلغاء الإيقاف
                                         Button(
-                                            onClick = { onNavigateToEditDonor(donor.id) },
-                                            colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary),
-                                            shape = RoundedCornerShape(12.dp),
+                                            onClick = {
+                                                if (donor.isSuspended) {
+                                                    scope.launch {
+                                                        donorRepository.cancelDonorSuspension(donor.id)
+                                                        Toast.makeText(context, "تم إلغاء إيقاف المتبرع", Toast.LENGTH_SHORT).show()
+                                                        loadData()
+                                                    }
+                                                } else {
+                                                    showSuspendDialog = true
+                                                }
+                                            },
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = if (donor.isSuspended) AppColors.Success else AppColors.Warning
+                                            ),
+                                            shape = RoundedCornerShape(10.dp),
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(48.dp)
+                                                .weight(1f)
+                                                .height(44.dp)
                                         ) {
-                                            Icon(Icons.Default.Edit, contentDescription = null)
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            Text("تعديل بيانات المتبرع الآن", fontWeight = FontWeight.Bold)
+                                            Icon(
+                                                imageVector = if (donor.isSuspended) Icons.Default.PlayArrow else Icons.Default.Pause,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = if (donor.isSuspended) "إلغاء الإيقاف" else "إيقاف 6 أشهر",
+                                                fontSize = 13.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+
+                                        // زر تحديث آخر تبرع
+                                        Button(
+                                            onClick = { showUpdateDonationDialog = true },
+                                            colors = ButtonDefaults.buttonColors(containerColor = AppColors.Info),
+                                            shape = RoundedCornerShape(10.dp),
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .height(44.dp)
+                                        ) {
+                                            Icon(Icons.Default.Update, contentDescription = null, modifier = Modifier.size(16.dp))
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text("تحديث آخر تبرع", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                                         }
                                     }
 
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
+                                        // زر تعطيل / تفعيل الحساب
                                         OutlinedButton(
                                             onClick = {
                                                 scope.launch {
-                                                    reportRepository.resetReportToPending(rep.id)
-                                                    Toast.makeText(context, "تمت إعادة البلاغ لقيد المراجعة", Toast.LENGTH_SHORT).show()
+                                                    val newActive = !donor.isActive
+                                                    donorRepository.toggleDonorStatus(donor.id, newActive)
+                                                    val msg = if (newActive) "تم تفعيل حساب المتبرع" else "تم تعطيل حساب المتبرع"
+                                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                                     loadData()
                                                 }
                                             },
-                                            shape = RoundedCornerShape(12.dp),
+                                            shape = RoundedCornerShape(10.dp),
                                             modifier = Modifier
                                                 .weight(1f)
-                                                .height(48.dp)
+                                                .height(44.dp)
                                         ) {
-                                            Icon(Icons.Default.LockReset, contentDescription = null)
+                                            Icon(
+                                                imageVector = if (donor.isActive) Icons.Default.Block else Icons.Default.CheckCircle,
+                                                contentDescription = null,
+                                                tint = if (donor.isActive) AppColors.Error else AppColors.Success,
+                                                modifier = Modifier.size(16.dp)
+                                            )
                                             Spacer(modifier = Modifier.width(6.dp))
-                                            Text("إعادة للمراجعة")
+                                            Text(
+                                                text = if (donor.isActive) "تعطيل الحساب" else "تفعيل الحساب",
+                                                fontSize = 13.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = if (donor.isActive) AppColors.Error else AppColors.Success
+                                            )
                                         }
 
-                                        Button(
-                                            onClick = { showDeleteReportDialog = true },
-                                            colors = ButtonDefaults.buttonColors(containerColor = AppColors.Error),
-                                            shape = RoundedCornerShape(12.dp),
+                                        // زر تعديل المتبرع في أي وقت
+                                        OutlinedButton(
+                                            onClick = { onNavigateToEditDonor(donor.id) },
+                                            shape = RoundedCornerShape(10.dp),
                                             modifier = Modifier
                                                 .weight(1f)
-                                                .height(48.dp)
+                                                .height(44.dp)
                                         ) {
-                                            Icon(Icons.Default.Delete, contentDescription = null)
+                                            Icon(Icons.Default.Edit, contentDescription = null, tint = AppColors.Primary, modifier = Modifier.size(16.dp))
                                             Spacer(modifier = Modifier.width(6.dp))
-                                            Text("حذف البلاغ")
+                                            Text("تعديل البيانات", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = AppColors.Primary)
                                         }
+                                    }
+
+                                    // زر الحذف النهائي للمتبرع
+                                    Button(
+                                        onClick = { showDeleteDonorDialog = true },
+                                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Error),
+                                        shape = RoundedCornerShape(10.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(44.dp)
+                                    ) {
+                                        Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text("حذف المتبرع نهائياً من قاعدة البيانات", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                                     }
                                 }
                             }
@@ -726,6 +912,62 @@ fun AdminReportDetailScreen(
                 }
             }
         }
+    }
+
+    // تأكيد إيقاف 6 أشهر
+    if (showSuspendDialog && matchedDonor != null) {
+        val d = matchedDonor!!
+        AlertDialog(
+            onDismissRequest = { showSuspendDialog = false },
+            title = { Text("تأكيد إيقاف المتبرع", fontWeight = FontWeight.Bold) },
+            text = { Text("هل تريد إيقاف المتبرع (${d.name}) لمدة 6 أشهر؟ سيتم تعليق ظهوره لطالبي الدم مؤقتاً.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        scope.launch {
+                            donorRepository.suspendDonorFor6Months(d.id)
+                            Toast.makeText(context, "تم إيقاف المتبرع لمدة 6 أشهر", Toast.LENGTH_SHORT).show()
+                            showSuspendDialog = false
+                            loadData()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Warning)
+                ) {
+                    Text("إيقاف 6 أشهر")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSuspendDialog = false }) { Text("إلغاء") }
+            }
+        )
+    }
+
+    // تأكيد تحديث آخر تبرع
+    if (showUpdateDonationDialog && matchedDonor != null) {
+        val d = matchedDonor!!
+        AlertDialog(
+            onDismissRequest = { showUpdateDonationDialog = false },
+            title = { Text("تحديث تاريخ آخر تبرع", fontWeight = FontWeight.Bold) },
+            text = { Text("سيتم تسجيل تبرع جديد للمتبرع (${d.name}) بتاريخ اليوم وإيقافه تلقائياً لمدة 6 أشهر حتى يسترد عافيته. هل تريد المتابعة؟") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        scope.launch {
+                            donorRepository.updateDonationDate(d.id)
+                            Toast.makeText(context, "تم تحديث تاريخ التبرع بنجاح", Toast.LENGTH_SHORT).show()
+                            showUpdateDonationDialog = false
+                            loadData()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Info)
+                ) {
+                    Text("تأكيد التحديث")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUpdateDonationDialog = false }) { Text("إلغاء") }
+            }
+        )
     }
 
     // تأكيد حذف البلاغ
@@ -751,6 +993,38 @@ fun AdminReportDetailScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteReportDialog = false }) {
+                    Text("إلغاء")
+                }
+            }
+        )
+    }
+
+    // تأكيد حذف المتبرع نهائياً
+    if (showDeleteDonorDialog && matchedDonor != null) {
+        val donor = matchedDonor!!
+        AlertDialog(
+            onDismissRequest = { showDeleteDonorDialog = false },
+            title = { Text("حذف سجل المتبرع نهائياً", fontWeight = FontWeight.Bold, color = AppColors.Error) },
+            text = {
+                Text("هل أنت متأكد من حذف المتبرع (${donor.name}) نهائياً من قاعدة البيانات؟ لا يمكن التراجع عن هذا الإجراء.")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        scope.launch {
+                            donorRepository.deleteDonor(donor.id)
+                            Toast.makeText(context, "تم حذف سجل المتبرع نهائياً", Toast.LENGTH_SHORT).show()
+                            showDeleteDonorDialog = false
+                            loadData()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Error)
+                ) {
+                    Text("حذف المتبرع")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDonorDialog = false }) {
                     Text("إلغاء")
                 }
             }

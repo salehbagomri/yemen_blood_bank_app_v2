@@ -1,8 +1,8 @@
-﻿# سياسة الخصوصية - Privacy Policy
+# سياسة الخصوصية - Privacy Policy
 
 **تطبيق بنك دم اليمن - Yemen Blood Bank App**
 
-**آخر تحديث: 20 أبريل 2026 - Last Updated: April 20, 2026**
+**آخر تحديث: 22 سبتمبر 2026 - Last Updated: September 22, 2026**
 
 **🔗 رابط السياسة: https://salehbagomri.github.io/yemen-blood-bank-privacy/**
 
@@ -32,9 +32,9 @@
 - **آخر تاريخ تبرع (اختياري)**: لضمان مرور الفترة الآمنة بين التبرعات
 - **ملاحظات (اختياري)**: أي معلومات إضافية
 
-#### 2.2 بيانات الاستخدام
-- **تقارير الأخطاء التقنية**: من خلال Firebase Crashlytics لتحسين التطبيق
-- **البلاغات**: إذا قمت بالإبلاغ عن متبرع
+#### 2.2 بيانات الاستخدام والبلاغات
+- **تقارير الأخطاء التقنية**: من خلال Firebase Crashlytics لتحسين استقرار التطبيق.
+- **نظام البلاغات والتحقق من الأرقام**: عند الإبلاغ عن رقم غير متاح أو متبرع غير دقيق، يتحقق النظام أولاً من وجود الرقم المبلغ عنه في قاعدة بيانات المتبرعين لضمان مصداقية البلاغات ومنع الإساءة. يتم تسجيل سبب البلاغ وملاحظاته لتمكين الإدارة من التحقق واتخاذ الإجراء المناسب (مثل الإيقاف المؤقت لمدة 6 أشهر أو تحديث تاريخ آخر تبرع أو تعديل البيانات أو الحذف).
 
 **ملاحظة مهمة**: المستخدم العادي لا يحتاج إلى إنشاء حساب أو كلمة مرور لاستخدام التطبيق. الحسابات مخصصة فقط للمستشفيات والمسؤولين.
 
@@ -64,10 +64,9 @@
 - لا يتم جمع معلومات شخصية من خلال Crashlytics
 - البيانات المرسلة: نوع الجهاز، إصدار النظام، تقارير الأخطاء فقط
 
-#### 4.3 التخزين المحلي (وضع بدون إنترنت)
-- يحتفظ التطبيق بنسخة محلية مشفرة من البيانات على جهازك
-- تُستخدم فقط لتمكين البحث عن متبرعين بدون اتصال بالإنترنت
-- تُحدّث تلقائياً عند توفر الاتصال
+#### 4.3 التخزين المحلي (قاعدة بيانات Room المحلية - وضع بدون إنترنت)
+- يحتفظ التطبيق بنسخة محلية مؤمنة على جهازك عبر قاعدة بيانات Android Room لتمكين البحث السريع والعمل دون اتصال بالإنترنت
+- تُحدّث تلقائياً وبشكل دوري عند توفر الاتصال بالإنترنت
 
 ### 5. مشاركة البيانات
 
@@ -163,9 +162,9 @@ When registering a new donor, we collect:
 - **Last Donation Date (Optional)**: To ensure safe interval between donations
 - **Notes (Optional)**: Any additional information
 
-#### 2.2 Usage Data
-- **Technical Error Reports**: Through Firebase Crashlytics to improve the app
-- **Reports**: If you report a donor
+#### 2.2 Usage & Report Data
+- **Technical Error Reports**: Through Firebase Crashlytics to improve app stability.
+- **Reporting System & Verification**: When reporting an unavailable or incorrect donor number, the system strictly verifies that the reported number exists in the registered donors database to prevent arbitrary or malicious reports. The report reason and notes are securely preserved for administrative review, enabling authorized supervisors to take corrective action (such as 6-month temporary suspension, updating last donation date, editing, or permanent deletion).
 
 **Important Note**: Regular users do not need to create an account or password to use the app. Accounts are only for hospitals and administrators.
 
@@ -195,10 +194,9 @@ We use the collected information for:
 - No personal information is collected through Crashlytics
 - Data sent: device type, OS version, error reports only
 
-#### 4.3 Local Storage (Offline Mode)
-- The app keeps an encrypted local copy of data on your device
-- Used only to enable donor search without internet connection
-- Automatically updated when connection is available
+#### 4.3 Local Storage (Android Room Database - Offline Mode)
+- The app maintains a secure local cache on your device using Android Room Database to enable rapid search without internet connectivity
+- Automatically synchronizes when an active connection is restored
 
 ### 5. Data Sharing
 
@@ -286,10 +284,10 @@ If you have any questions about the privacy policy:
    - No personal information collected
    - Website: https://firebase.google.com
 
-3. **Hive** (Local Encrypted Storage)
-   - Purpose: Cache donor data locally for offline access
+3. **Android Room Database** (Local Secure Storage)
+   - Purpose: Cache donor data locally on device for offline access and high-speed search
    - Data location: On the user's device only
-   - Security: Encrypted local storage
+   - Security: Application sandboxed local storage
 
 ### Data Retention
 
@@ -319,9 +317,9 @@ You can withdraw consent at any time by requesting data deletion.
 
 ---
 
-**Version**: 1.2
-**Effective Date**: April 20, 2026
-**App Version**: 1.0.3
+**Version**: 2.0.1
+**Effective Date**: September 22, 2026
+**App Version**: 2.0.1
 
 ---
 

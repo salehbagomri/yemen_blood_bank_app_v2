@@ -2,7 +2,9 @@
 
 **تطبيق بنك دم اليمن - Yemen Blood Bank App**
 
-**آخر تحديث: 29 مايو 2026 - Last Updated: May 29, 2026**
+**آخر تحديث: 22 سبتمبر 2026 - Last Updated: September 22, 2026**
+
+**إصدار التطبيق - App Version: 2.0.1**
 
 **🔗 رابط الشروط: https://salehbagomri.github.io/yemen-blood-bank-privacy/terms.html**
 
@@ -27,19 +29,23 @@
 * تقديم بيانات صحيحة (الاسم، الهاتف، فصيلة الدم، المحافظة/المديرية، العمر).
 * أن يكون عمرك 18 سنة فأكثر ومؤهلاً صحياً للتبرع.
 * تتحمل مسؤولية الموافقة على عرض رقم هاتفك للباحثين عن المتبرعين المتاحين.
-* يمكنك طلب حذف بياناتك في أي وقت عبر وسائل التواصل أدناه.
+* يمكنك طلب حذف بياناتك في أي وقت عبر وسائل التواصل أدناه أو من داخل التطبيق.
 
 ### 5. مسؤوليات طالب الدم
 * استخدام أرقام المتبرعين **لغرض التبرع بالدم فقط**.
 * التحقق الطبي من فصيلة الدم وصلاحية التبرع عبر الجهة الصحية المختصة قبل أي نقل دم.
 * احترام خصوصية المتبرع وعدم إزعاجه أو إساءة استخدام بياناته.
 
-### 6. الاستخدام المحظور
-* إدخال بيانات وهمية أو تسجيل متبرعين دون علمهم وموافقتهم.
-* جمع أرقام المتبرعين أو استخدامها لأغراض تجارية أو دعائية أو غير التبرع.
-* إرسال رسائل مزعجة (Spam) أو التحرّش أو الإساءة لأي مستخدم.
-* محاولة اختراق النظام أو الوصول غير المصرّح به لقاعدة البيانات (Supabase).
-* استخدام التطبيق في أي نشاط مخالف للقانون.
+### 6. الاستخدام المحظور ونظام البلاغات
+* **ضوابط البلاغات:** يوفر التطبيق نظاماً للإبلاغ عن الأرقام غير الصحيحة أو غير المتاحة، ويشترط النظام تقنياً أن يكون الرقم المُبلَّغ عنه مسجلاً في قاعدة البيانات لمنع البلاغات العشوائية أو الكيدية.
+* **إجراءات الإدارة:** يحق للإدارة والمشرفين المخولين مراجعة البلاغات واتخاذ الإجراءات التنظيمية والرقابية اللازمة، ومنها: الإيقاف المؤقت لظهور المتبرع لمدة 6 أشهر، تحديث تاريخ آخر تبرع، تعديل البيانات، أو الحذف النهائي للسجلات غير المطابقة.
+* **المحظورات:**
+  - إدخال بيانات وهمية أو تسجيل متبرعين دون علمهم وموافقتهم.
+  - تقديم بلاغات كيدية أو مضللة ضد متبرعين.
+  - جمع أرقام المتبرعين أو استخدامها لأغراض تجارية أو دعائية أو غير التبرع.
+  - إرسال رسائل مزعجة (Spam) أو التحرّش أو الإساءة لأي مستخدم.
+  - محاولة اختراق النظام أو الوصول غير المصرّح به لقاعدة البيانات (Supabase).
+  - استخدام التطبيق في أي نشاط مخالف للقانون.
 
 ### 7. إخلاء المسؤولية الطبية
 التطبيق وسيلة مساعدة لتسهيل التواصل فقط، ولا يُغني عن الفحص والاستشارة الطبية المتخصصة. لا تتحمل إدارة التطبيق أي مسؤولية عن دقة بيانات المتبرعين أو نتائج التبرع/نقل الدم أو أي ضرر مباشر أو غير مباشر ناتج عن الاستخدام. المسؤولية الطبية الكاملة على الجهات الصحية المختصة.
@@ -80,19 +86,23 @@ Yemen Blood Bank is a **free, non-profit** service that facilitates connecting b
 * Provide accurate data (name, phone, blood type, governorate/district, age).
 * Be 18+ and medically eligible to donate.
 * You are responsible for consenting to display your phone number to those searching for available donors.
-* You may request deletion of your data anytime via the contacts below.
+* You may request deletion of your data anytime via the contacts below or from within the app.
 
 ### 5. Recipient Responsibilities
 * Use donor phone numbers **for blood donation purposes only**.
 * Medically verify blood type and eligibility through qualified health authorities before any transfusion.
 * Respect donor privacy and do not harass or misuse their data.
 
-### 6. Prohibited Use
-* Entering fake data or registering donors without their consent.
-* Harvesting donor numbers or using them for commercial/promotional/non-donation purposes.
-* Sending spam, harassment, or abuse to any user.
-* Attempting to breach the system or gain unauthorized access to the database (Supabase).
-* Using the app for any unlawful activity.
+### 6. Prohibited Use & Reporting System
+* **Reporting Safeguards:** The app includes a reporting feature for inaccurate or unavailable donor numbers. The system strictly verifies that the reported number is registered in the database to prevent fake or abusive reports.
+* **Administrative Actions:** Authorized administrators review reports and may apply regulatory measures, including 6-month temporary suspension, updating last donation date, record corrections, or permanent removal of non-compliant listings.
+* **Prohibitions:**
+  - Entering fake data or registering donors without their consent.
+  - Submitting malicious or false reports against legitimate donors.
+  - Harvesting donor numbers or using them for commercial/promotional/non-donation purposes.
+  - Sending spam, harassment, or abuse to any user.
+  - Attempting to breach the system or gain unauthorized access to the database (Supabase).
+  - Using the app for any unlawful activity.
 
 ### 7. Medical Disclaimer
 The app is only a communication-facilitation tool and does not replace professional medical examination and advice. The administration bears no responsibility for the accuracy of donor data, donation/transfusion outcomes, or any direct or indirect harm from using the app. Full medical responsibility lies with competent health authorities.

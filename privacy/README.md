@@ -46,12 +46,13 @@ We are committed to protecting your privacy and personal data:
 #### استخدام البيانات - Data Usage:
 - ربط المتبرعين بالمحتاجين - Connect donors with recipients
 - البحث عن متبرعين متاحين - Search for available donors
+- التحقق من دقة البيانات وصحة البلاغات - Verify data accuracy and report validity
 - تحسين الخدمة - Improve service
 
 #### الحماية - Protection:
 - تخزين آمن على Supabase - Secure storage on Supabase
 - تشفير SSL/TLS - SSL/TLS encryption
-- تخزين محلي مشفر (وضع بدون إنترنت) - Encrypted local storage (offline mode)
+- تخزين محلي مشفر ومؤمن (Room Database / Offline Mode) - Encrypted local storage
 - عدم مشاركة مع أطراف ثالثة - No third-party sharing
 
 ---
@@ -70,9 +71,9 @@ We are committed to protecting your privacy and personal data:
 
 ### 📅 آخر تحديث - Last Updated
 
-**20 أبريل 2026 - April 20, 2026**
+**22 سبتمبر 2026 - September 22, 2026**
 
-**إصدار التطبيق - App Version**: 1.0.3
+**إصدار التطبيق - App Version**: 2.0.1
 
 ---
 

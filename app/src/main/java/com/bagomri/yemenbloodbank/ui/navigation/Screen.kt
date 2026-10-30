@@ -48,4 +48,7 @@ sealed class Screen(val route: String) {
     object HospitalAdvancedSearch : Screen("hospital/advanced_search")
     object HospitalReportsHub : Screen("hospital/reports_hub")
     object HospitalBloodTypeReport : Screen("hospital/report/blood_type")
+
+    // التقارير المشتركة وتصدير الكشوفات
+    object ExportDonorsReport : Screen("reports/export_donors")
 }

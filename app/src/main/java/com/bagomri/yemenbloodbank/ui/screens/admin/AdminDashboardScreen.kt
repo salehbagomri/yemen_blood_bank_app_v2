@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.ReportProblem
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
@@ -76,6 +77,7 @@ fun AdminDashboardScreen(
     onNavigateToSystemOverview: () -> Unit,
     onNavigateToManageLocations: () -> Unit,
     onNavigateToManageBanners: () -> Unit,
+    onNavigateToExportDonors: () -> Unit = {},
     onLogout: () -> Unit,
     viewModel: AdminDashboardViewModel = viewModel()
 ) {
@@ -294,6 +296,14 @@ fun AdminDashboardScreen(
                         subtitle = "${uiState.totalDonors} متبرع مسجل بالجمهورية",
                         iconColor = AppColors.Primary,
                         onClick = onNavigateToManageDonors
+                    )
+
+                    AdminSectionTile(
+                        icon = Icons.Default.PictureAsPdf,
+                        title = "تصدير كشوفات المتبرعين (PDF / Excel)",
+                        subtitle = "استخراج ومشاركة كشوفات مخصصة لكافة المحافظات والفصائل",
+                        iconColor = Color(0xFFC62828),
+                        onClick = onNavigateToExportDonors
                     )
 
                     AdminSectionTile(

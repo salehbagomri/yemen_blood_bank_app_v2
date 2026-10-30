@@ -32,6 +32,7 @@ import com.bagomri.yemenbloodbank.ui.screens.hospital.HospitalSuspendedDonorsScr
 import com.bagomri.yemenbloodbank.ui.screens.info.AboutScreen
 import com.bagomri.yemenbloodbank.ui.screens.info.ContactScreen
 import com.bagomri.yemenbloodbank.ui.screens.onboarding.OnboardingScreen
+import com.bagomri.yemenbloodbank.ui.screens.reports.ExportDonorsReportScreen
 import com.bagomri.yemenbloodbank.ui.screens.reports.ReportDonorScreen
 import com.bagomri.yemenbloodbank.ui.screens.splash.SplashScreen
 
@@ -175,6 +176,7 @@ fun AppNavigation(
                 onNavigateToAdvancedSearch = { navController.navigate(Screen.HospitalAdvancedSearch.route) },
                 onNavigateToReportsHub = { navController.navigate(Screen.HospitalReportsHub.route) },
                 onNavigateToAddDonor = { navController.navigate(Screen.AddDonor.route) },
+                onNavigateToExportDonors = { navController.navigate(Screen.ExportDonorsReport.route) },
                 onLogout = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
@@ -206,7 +208,8 @@ fun AppNavigation(
             HospitalReportsHubScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToBloodTypeReport = { navController.navigate(Screen.HospitalBloodTypeReport.route) },
-                onNavigateToSuspendedDonors = { navController.navigate(Screen.HospitalSuspendedDonors.route) }
+                onNavigateToSuspendedDonors = { navController.navigate(Screen.HospitalSuspendedDonors.route) },
+                onNavigateToExportDonors = { navController.navigate(Screen.ExportDonorsReport.route) }
             )
         }
 
@@ -225,6 +228,7 @@ fun AppNavigation(
                 onNavigateToSystemOverview = { navController.navigate(Screen.AdminSystemOverview.route) },
                 onNavigateToManageLocations = { navController.navigate(Screen.AdminManageLocations.route) },
                 onNavigateToManageBanners = { navController.navigate(Screen.AdminManageBanners.route) },
+                onNavigateToExportDonors = { navController.navigate(Screen.ExportDonorsReport.route) },
                 onLogout = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
@@ -318,6 +322,13 @@ fun AppNavigation(
 
         composable(Screen.AdminManageBanners.route) {
             AdminManageBannersScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // ==================== تصدير كشوفات المتبرعين ====================
+        composable(Screen.ExportDonorsReport.route) {
+            ExportDonorsReportScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

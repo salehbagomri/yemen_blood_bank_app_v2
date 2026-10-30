@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
@@ -75,6 +76,7 @@ fun HospitalDashboardScreen(
     onNavigateToSuspendedDonors: () -> Unit,
     onNavigateToAdvancedSearch: () -> Unit,
     onNavigateToAddDonor: () -> Unit,
+    onNavigateToExportDonors: () -> Unit = {},
     onLogout: () -> Unit,
     onNavigateToBloodTypeReport: () -> Unit = onNavigateToReportsHub,
     viewModel: HospitalDashboardViewModel = viewModel()
@@ -317,6 +319,14 @@ fun HospitalDashboardScreen(
                         subtitle = "توزيع فصائل الدم، تقارير المديريات، وتصدير البيانات",
                         gradient = listOf(Color(0xFF2E7D32), Color(0xFF43A047)),
                         onClick = onNavigateToReportsHub
+                    )
+
+                    HospitalActionTile(
+                        icon = Icons.Default.PictureAsPdf,
+                        title = "استخراج كشف المتبرعين (PDF / Excel)",
+                        subtitle = "إنشاء كشف مفلتر رسمي وجاهز للطباعة أو المشاركة الفورية",
+                        gradient = listOf(Color(0xFFC62828), Color(0xFFD32F2F)),
+                        onClick = onNavigateToExportDonors
                     )
 
                     HospitalActionTile(

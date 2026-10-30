@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Bloodtype
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +54,8 @@ import com.bagomri.yemenbloodbank.core.constants.AppStrings
 fun HospitalReportsHubScreen(
     onNavigateBack: () -> Unit,
     onNavigateToBloodTypeReport: () -> Unit,
-    onNavigateToSuspendedDonors: () -> Unit
+    onNavigateToSuspendedDonors: () -> Unit,
+    onNavigateToExportDonors: () -> Unit = {}
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -133,6 +135,14 @@ fun HospitalReportsHubScreen(
             }
 
             // قائمة بطاقات التقارير
+            ReportHubCard(
+                title = "📑 استخراج كشف المتبرعين (PDF / Excel)",
+                description = "إنشاء كشف رسمي مفلتر وقابل للطباعة أو المشاركة الفورية عبر واتساب",
+                icon = Icons.Default.PictureAsPdf,
+                gradient = listOf(Color(0xFFB71C1C), Color(0xFFC62828)),
+                onClick = onNavigateToExportDonors
+            )
+
             ReportHubCard(
                 title = "تقرير فصائل الدم",
                 description = "توزيع المتبرعين حسب فصائل الدم الثماني مع النسب المئوية",

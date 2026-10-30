@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
@@ -402,7 +403,24 @@ private fun BannerAdminCard(
                 Switch(
                     checked = banner.isActive,
                     onCheckedChange = { onToggleStatus() },
-                    colors = SwitchDefaults.colors(checkedThumbColor = AppColors.Success)
+                    thumbContent = if (banner.isActive) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                tint = AppColors.Success
+                            )
+                        }
+                    } else null,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = AppColors.Success,
+                        checkedBorderColor = Color.Transparent,
+                        uncheckedThumbColor = Color.White,
+                        uncheckedTrackColor = Color(0xFFE2E8F0),
+                        uncheckedBorderColor = Color(0xFFCBD5E1)
+                    )
                 )
             }
 

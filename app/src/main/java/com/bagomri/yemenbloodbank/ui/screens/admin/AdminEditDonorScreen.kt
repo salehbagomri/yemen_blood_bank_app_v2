@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.width
@@ -381,7 +382,24 @@ fun AdminEditDonorScreen(
                             Switch(
                                 checked = isActive,
                                 onCheckedChange = { isActive = it },
-                                colors = SwitchDefaults.colors(checkedThumbColor = AppColors.Success)
+                                thumbContent = if (isActive) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                                            tint = AppColors.Success
+                                        )
+                                    }
+                                } else null,
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = Color.White,
+                                    checkedTrackColor = AppColors.Success,
+                                    checkedBorderColor = Color.Transparent,
+                                    uncheckedThumbColor = Color.White,
+                                    uncheckedTrackColor = Color(0xFFE2E8F0),
+                                    uncheckedBorderColor = Color(0xFFCBD5E1)
+                                )
                             )
                         }
                     }

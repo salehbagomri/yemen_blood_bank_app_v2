@@ -24,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Email
@@ -230,7 +231,24 @@ fun AdminAddHospitalScreen(
                             Switch(
                                 checked = isActive,
                                 onCheckedChange = { isActive = it },
-                                colors = SwitchDefaults.colors(checkedThumbColor = AppColors.Success)
+                                thumbContent = if (isActive) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(androidx.compose.material3.SwitchDefaults.IconSize),
+                                            tint = AppColors.Success
+                                        )
+                                    }
+                                } else null,
+                                colors = androidx.compose.material3.SwitchDefaults.colors(
+                                    checkedThumbColor = Color.White,
+                                    checkedTrackColor = AppColors.Success,
+                                    checkedBorderColor = Color.Transparent,
+                                    uncheckedThumbColor = Color.White,
+                                    uncheckedTrackColor = Color(0xFFE2E8F0),
+                                    uncheckedBorderColor = Color(0xFFCBD5E1)
+                                )
                             )
                         }
                     }
@@ -542,7 +560,24 @@ fun AdminEditHospitalScreen(
                             Switch(
                                 checked = isActive,
                                 onCheckedChange = { isActive = it },
-                                colors = SwitchDefaults.colors(checkedThumbColor = AppColors.Success)
+                                thumbContent = if (isActive) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Filled.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(androidx.compose.material3.SwitchDefaults.IconSize),
+                                            tint = AppColors.Success
+                                        )
+                                    }
+                                } else null,
+                                colors = androidx.compose.material3.SwitchDefaults.colors(
+                                    checkedThumbColor = Color.White,
+                                    checkedTrackColor = AppColors.Success,
+                                    checkedBorderColor = Color.Transparent,
+                                    uncheckedThumbColor = Color.White,
+                                    uncheckedTrackColor = Color(0xFFE2E8F0),
+                                    uncheckedBorderColor = Color(0xFFCBD5E1)
+                                )
                             )
                         }
                     }

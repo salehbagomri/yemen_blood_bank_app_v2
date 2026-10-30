@@ -882,37 +882,87 @@ private fun ReportOptionsCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onToggleSecondaryPhones)
-                    .padding(vertical = 6.dp),
+                    .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text("تضمين أرقام الهواتف البديلة", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                    Text("إظهار الرقم الثاني والثالث للمتبرع إن وجد", style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
+                Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
+                    Text(
+                        text = "تضمين أرقام الهواتف البديلة",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    Text(
+                        text = "إظهار الرقم الثاني والثالث للمتبرع إن وجد",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AppColors.TextSecondary
+                    )
                 }
                 Switch(
                     checked = includeSecondaryPhones,
                     onCheckedChange = { onToggleSecondaryPhones() },
-                    colors = SwitchDefaults.colors(checkedThumbColor = AppColors.Primary)
+                    thumbContent = if (includeSecondaryPhones) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                tint = AppColors.Primary
+                            )
+                        }
+                    } else null,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = AppColors.Primary,
+                        checkedBorderColor = Color.Transparent,
+                        uncheckedThumbColor = Color.White,
+                        uncheckedTrackColor = Color(0xFFE2E8F0),
+                        uncheckedBorderColor = Color(0xFFCBD5E1)
+                    )
                 )
             }
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onToggleNotes)
-                    .padding(vertical = 6.dp),
+                    .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text("تضمين الملاحظات الطبية", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                    Text("إظهار الملاحظات المسجلة في ملف المتبرع", style = MaterialTheme.typography.bodySmall, color = AppColors.TextSecondary)
+                Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
+                    Text(
+                        text = "تضمين الملاحظات الطبية",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    Text(
+                        text = "إظهار الملاحظات المسجلة في ملف المتبرع",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AppColors.TextSecondary
+                    )
                 }
                 Switch(
                     checked = includeNotes,
                     onCheckedChange = { onToggleNotes() },
-                    colors = SwitchDefaults.colors(checkedThumbColor = AppColors.Primary)
+                    thumbContent = if (includeNotes) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                tint = AppColors.Primary
+                            )
+                        }
+                    } else null,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = AppColors.Primary,
+                        checkedBorderColor = Color.Transparent,
+                        uncheckedThumbColor = Color.White,
+                        uncheckedTrackColor = Color(0xFFE2E8F0),
+                        uncheckedBorderColor = Color(0xFFCBD5E1)
+                    )
                 )
             }
         }

@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
@@ -297,7 +298,24 @@ fun AdminManageLocationsScreen(
                                                 loadData()
                                             }
                                         },
-                                        colors = SwitchDefaults.colors(checkedThumbColor = AppColors.Success)
+                                        thumbContent = if (gov.isActive) {
+                                            {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Check,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(SwitchDefaults.IconSize),
+                                                    tint = AppColors.Success
+                                                )
+                                            }
+                                        } else null,
+                                        colors = SwitchDefaults.colors(
+                                            checkedThumbColor = Color.White,
+                                            checkedTrackColor = AppColors.Success,
+                                            checkedBorderColor = Color.Transparent,
+                                            uncheckedThumbColor = Color.White,
+                                            uncheckedTrackColor = Color(0xFFE2E8F0),
+                                            uncheckedBorderColor = Color(0xFFCBD5E1)
+                                        )
                                     )
                                 }
 

@@ -20,12 +20,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Bloodtype
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +36,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
 
@@ -55,15 +56,18 @@ fun HospitalReportsHubScreen(
     onNavigateBack: () -> Unit,
     onNavigateToBloodTypeReport: () -> Unit,
     onNavigateToSuspendedDonors: () -> Unit,
-    onNavigateToExportDonors: () -> Unit = {}
+    onNavigateToExportDonors: () -> Unit = {},
+    viewModel: HospitalDashboardViewModel = viewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "📊 التقارير والإحصائيات",
+                        text = "التقارير والإحصائيات",
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
@@ -92,7 +96,7 @@ fun HospitalReportsHubScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // بطاقة التوضيح
+            // بطاقة معلومات المحافظة التوضيحية
             Card(
                 colors = CardDefaults.cardColors(containerColor = AppColors.InfoContainer),
                 shape = RoundedCornerShape(14.dp),
@@ -120,13 +124,17 @@ fun HospitalReportsHubScreen(
                     Spacer(modifier = Modifier.width(14.dp))
                     Column {
                         Text(
-                            text = "تقارير شاملة ومحدثة فورياً",
+                            text = if (uiState.hospitalGovernorate != null) {
+                                "تقارير وإحصائيات محافظة ${uiState.hospitalGovernorate}"
+                            } else {
+                                "تقارير وإحصائيات المستشفى"
+                            },
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                             color = AppColors.Info
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "إحصائيات دقيقة لفصائل الدم وحالة التوفر بالمحافظة",
+                            text = "بيانات لحظية ومحدثة لفصائل الدم، سجل الإيقاف، وتصدير الكشوفات الرسمية",
                             style = MaterialTheme.typography.bodySmall,
                             color = AppColors.TextPrimary
                         )
@@ -134,44 +142,33 @@ fun HospitalReportsHubScreen(
                 }
             }
 
-            // قائمة بطاقات التقارير
+            // 1. تقرير استخراج وتصدير كشف المتبرعين
             ReportHubCard(
-                title = "📑 استخراج كشف المتبرعين (PDF / Excel)",
-                description = "إنشاء كشف رسمي مفلتر وقابل للطباعة أو المشاركة الفورية عبر واتساب",
+                title = "استخراج وتصدير كشف المتبرعين",
+                description = "إنشاء كشف مفلتر رسمي وجاهز للطباعة أو التصدير بصيغة PDF أو Excel مع المشاركة الفورية",
                 icon = Icons.Default.PictureAsPdf,
                 gradient = listOf(Color(0xFFB71C1C), Color(0xFFC62828)),
+                badge = "PDF / Excel",
                 onClick = onNavigateToExportDonors
             )
 
+            // 2. سجل المتبرعين الموقوفين (فترة الراحة 6 أشهر) - منقول من الخدمات الإدارية
             ReportHubCard(
-                title = "تقرير فصائل الدم",
-                description = "توزيع المتبرعين حسب فصائل الدم الثماني مع النسب المئوية",
-                icon = Icons.Default.Bloodtype,
-                gradient = listOf(Color(0xFFD32F2F), Color(0xFFE53935)),
-                onClick = onNavigateToBloodTypeReport
-            )
-
-            ReportHubCard(
-                title = "تقرير التوفر والإيقاف",
-                description = "المتبرعون المتاحون والموقوفون ومواعيد انتهاء فترة الراحة",
-                icon = Icons.Default.CheckCircle,
-                gradient = listOf(Color(0xFF2E7D32), Color(0xFF43A047)),
+                title = "سجل المتبرعين الموقوفين (فترة الراحة)",
+                description = "قائمة المتبرعين في فترة الراحة (6 أشهر)، العد التنازلي، وتاريخ إتاحتهم للتبرع مجدداً",
+                icon = Icons.Default.Schedule,
+                gradient = listOf(Color(0xFFE65100), Color(0xFFF57C00)),
+                badge = if (uiState.suspendedDonors.isNotEmpty()) "${uiState.suspendedDonors.size} موقوف" else "لا يوجد موقوفون",
                 onClick = onNavigateToSuspendedDonors
             )
 
+            // 3. تقرير وتوزيع فصائل الدم
             ReportHubCard(
-                title = "تقرير النشاط الشهري",
-                description = "المتبرعون الجدد وعمليات التبرع المنجزة خلال الشهر الحالي",
-                icon = Icons.Default.CalendarMonth,
-                gradient = listOf(Color(0xFF6A1B9A), Color(0xFF8E24AA)),
-                onClick = onNavigateToBloodTypeReport
-            )
-
-            ReportHubCard(
-                title = "التقرير الشامل",
-                description = "ملخص تحليلي عام يجمع كافة أرقام وبيانات المحافظة",
-                icon = Icons.Default.Analytics,
-                gradient = listOf(Color(0xFF0277BD), Color(0xFF0288D1)),
+                title = "إحصائيات وتوزيع فصائل الدم",
+                description = "تحليل بياني لنسب وتوزيع فصائل الدم الثماني مع رصد الفصائل النادرة والأكثر توفراً",
+                icon = Icons.Default.Bloodtype,
+                gradient = listOf(Color(0xFF1565C0), Color(0xFF1976D2)),
+                badge = if (uiState.donors.isNotEmpty()) "${uiState.donors.size} متبرع" else null,
                 onClick = onNavigateToBloodTypeReport
             )
 
@@ -186,6 +183,7 @@ private fun ReportHubCard(
     description: String,
     icon: ImageVector,
     gradient: List<Color>,
+    badge: String? = null,
     onClick: () -> Unit
 ) {
     Card(
@@ -223,15 +221,39 @@ private fun ReportHubCard(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            fontSize = 17.sp
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 16.sp
+                            )
                         )
-                    )
-                    Spacer(modifier = Modifier.height(3.dp))
+                    }
+
+                    if (badge != null) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = Color.White.copy(alpha = 0.22f)
+                        ) {
+                            Text(
+                                text = badge,
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.sp
+                                ),
+                                modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = description,
                         style = MaterialTheme.typography.bodySmall.copy(
@@ -240,6 +262,8 @@ private fun ReportHubCard(
                         )
                     )
                 }
+
+                Spacer(modifier = Modifier.width(8.dp))
 
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,

@@ -257,14 +257,16 @@ fun HospitalDashboardScreen(
                             value = "${uiState.statistics.totalDonors}",
                             icon = Icons.Default.People,
                             color = Color(0xFF1976D2),
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            onClick = onNavigateToManageDonors
                         )
                         MiniStatCard(
                             title = "المتاحون الآن",
                             value = "${uiState.statistics.availableDonors}",
                             icon = Icons.Default.CheckCircle,
                             color = Color(0xFF388E3C),
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            onClick = onNavigateToManageDonors
                         )
                     }
 
@@ -277,7 +279,8 @@ fun HospitalDashboardScreen(
                             value = "${uiState.statistics.suspendedDonors}",
                             icon = Icons.Default.Schedule,
                             color = Color(0xFFF57C00),
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            onClick = onNavigateToSuspendedDonors
                         )
                         MiniStatCard(
                             title = "جدد هذا الشهر",
@@ -306,17 +309,17 @@ fun HospitalDashboardScreen(
                     )
 
                     HospitalActionTile(
-                        icon = Icons.Default.Schedule,
-                        title = AppStrings.suspendedDonors,
-                        subtitle = "قائمة المتبرعين في فترة الراحة (6 أشهر) والعد التنازلي",
-                        gradient = listOf(Color(0xFFE65100), Color(0xFFF57C00)),
-                        onClick = onNavigateToSuspendedDonors
+                        icon = Icons.Default.PersonAdd,
+                        title = "تسجيل متبرع جديد بالمحافظة",
+                        subtitle = "إضافة متبرع مع ربطه تلقائياً بمحافظة المستشفى",
+                        gradient = listOf(Color(0xFF00695C), Color(0xFF00897B)),
+                        onClick = onNavigateToAddDonor
                     )
 
                     HospitalActionTile(
                         icon = Icons.Default.Analytics,
                         title = "التقارير والإحصائيات",
-                        subtitle = "توزيع فصائل الدم، تقارير المديريات، وتصدير البيانات",
+                        subtitle = "توزيع فصائل الدم، سجل المتبرعين الموقوفين، وتصدير البيانات",
                         gradient = listOf(Color(0xFF2E7D32), Color(0xFF43A047)),
                         onClick = onNavigateToReportsHub
                     )
@@ -327,14 +330,6 @@ fun HospitalDashboardScreen(
                         subtitle = "إنشاء كشف مفلتر رسمي وجاهز للطباعة أو المشاركة الفورية",
                         gradient = listOf(Color(0xFFC62828), Color(0xFFD32F2F)),
                         onClick = onNavigateToExportDonors
-                    )
-
-                    HospitalActionTile(
-                        icon = Icons.Default.PersonAdd,
-                        title = "تسجيل متبرع جديد بالمحافظة",
-                        subtitle = "إضافة متبرع مع ربطه تلقائياً بمحافظة المستشفى",
-                        gradient = listOf(Color(0xFF00695C), Color(0xFF00897B)),
-                        onClick = onNavigateToAddDonor
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -350,10 +345,11 @@ private fun MiniStatCard(
     value: String,
     icon: ImageVector,
     color: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
     Card(
-        modifier = modifier,
+        modifier = if (onClick != null) modifier.clickable(onClick = onClick) else modifier,
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),

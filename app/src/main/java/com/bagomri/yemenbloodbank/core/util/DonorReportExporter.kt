@@ -131,16 +131,19 @@ object DonorReportExporter {
 
                 // --- رسم الترويسة ---
                 if (pageNum == 1) {
-                    // شريط علوي ملون
+                    // شريط علوي ملون - مرتفع لأعلى الصفحة (16pt) لمنع أي تداخل مع العنوان
+                    val barTop = 16f
+                    val barHeight = 4f
                     bgPaint.color = Color.rgb(183, 28, 28) // Crimson / Dark Blood
-                    canvas.drawRect(MARGIN, currentY, A4_WIDTH - MARGIN, currentY + 4f, bgPaint)
-                    currentY += 14f
+                    canvas.drawRect(MARGIN, barTop, A4_WIDTH - MARGIN, barTop + barHeight, bgPaint)
 
-                    // العنوان الرئيسي
+                    currentY = 50f
+
+                    // العنوان الرئيسي (باستخدام الشرطة القصيرة -)
                     boldPaint.textSize = 15f
                     boldPaint.color = Color.rgb(183, 28, 28)
                     boldPaint.textAlign = Paint.Align.RIGHT
-                    canvas.drawText("بنك دم اليمن — $title", tableRight, currentY, boldPaint)
+                    canvas.drawText("بنك دم اليمن - $title", tableRight, currentY, boldPaint)
 
                     // شعار / صفة الجهة
                     textPaint.textSize = 10.5f
@@ -174,16 +177,22 @@ object DonorReportExporter {
 
                     currentY += 34f
                 } else {
-                    // ترويسة مصغرة للصفحات التالية
-                    boldPaint.textSize = 11f
+                    // ترويسة مصغرة للصفحات التالية مع شريط علوي أنيق
+                    val barTop = 16f
+                    val barHeight = 3f
+                    bgPaint.color = Color.rgb(183, 28, 28)
+                    canvas.drawRect(MARGIN, barTop, A4_WIDTH - MARGIN, barTop + barHeight, bgPaint)
+
+                    currentY = 38f
+                    boldPaint.textSize = 10.5f
                     boldPaint.textAlign = Paint.Align.RIGHT
-                    canvas.drawText("بنك دم اليمن — $organizationName ($governorate)", tableRight, currentY + 8f, boldPaint)
+                    canvas.drawText("بنك دم اليمن - $organizationName ($governorate)", tableRight, currentY, boldPaint)
 
                     textPaint.textSize = 8.5f
                     textPaint.textAlign = Paint.Align.LEFT
-                    canvas.drawText("تاريخ: $nowFormatted", MARGIN, currentY + 8f, textPaint)
+                    canvas.drawText("صفحة $pageNum من $totalPages", MARGIN, currentY, textPaint)
 
-                    currentY += 18f
+                    currentY += 16f
                 }
 
                 // --- رسم رأس الجدول (Table Header) ---
@@ -258,13 +267,15 @@ object DonorReportExporter {
                     canvas.drawText(donor.bloodType, cellX - (colBloodW / 2f), currentY + 15f, rowCenterPaint)
                     cellX -= colBloodW
 
-                    // 4. رقم الهاتف (الأساسي + الثانوي إن وجد)
+                    // 4. رقم الهاتف (الأساسي + الثانوي إن وجد - موحد بدون رمز الدولة)
                     rowCenterPaint.color = Color.rgb(44, 62, 80)
                     rowCenterPaint.textSize = 8.5f
-                    val phoneText = if (includeSecondaryPhones && !donor.phoneNumber2.isNullOrBlank()) {
-                        "${donor.phoneNumber} / ${donor.phoneNumber2}"
+                    val p1 = PhoneUtils.cleanLocalPhone(donor.phoneNumber)
+                    val p2 = PhoneUtils.cleanLocalPhone(donor.phoneNumber2)
+                    val phoneText = if (includeSecondaryPhones && p2.isNotBlank()) {
+                        "$p1 / $p2"
                     } else {
-                        donor.phoneNumber
+                        p1
                     }
                     canvas.drawText(phoneText, cellX - (colPhoneW / 2f), currentY + 15f, rowCenterPaint)
                     cellX -= colPhoneW
@@ -380,7 +391,7 @@ object DonorReportExporter {
 
                 OutputStreamWriter(fos, StandardCharsets.UTF_8).use { writer ->
                     // الترويسة ومعلومات الكشف
-                    writer.appendLine("\"# بنك دم اليمن — $title\"")
+                    writer.appendLine("\"# بنك دم اليمن - $title\"")
                     writer.appendLine("\"# الجهة المصدرة:\",\"${escapeCsv(organizationName)}\"")
                     writer.appendLine("\"# المحافظة:\",\"${escapeCsv(governorate)}\"")
                     writer.appendLine("\"# تاريخ الاستخراج:\",\"$nowFormatted\"")
@@ -422,9 +433,9 @@ object DonorReportExporter {
                             (index + 1).toString(),
                             donor.name,
                             donor.bloodType,
-                            donor.phoneNumber,
-                            donor.phoneNumber2 ?: "",
-                            donor.phoneNumber3 ?: "",
+                            PhoneUtils.cleanLocalPhone(donor.phoneNumber),
+                            PhoneUtils.cleanLocalPhone(donor.phoneNumber2),
+                            PhoneUtils.cleanLocalPhone(donor.phoneNumber3),
                             donor.governorate,
                             donor.subDistrict,
                             donor.age.toString(),

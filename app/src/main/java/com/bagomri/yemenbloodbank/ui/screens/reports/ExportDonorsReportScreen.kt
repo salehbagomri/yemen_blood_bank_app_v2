@@ -92,6 +92,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.util.DonorReportExporter
+import com.bagomri.yemenbloodbank.core.util.PhoneUtils
 import com.bagomri.yemenbloodbank.data.model.Donor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -1080,7 +1081,7 @@ private fun DonorPreviewItem(donor: Donor) {
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = "${donor.phoneNumber} • ${donor.subDistrict}",
+                        text = "${PhoneUtils.cleanLocalPhone(donor.phoneNumber)} • ${donor.subDistrict}",
                         style = MaterialTheme.typography.bodySmall,
                         color = AppColors.TextSecondary
                     )

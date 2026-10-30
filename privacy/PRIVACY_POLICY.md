@@ -317,9 +317,9 @@ You can withdraw consent at any time by requesting data deletion.
 
 ---
 
-**Version**: 2.0.1
-**Effective Date**: September 22, 2026
-**App Version**: 2.0.1
+**Version**: 2.1.0
+**Effective Date**: October 30, 2026
+**App Version**: 2.1.0
 
 ---
 

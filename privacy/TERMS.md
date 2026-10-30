@@ -2,9 +2,9 @@
 
 **تطبيق بنك دم اليمن - Yemen Blood Bank App**
 
-**آخر تحديث: 22 سبتمبر 2026 - Last Updated: September 22, 2026**
+**آخر تحديث: 30 أكتوبر 2026 - Last Updated: October 30, 2026**
 
-**إصدار التطبيق - App Version: 2.0.1**
+**إصدار التطبيق - App Version: 2.1.0**
 
 **🔗 رابط الشروط: https://salehbagomri.github.io/yemen-blood-bank-privacy/terms.html**
 

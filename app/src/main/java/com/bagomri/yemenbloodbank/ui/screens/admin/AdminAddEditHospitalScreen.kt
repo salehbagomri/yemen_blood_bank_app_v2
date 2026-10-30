@@ -1,6 +1,11 @@
 package com.bagomri.yemenbloodbank.ui.screens.admin
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,18 +16,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -31,7 +41,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -51,7 +63,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.bagomri.yemenbloodbank.core.constants.AppColors
 import com.bagomri.yemenbloodbank.core.constants.AppStrings
 import com.bagomri.yemenbloodbank.core.util.ErrorHandler
@@ -78,16 +92,23 @@ fun AdminAddHospitalScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var governorate by remember { mutableStateOf("") }
+    var subDistrict by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var isActive by remember { mutableStateOf(true) }
 
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    var createdHospitalInfo by remember { mutableStateOf<Hospital?>(null) }
+    var createdPassword by remember { mutableStateOf("") }
+
     var governorates by remember { mutableStateOf<List<String>>(emptyList()) }
+    var districtsByGov by remember { mutableStateOf<Map<String, List<String>>>(emptyMap()) }
 
     LaunchedEffect(Unit) {
         val locations = locationRepository.getActiveLocations()
         governorates = locations.governorates
-        if (governorates.isNotEmpty()) {
+        districtsByGov = locations.districtsByGov
+        if (governorates.isNotEmpty() && governorate.isEmpty()) {
             governorate = governorates.first()
         }
     }
@@ -112,7 +133,7 @@ fun AdminAddHospitalScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             if (isSaving) {
-                LoadingIndicator(message = "جاري إنشاء حساب المستشفى...")
+                LoadingIndicator(message = "جاري إنشاء حساب المستشفى واعتماده...")
             } else {
                 Column(
                     modifier = Modifier
@@ -124,7 +145,7 @@ fun AdminAddHospitalScreen(
                     CustomTextField(
                         value = name,
                         onValueChange = { name = it },
-                        label = "اسم المستشفى / المركز الطبي",
+                        label = "اسم المستشفى / المركز الطبي *",
                         placeholder = "مثال: مستشفى الثورة العام",
                         leadingIcon = { Icon(Icons.Default.LocalHospital, contentDescription = null, tint = AppColors.Primary) }
                     )
@@ -132,7 +153,7 @@ fun AdminAddHospitalScreen(
                     CustomTextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = AppStrings.email,
+                        label = "${AppStrings.email} *",
                         placeholder = "hospital@example.com",
                         leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = AppColors.Primary) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
@@ -141,7 +162,7 @@ fun AdminAddHospitalScreen(
                     CustomTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = AppStrings.password,
+                        label = "${AppStrings.password} (6 خانات على الأقل) *",
                         placeholder = "••••••••",
                         leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = AppColors.Primary) },
                         visualTransformation = PasswordVisualTransformation(),
@@ -151,11 +172,26 @@ fun AdminAddHospitalScreen(
                     CustomDropdown(
                         selectedValue = governorate.ifEmpty { null },
                         items = governorates,
-                        onItemSelected = { governorate = it },
-                        label = "المحافظة",
+                        onItemSelected = {
+                            governorate = it
+                            subDistrict = ""
+                        },
+                        label = "المحافظة *",
                         placeholder = "اختر محافظة المستشفى",
                         leadingIcon = { Icon(Icons.Default.Map, contentDescription = null, tint = AppColors.Primary) }
                     )
+
+                    val currentDistricts = districtsByGov[governorate] ?: emptyList()
+                    if (currentDistricts.isNotEmpty()) {
+                        CustomDropdown(
+                            selectedValue = subDistrict.ifEmpty { null },
+                            items = currentDistricts,
+                            onItemSelected = { subDistrict = it },
+                            label = "المديرية (اختياري)",
+                            placeholder = "اختر المديرية التابع لها المستشفى",
+                            leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = AppColors.Primary) }
+                        )
+                    }
 
                     CustomTextField(
                         value = phone,
@@ -203,29 +239,38 @@ fun AdminAddHospitalScreen(
 
                     Button(
                         onClick = {
-                            if (name.isBlank() || email.isBlank() || governorate.isBlank()) {
-                                Toast.makeText(context, "يرجى ملء جميع الحقول المطلوبة", Toast.LENGTH_SHORT).show()
+                            if (name.isBlank() || email.isBlank() || password.isBlank() || governorate.isBlank()) {
+                                Toast.makeText(context, "يرجى ملء جميع الحقول الإلزامية (بما فيها كلمة المرور)", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+
+                            if (password.length < 6) {
+                                Toast.makeText(context, "كلمة المرور يجب أن لا تقل عن 6 أحرف أو أرقام", Toast.LENGTH_SHORT).show()
                                 return@Button
                             }
 
                             isSaving = true
                             scope.launch {
+                                val fullDistrict = if (subDistrict.isNotBlank()) "$governorate - $subDistrict" else governorate
                                 val hospital = Hospital(
                                     name = name.trim(),
                                     email = email.trim(),
+                                    district = fullDistrict,
                                     rawGovernorate = governorate,
                                     phoneNumber = phone.trim().ifEmpty { null },
                                     address = address.trim().ifEmpty { null },
                                     isActive = isActive
                                 )
-                                val res = hospitalRepository.addHospital(hospital)
+                                val res = hospitalRepository.addHospital(hospital, password)
                                 isSaving = false
                                 res.fold(
-                                    onSuccess = {
-                                        Toast.makeText(context, "تمت إضافة المستشفى بنجاح", Toast.LENGTH_SHORT).show()
-                                        onNavigateBack()
+                                    onSuccess = { h ->
+                                        createdHospitalInfo = h
+                                        createdPassword = password
+                                        showSuccessDialog = true
                                     },
                                     onFailure = { err ->
+                                        Log.e("AdminAddHospital", "Error creating hospital account", err)
                                         Toast.makeText(context, ErrorHandler.getArabicMessage(err), Toast.LENGTH_LONG).show()
                                     }
                                 )
@@ -238,7 +283,7 @@ fun AdminAddHospitalScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = AppColors.Success)
                     ) {
                         Text(
-                            text = "إضافة المستشفى",
+                            text = "إضافة واعتماد المستشفى",
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = Color.White)
                         )
                     }
@@ -247,6 +292,101 @@ fun AdminAddHospitalScreen(
                 }
             }
         }
+    }
+
+    // نافذة نجاح إنشاء الحساب وعرض بيانات الاعتماد للمدير
+    if (showSuccessDialog && createdHospitalInfo != null) {
+        val hName = createdHospitalInfo!!.name
+        val hEmail = createdHospitalInfo!!.email
+        val hPass = createdPassword
+        val credentialsText = "بيانات دخول لوحة تحكم بنك دم اليمن للمستشفى:\nاسم المستشفى: $hName\nالبريد الإلكتروني: $hEmail\nكلمة المرور: $hPass"
+
+        AlertDialog(
+            onDismissRequest = { /* يمنع الإغلاق بالضغط خارج النافذة لضمان حفظ البيانات */ },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = null,
+                    tint = AppColors.Success,
+                    modifier = Modifier.size(46.dp)
+                )
+            },
+            title = {
+                Text(
+                    text = "تم إنشاء الحساب بنجاح!",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = "تم تسجيل مستشفى \"$hName\" وربط حسابه بقاعدة البيانات بنجاح.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                text = "بيانات تسجيل الدخول للوحة التحكم:",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = AppColors.Primary
+                                )
+                            )
+                            Text(
+                                text = "البريد: $hEmail",
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
+                            )
+                            Text(
+                                text = "كلمة المرور: $hPass",
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = "يمكنك نسخ هذه البيانات مباشرة وإرسالها لإدارة المستشفى للدخول إلى حسابهم وإدارة المتبرعين.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AppColors.TextSecondary
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clip = ClipData.newPlainText("Hospital Credentials", credentialsText)
+                        clipboard.setPrimaryClip(clip)
+                        Toast.makeText(context, "تم نسخ بيانات الدخول إلى الحافظة بنجاح", Toast.LENGTH_SHORT).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary)
+                ) {
+                    Icon(imageVector = Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("نسخ البيانات")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        showSuccessDialog = false
+                        onNavigateBack()
+                    }
+                ) {
+                    Text("العودة للقائمة")
+                }
+            }
+        )
     }
 }
 
@@ -268,15 +408,18 @@ fun AdminEditHospitalScreen(
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var governorate by remember { mutableStateOf("") }
+    var subDistrict by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var isActive by remember { mutableStateOf(true) }
 
     var governorates by remember { mutableStateOf<List<String>>(emptyList()) }
+    var districtsByGov by remember { mutableStateOf<Map<String, List<String>>>(emptyMap()) }
 
     LaunchedEffect(hospitalId) {
         val locations = locationRepository.getActiveLocations()
         governorates = locations.governorates
+        districtsByGov = locations.districtsByGov
 
         val result = hospitalRepository.getHospitalById(hospitalId)
         result.fold(
@@ -286,6 +429,7 @@ fun AdminEditHospitalScreen(
                     name = h.name
                     email = h.email
                     governorate = h.governorate
+                    subDistrict = if (h.district.contains(" - ")) h.district.substringAfter(" - ") else ""
                     phone = h.phoneNumber ?: ""
                     address = h.address ?: ""
                     isActive = h.isActive
@@ -344,10 +488,24 @@ fun AdminEditHospitalScreen(
                     CustomDropdown(
                         selectedValue = governorate.ifEmpty { null },
                         items = governorates,
-                        onItemSelected = { governorate = it },
+                        onItemSelected = {
+                            governorate = it
+                            subDistrict = ""
+                        },
                         label = "المحافظة",
                         leadingIcon = { Icon(Icons.Default.Map, contentDescription = null, tint = AppColors.Primary) }
                     )
+
+                    val currentDistricts = districtsByGov[governorate] ?: emptyList()
+                    if (currentDistricts.isNotEmpty()) {
+                        CustomDropdown(
+                            selectedValue = subDistrict.ifEmpty { null },
+                            items = currentDistricts,
+                            onItemSelected = { subDistrict = it },
+                            label = "المديرية (اختياري)",
+                            leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = AppColors.Primary) }
+                        )
+                    }
 
                     CustomTextField(
                         value = phone,
@@ -394,9 +552,11 @@ fun AdminEditHospitalScreen(
                     Button(
                         onClick = {
                             if (existingHospital != null) {
+                                val fullDistrict = if (subDistrict.isNotBlank()) "$governorate - $subDistrict" else governorate
                                 val updated = existingHospital!!.copy(
                                     name = name.trim(),
                                     email = email.trim(),
+                                    district = fullDistrict,
                                     rawGovernorate = governorate,
                                     phoneNumber = phone.trim().ifEmpty { null },
                                     address = address.trim().ifEmpty { null },
@@ -413,6 +573,7 @@ fun AdminEditHospitalScreen(
                                             onNavigateBack()
                                         },
                                         onFailure = { err ->
+                                            Log.e("AdminEditHospital", "Error updating hospital", err)
                                             Toast.makeText(context, ErrorHandler.getArabicMessage(err), Toast.LENGTH_LONG).show()
                                         }
                                     )

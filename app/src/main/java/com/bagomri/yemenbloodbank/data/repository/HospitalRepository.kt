@@ -1,12 +1,18 @@
 package com.bagomri.yemenbloodbank.data.repository
 
+import com.bagomri.yemenbloodbank.core.constants.AppConfig
 import com.bagomri.yemenbloodbank.core.network.SupabaseProvider
 import com.bagomri.yemenbloodbank.data.model.Hospital
+import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -51,27 +57,79 @@ class HospitalRepository(
 
     /**
      * إضافة مستشفى جديد
+     * 1. إنشاء حساب المستخدم في Supabase Auth باستخدام عميل مصادقة مستقل حتى لا يتم تسجيل خروج الأدمن
+     * 2. استدعاء الدالة الخادمية المصرحة add_hospital_bypassing_rls لربط الحساب وحفظ بيانات المستشفى
      */
-    suspend fun addHospital(hospital: Hospital): Result<Hospital> = withContext(Dispatchers.IO) {
+    suspend fun addHospital(hospital: Hospital, password: String): Result<Hospital> = withContext(Dispatchers.IO) {
+        var tempClient: io.github.jan.supabase.SupabaseClient? = null
         try {
-            val insertData = buildJsonObject {
-                put("name", hospital.name.trim())
-                put("email", hospital.email.trim())
-                put("district", hospital.district)
-                put("governorate", hospital.governorate)
-                put("phone_number", hospital.phoneNumber?.trim()?.ifEmpty { null })
-                put("address", hospital.address?.trim()?.ifEmpty { null })
-                put("is_active", hospital.isActive)
+            val adminId = SupabaseProvider.auth.currentUserOrNull()?.id
+                ?: throw Exception("يجب تسجيل الدخول كمدير نظام أولاً")
+
+            // 1. إنشاء عميل Supabase مستقل لعملية التسجيل لحماية جلسة الأدمن الحالية
+            tempClient = io.github.jan.supabase.createSupabaseClient(
+                supabaseUrl = com.bagomri.yemenbloodbank.core.constants.AppConfig.SUPABASE_URL,
+                supabaseKey = com.bagomri.yemenbloodbank.core.constants.AppConfig.SUPABASE_ANON_KEY
+            ) {
+                install(io.github.jan.supabase.auth.Auth)
             }
 
-            val created = postgrest.from("hospitals")
-                .insert(insertData) {
-                    select()
-                }.decodeSingle<Hospital>()
+            val hospitalEmail = hospital.email.trim()
+            val hospitalName = hospital.name.trim()
 
+            // تسجيل الحساب الجديد في Auth
+            val userResponse = tempClient.auth.signUpWith(io.github.jan.supabase.auth.providers.builtin.Email) {
+                this.email = hospitalEmail
+                this.password = password
+                data = buildJsonObject {
+                    put("role", "hospital")
+                    put("name", hospitalName)
+                }
+            }
+
+            val userId = userResponse?.id ?: tempClient.auth.currentUserOrNull()?.id
+                ?: throw Exception("فشل إنشاء حساب المستخدم. يرجى التحقق من البريد الإلكتروني وكلمة المرور")
+
+            // 2. استدعاء دالة قاعدة البيانات add_hospital_bypassing_rls
+            val districtValue = if (hospital.district.isNotBlank()) {
+                hospital.district
+            } else {
+                hospital.governorate
+            }
+
+            val rpcParams = buildJsonObject {
+                put("p_admin_id", adminId)
+                put("p_hospital_id", userId)
+                put("p_name", hospitalName)
+                put("p_email", hospitalEmail)
+                put("p_district", districtValue)
+                if (!hospital.phoneNumber.isNullOrBlank()) {
+                    put("p_phone_number", hospital.phoneNumber.trim())
+                } else {
+                    put("p_phone_number", kotlinx.serialization.json.JsonNull)
+                }
+                if (!hospital.address.isNullOrBlank()) {
+                    put("p_address", hospital.address.trim())
+                } else {
+                    put("p_address", kotlinx.serialization.json.JsonNull)
+                }
+            }
+
+            postgrest.rpc("add_hospital_bypassing_rls", rpcParams)
+
+            // في حال رغب الأدمن بتعطيل الحساب منذ البداية
+            if (!hospital.isActive) {
+                toggleHospitalStatus(userId, false)
+            }
+
+            val created = getHospitalById(userId).getOrNull() ?: hospital.copy(id = userId)
             Result.success(created)
         } catch (e: Exception) {
             Result.failure(e)
+        } finally {
+            try {
+                tempClient?.close()
+            } catch (_: Exception) {}
         }
     }
 

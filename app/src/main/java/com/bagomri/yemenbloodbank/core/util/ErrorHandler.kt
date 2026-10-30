@@ -37,16 +37,22 @@ object ErrorHandler {
             }
 
             rawMessage.contains("User already registered", ignoreCase = true) ||
-            rawMessage.contains("already registered", ignoreCase = true) -> {
+            rawMessage.contains("already registered", ignoreCase = true) ||
+            rawMessage.contains("email already", ignoreCase = true) -> {
                 "هذا البريد الإلكتروني مسجل مسبقاً"
             }
 
             rawMessage.contains("duplicate key", ignoreCase = true) ||
             rawMessage.contains("23505", ignoreCase = true) -> {
-                "رقم الهاتف مسجل مسبقاً"
+                if (rawMessage.contains("email", ignoreCase = true) || rawMessage.contains("hospitals_email_key", ignoreCase = true)) {
+                    "البريد الإلكتروني مسجل مسبقاً"
+                } else {
+                    "رقم الهاتف مسجل مسبقاً"
+                }
             }
 
-            rawMessage.contains("Password should be at least", ignoreCase = true) -> {
+            rawMessage.contains("Password should be at least", ignoreCase = true) ||
+            rawMessage.contains("weak_password", ignoreCase = true) -> {
                 "كلمة المرور يجب أن لا تقل عن 6 خانات"
             }
 
